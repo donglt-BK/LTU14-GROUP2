@@ -1,14 +1,16 @@
 package com.bk.olympia.model;
 
+import java.util.HashMap;
+
 public class Message {
     private int type;
     private String sender;
-    private String content;
+    private HashMap content;
 
     public Message() {
     }
 
-    public Message(int type, String sender, String content) {
+    public Message(int type, String sender, HashMap content) {
         this.type = type;
         this.sender = sender;
         this.content = content;
@@ -30,11 +32,11 @@ public class Message {
         this.sender = sender;
     }
 
-    public String getContent() {
+    public HashMap getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(HashMap content) {
         this.content = content;
     }
 }

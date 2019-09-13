@@ -2,7 +2,8 @@ package com.bk.olympia.model.type;
 
 public enum MessageType {
     LOGIN(1),
-    QUEUE(2);
+    LOGOUT(2),
+    QUEUE(3);
 
     private int value;
 
