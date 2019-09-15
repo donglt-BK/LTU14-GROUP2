@@ -3,7 +3,7 @@ package com.bk.olympia.controller;
 import com.bk.olympia.model.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
-import com.bk.olympia.model.type.Messages;
+import com.bk.olympia.model.type.MessageDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,7 +22,7 @@ public class LoginController {
     public Message login(@Payload Message message) {
         System.out.println("HERE");
         HashMap<String, String> contents = new HashMap<>();
-        contents.put(ContentType.STATUS, validateAccount(message) ? Messages.LOGIN_SUCCESS : Messages.LOGIN_FAILED);
+        contents.put(ContentType.STATUS, validateAccount(message) ? MessageDetail.LOGIN_SUCCESS : MessageDetail.LOGIN_FAILED);
         logger.info(contents.get(ContentType.STATUS));
         return new Message(MessageType.LOGIN.getValue(), message.getSender(), contents);
     }
