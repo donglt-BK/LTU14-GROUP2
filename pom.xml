@@ -11,8 +11,7 @@
 	<groupId>com.bk</groupId>
 	<artifactId>olympia</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>olympia</name>
-	<description>Demo project for Spring Boot</description>
+	<name>olympia server</name>
 
 	<properties>
 		<java.version>1.8</java.version>

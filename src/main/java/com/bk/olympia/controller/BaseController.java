@@ -14,7 +14,7 @@ public abstract class BaseController {
     @Autowired
     private SimpMessagingTemplate template;
 
-    protected EntityManagerFactory factory = Persistence.createEntityManagerFactory("App");
-    protected EntityManager manager = factory.createEntityManager();
+    protected EntityManagerFactory factory;//= Persistence.createEntityManagerFactory("App");
+    protected EntityManager manager;// = factory.createEntityManager();
     protected Query query;
 }

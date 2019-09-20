@@ -1,6 +1,7 @@
 package com.bk.olympia.model.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "PlayerData")
 public class Player {
     @NotNull
+    @Id
     private int id;
 
     private int currentLevel;

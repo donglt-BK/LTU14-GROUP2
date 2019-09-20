@@ -13,6 +13,8 @@ public class QuestionSet {
     @NotNull
     private int difficulty;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "TopicId")
     private Topic topic;
     private Answer[] answers;
 

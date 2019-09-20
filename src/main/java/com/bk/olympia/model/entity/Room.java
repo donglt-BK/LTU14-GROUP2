@@ -2,7 +2,7 @@ package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "room")
@@ -26,7 +26,7 @@ public class Room {
             joinColumns = @JoinColumn(name = "roomid"),
             inverseJoinColumns = @JoinColumn(name = "playerid")
     )
-    private ArrayList<Player> playerList;
+    private List<Player> playerList;
 
     public Room(@NotNull int maxUsers, @NotNull int betValue, @NotNull int maxQuestions) {
         this.maxUsers = maxUsers;
@@ -34,7 +34,7 @@ public class Room {
         this.maxQuestions = maxQuestions;
     }
 
-    public Room(@NotNull int maxUsers, @NotNull int betValue, @NotNull int maxQuestions, @NotNull ArrayList<Player> playerList) {
+    public Room(@NotNull int maxUsers, @NotNull int betValue, @NotNull int maxQuestions, @NotNull List<Player> playerList) {
         this.maxUsers = maxUsers;
         this.betValue = betValue;
         this.maxQuestions = maxQuestions;
@@ -57,11 +57,11 @@ public class Room {
         return maxQuestions;
     }
 
-    public void setPlayerList(ArrayList<Player> playerList) {
+    public void setPlayerList(List<Player> playerList) {
         this.playerList = playerList;
     }
 
-    public ArrayList<Player> getPlayerList() {
+    public List<Player> getPlayerList() {
         return playerList;
     }
 }

@@ -22,6 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/login").setHandshakeHandler(new DefaultHandshakeHandler() {
             public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler handler, Map attributes) throws Exception {
+                System.out.println("check");
                 if (request instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                     HttpSession session = servletRequest.getServletRequest().getSession();
