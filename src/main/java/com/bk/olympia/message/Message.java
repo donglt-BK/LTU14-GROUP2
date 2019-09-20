@@ -1,33 +1,31 @@
-package com.bk.olympia.model.entity;
-
-import com.bk.olympia.base.Broadcaster;
+package com.bk.olympia.message;
 
 import java.util.HashMap;
 
-public class Message extends Broadcaster {
-    private int type;
+public class Message {
+    private MessageType type;
     private int sender;
     private HashMap content;
 
     public Message() {
     }
 
-    public Message(int type, int sender) {
+    public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
     }
 
-    public Message(int type, int sender, HashMap content) {
+    public Message(MessageType type, int sender, HashMap content) {
         this.type = type;
         this.sender = sender;
         this.content = content;
     }
 
-    public int getType() {
+    public MessageType getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(MessageType type) {
         this.type = type;
     }
 
