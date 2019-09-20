@@ -1,4 +1,4 @@
-package com.bk.olympia.model;
+package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -20,7 +20,12 @@ public class Room {
     @NotNull
     private final int maxQuestions;
 
-    //TODO: Join table RoomPlayer
+    @ManyToMany
+    @JoinTable(
+            name = "roomplayer",
+            joinColumns = @JoinColumn(name = "roomid"),
+            inverseJoinColumns = @JoinColumn(name = "playerid")
+    )
     private ArrayList<Player> playerList;
 
     public Room(@NotNull int maxUsers, @NotNull int betValue, @NotNull int maxQuestions) {

@@ -1,6 +1,6 @@
 package com.bk.olympia.controller;
 
-import com.bk.olympia.model.Message;
+import com.bk.olympia.model.entity.Message;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
-        if (username != null) {
+        int username = (int) headerAccessor.getSessionAttributes().get("username");
+        if (username != 0) {
             logger.info("User " + username + " disconnected!");
             Message message = new Message();
             message.setType(MessageType.LOGOUT.getValue());

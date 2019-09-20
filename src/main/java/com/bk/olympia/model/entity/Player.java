@@ -1,4 +1,4 @@
-package com.bk.olympia.model;
+package com.bk.olympia.model.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
