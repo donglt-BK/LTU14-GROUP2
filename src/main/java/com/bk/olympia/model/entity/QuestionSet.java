@@ -24,6 +24,10 @@ public class QuestionSet {
         this.answers = answers;
     }
 
+    public QuestionSet() {
+
+    }
+
     public int getId() {
         return id;
     }

@@ -22,6 +22,10 @@ public class Player {
         currentLevel = totalPoint = 0;
     }
 
+    public Player() {
+
+    }
+
     public static Player getInstance(@NotNull int id) {
         if (instance == null) {
             synchronized (Player.class) {

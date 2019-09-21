@@ -24,6 +24,10 @@ public class Answer {
         this.isCorrect = isCorrect;
     }
 
+    public Answer() {
+
+    }
+
     public int getId() {
         return id;
     }

@@ -25,6 +25,10 @@ public class Topic {
         this.topicDescription = topicDescription;
     }
 
+    public Topic() {
+        
+    }
+
     public int getId() {
         return id;
     }
