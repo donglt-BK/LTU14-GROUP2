@@ -1,7 +1,7 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.model.Lobby;
-import com.bk.olympia.model.entity.Message;
+import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
@@ -9,10 +9,8 @@ import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -20,10 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Controller
-public class QueueController {
-    @Autowired
-    private SimpMessagingTemplate template;
-
+public class QueueController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(QueueController.class);
     private HashMap<Lobby, Integer> lobbyList = new HashMap<>();
 

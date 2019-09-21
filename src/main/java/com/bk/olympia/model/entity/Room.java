@@ -12,13 +12,13 @@ public class Room {
     private int id;
 
     @NotNull
-    private final int maxUsers;
+    private int maxUsers;
 
     @NotNull
-    private final int betValue;
+    private int betValue;
 
     @NotNull
-    private final int maxQuestions;
+    private int maxQuestions;
 
     @ManyToMany
     @JoinTable(
@@ -39,6 +39,10 @@ public class Room {
         this.betValue = betValue;
         this.maxQuestions = maxQuestions;
         this.playerList = playerList;
+    }
+
+    public Room() {
+
     }
 
     public int getId() {

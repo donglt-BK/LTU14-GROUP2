@@ -1,4 +1,4 @@
-package com.bk.olympia.model.entity;
+package com.bk.olympia.model;
 
 import com.bk.olympia.base.Broadcaster;
 

@@ -1,6 +1,6 @@
 package com.bk.olympia.base;
 
-import com.bk.olympia.model.entity.Message;
+import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.User;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 

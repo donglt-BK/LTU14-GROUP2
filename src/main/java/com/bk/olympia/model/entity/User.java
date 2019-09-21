@@ -4,7 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "user")
+@Table(name = "User")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,6 +24,11 @@ public class User {
 
     public User() {
 
+    }
+
+    public User(@NotNull String username, @NotNull String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public User(@NotNull String username, @NotNull String password, @NotNull String name, int gender) {
@@ -80,5 +85,21 @@ public class User {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public enum Gender {
+        MALE(1),
+        FEMALE(2),
+        OTHER(3);
+
+        int value;
+
+        Gender(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
     }
 }

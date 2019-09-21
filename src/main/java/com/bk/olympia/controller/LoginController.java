@@ -1,6 +1,6 @@
 package com.bk.olympia.controller;
 
-import com.bk.olympia.model.entity.Message;
+import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
@@ -22,13 +22,33 @@ public class LoginController extends BaseController {
         User u = validateAccount(message);
 
         Message m = new Message(MessageType.LOGIN.getValue(), message.getSender());
-        m.addContent(ContentType.USER_ID, u != null ? u.getId() : -1);
+        m.addContent(ContentType.USER_ID, u.getId());
         logger.info((String) m.getContent().get(ContentType.USER_ID));
         return m;
     }
 
     private User validateAccount(Message message) {
-        query = manager.createQuery("SELECT " + message.getSender() + " FROM 'User'");
-        return (User) query.getResultList().get(0);
+        query = entityManager.createQuery("SELECT " + message.getSender() + " FROM 'User'");
+        User user = (User) query.getResultList().get(0);
+        if (user == null) {
+            user = new User((String) message.getContent().get(ContentType.USERNAME), (String) message.getContent().get(ContentType.PASSWORD));
+            user.setName("player" + user.getId());
+            user.setGender(User.Gender.MALE.getValue());
+
+//            entityManager.createNativeQuery("INSERT INTO User VALUES (?, ?, ?, ?, ?, ?)")
+//                    .setParameter(1, user.getId())
+//                    .setParameter(2, user.getUsername())
+//                    .setParameter(3, user.getPassword())
+//                    .setParameter(4, user.getName())
+//                    .setParameter(5, user.getGender())
+//                    .setParameter(6, user.getBalance())
+//                    .executeUpdate();
+            entityManager.getTransaction().begin();
+            entityManager.persist(user);
+            entityManager.getTransaction().commit();
+            factory.close();
+            entityManager.close();
+        }
+        return user;
     }
 }
