@@ -15,7 +15,7 @@
 		<dependency>
 			<groupId>org.glassfish.tyrus.bundles</groupId>
 			<artifactId>tyrus-standalone-client</artifactId>
-			<version>1.9</version>
+			<version>1.13</version>
 		</dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
