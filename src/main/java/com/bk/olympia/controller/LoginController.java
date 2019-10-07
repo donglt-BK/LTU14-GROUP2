@@ -10,25 +10,34 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class LoginController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger("LoginController");
 
+//    @RequestMapping(value = "/", method = RequestMethod.GET)
+//    @ResponseBody
+//    public String test() {
+//        return "Test";
+//    }
+
     @MessageMapping("/login")
     @SendToUser("/queue/login")
     public Message login(@Payload Message message) {
         User u = validateAccount(message);
 
-        Message m = new Message(MessageType.LOGIN.getValue(), message.getSender());
+        Message m = new Message(MessageType.LOGIN, message.getSender());
         m.addContent(ContentType.USER_ID, u.getId());
         logger.info((String) m.getContent().get(ContentType.USER_ID));
         return m;
     }
 
     private User validateAccount(Message message) {
-        query = entityManager.createQuery("SELECT " + message.getSender() + " FROM 'User'");
+        query = entityManager.createQuery("SELECT u FROM User u WHERE username='" + message.getContent().get(ContentType.USERNAME) + "' && password='" + message.getContent().get(ContentType.PASSWORD) + "'");
         User user = (User) query.getResultList().get(0);
         if (user == null) {
             user = new User((String) message.getContent().get(ContentType.USERNAME), (String) message.getContent().get(ContentType.PASSWORD));

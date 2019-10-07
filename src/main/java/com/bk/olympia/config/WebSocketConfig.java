@@ -1,5 +1,7 @@
 package com.bk.olympia.config;
 
+import com.bk.olympia.interceptor.HttpHandshakeInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -18,26 +20,18 @@ import java.util.Map;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    @Autowired
+    private HttpHandshakeInterceptor interceptor;
+
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/login").setHandshakeHandler(new DefaultHandshakeHandler() {
-            public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler handler, Map attributes) throws Exception {
-                System.out.println("check");
-                if (request instanceof ServletServerHttpRequest) {
-                    ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
-                    HttpSession session = servletRequest.getServletRequest().getSession();
-                    attributes.put("sessionId", session.getId());
-                }
-                return true;
-            }
-        }).withSockJS();
+        registry.addEndpoint("/login").withSockJS().setInterceptors(interceptor);
         registry.addEndpoint("/play").withSockJS();
-
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic/", "/queue/");
+        registry.enableSimpleBroker("/topic/", "/e/");
     }
 }

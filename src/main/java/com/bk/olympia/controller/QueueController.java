@@ -29,7 +29,7 @@ public class QueueController extends BaseController {
 
         Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
 
-        Message m = new Message(MessageType.JOIN_QUEUE.getValue(), message.getSender());
+        Message m = new Message(MessageType.JOIN_QUEUE, message.getSender());
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
                 .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getFirstUser().getName());
         lobby.addUser(user);
@@ -43,7 +43,7 @@ public class QueueController extends BaseController {
         User user = new User();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
-        Message m = new Message(MessageType.LEAVE_QUEUE.getValue(), message.getSender());
+        Message m = new Message(MessageType.LEAVE_QUEUE, message.getSender());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
 
@@ -57,7 +57,7 @@ public class QueueController extends BaseController {
         ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
-        Message m = new Message(MessageType.START_GAME.getValue(), message.getSender());
+        Message m = new Message(MessageType.START_GAME, message.getSender());
         m.addContent(ContentType.START, user.equals(lobby.getFirstUser()));
         Message.broadcast(lobby.getUsers(), "/queue/play/start-game", m);
         lobby.getUsers().forEach(u -> {
@@ -67,7 +67,7 @@ public class QueueController extends BaseController {
         if (user.equals(lobby.getFirstUser())) {
             Room room = new Room(lobby.getUsers().size(), lobby.getBetValue(), 10, players);
 
-            m = new Message(MessageType.CREATE_ROOM.getValue(), message.getSender());
+            m = new Message(MessageType.CREATE_ROOM, message.getSender());
             Message.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
             lobbyList.remove(lobby);
         }
@@ -82,9 +82,8 @@ public class QueueController extends BaseController {
     }
 
     private Lobby findLobbyById(int id) {
-        return lobbyList.entrySet().stream()
-                .filter(entry -> entry.getKey().getId() == id)
-                .map(Map.Entry::getKey)
+        return lobbyList.keySet().stream()
+                .filter(integer -> integer.getId() == id)
                 .findFirst()
                 .orElse(null);
     }
