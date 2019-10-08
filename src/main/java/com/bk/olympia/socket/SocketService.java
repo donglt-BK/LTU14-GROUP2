@@ -6,14 +6,15 @@ import org.springframework.web.socket.client.WebSocketClient;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
-import javax.websocket.ClientEndpoint;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
 public class SocketService {
 
-    public static ClientEndPoint connect(String url) throws URISyntaxException {
-        return new ClientEndPoint(new URI(url));
+    public static StompSession connect(String url) throws ExecutionException, InterruptedException {
+        WebSocketClient client = new StandardWebSocketClient();
+        WebSocketStompClient stompClient = new WebSocketStompClient(client);
+        stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+        stompClient.connect(url, new CustomStompSessionHandler());
+        return null;
     }
 }
