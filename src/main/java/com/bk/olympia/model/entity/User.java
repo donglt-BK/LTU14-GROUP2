@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "User")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @NotNull
@@ -19,7 +19,9 @@ public class User {
     @NotNull
     private String name;
 
+    @NotNull
     private int gender;
+
     private int balance;
 
     public User() {

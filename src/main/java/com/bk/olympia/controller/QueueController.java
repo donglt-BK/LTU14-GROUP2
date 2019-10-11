@@ -25,7 +25,7 @@ public class QueueController extends BaseController {
     @MessageMapping("/play/join")
     public void joinQueue(@Payload Message message) {
         //TODO: Get user from DB
-        User user = new User();
+        User user = findUserById(message.getSender());
 
         Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
 
@@ -40,7 +40,7 @@ public class QueueController extends BaseController {
     @MessageMapping("/play/leave")
     public void leaveQueue(@Payload Message message) {
         //TODO: Get user from DB
-        User user = new User();
+        User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
         Message m = new Message(MessageType.LEAVE_QUEUE, message.getSender());
@@ -53,7 +53,7 @@ public class QueueController extends BaseController {
     @MessageMapping("/play/start-game")
     public void startGame(@Payload Message message) {
         //TODO: Get user from DB
-        User user = new User();
+        User user = findUserById(message.getSender());
         ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
@@ -66,6 +66,9 @@ public class QueueController extends BaseController {
 
         if (user.equals(lobby.getFirstUser())) {
             Room room = new Room(lobby.getUsers().size(), lobby.getBetValue(), 10, players);
+//            entityManager.persist(room);
+
+            roomRepository.save(room);
 
             m = new Message(MessageType.CREATE_ROOM, message.getSender());
             Message.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
@@ -86,5 +89,12 @@ public class QueueController extends BaseController {
                 .filter(integer -> integer.getId() == id)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private User findUserById(int id) {
+//        query = entityManager.createQuery("SELECT u From User u WHERE u.id == " + id);
+//        return query.getResultList() != null ? (User) query.getResultList().get(0) : null;
+
+        return userRepository.findById(id);
     }
 }

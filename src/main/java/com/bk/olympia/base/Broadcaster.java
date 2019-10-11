@@ -6,8 +6,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
 
-public class Broadcaster {
-    private static SimpMessagingTemplate template;
+public abstract class Broadcaster {
+    protected static SimpMessagingTemplate template;
     public static void broadcast(List<User> list, String destination, Message message) {
         list.forEach(u -> template.convertAndSendToUser(u.getName(), destination, message));
     }

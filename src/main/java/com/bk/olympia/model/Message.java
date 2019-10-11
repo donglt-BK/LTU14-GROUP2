@@ -4,11 +4,12 @@ import com.bk.olympia.base.Broadcaster;
 import com.bk.olympia.model.type.MessageType;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Message extends Broadcaster {
     private MessageType type;
     private int sender;
-    private HashMap content;
+    private Map content;
 
     public Message() {
     }
@@ -16,6 +17,7 @@ public class Message extends Broadcaster {
     public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
+        content = new HashMap();
     }
 
     public Message(MessageType type, int sender, HashMap content) {
@@ -40,12 +42,12 @@ public class Message extends Broadcaster {
         this.sender = sender;
     }
 
-    public HashMap getContent() {
+    public Map getContent() {
         return content;
     }
 
     public <T> T getContent(String type) {
-        return (T) content.get(type);
+        return (T) (content.get(type));
     }
 
     public void setContent(HashMap content) {
@@ -55,5 +57,10 @@ public class Message extends Broadcaster {
     public <T> Message addContent(String type, T detail) {
         this.content.put(type, detail);
         return this;
+    }
+
+    //TODO: Hàm encrypt gói tin
+    public void pack() {
+
     }
 }

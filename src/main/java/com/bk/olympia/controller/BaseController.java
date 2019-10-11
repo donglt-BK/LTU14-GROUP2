@@ -1,5 +1,7 @@
 package com.bk.olympia.controller;
 
+import com.bk.olympia.repository.RoomRepository;
+import com.bk.olympia.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
@@ -12,12 +14,18 @@ import java.util.concurrent.ScheduledFuture;
 
 @Controller
 public abstract class BaseController {
-    @Autowired
-    private SimpMessagingTemplate template;
+//    @Autowired
+//    private SimpMessagingTemplate template;
+//
+//    protected EntityManagerFactory factory = Persistence.createEntityManagerFactory("App");
+//    protected EntityManager entityManager = factory.createEntityManager();
+//    protected Query query;
 
-    protected EntityManagerFactory factory = Persistence.createEntityManagerFactory("App");
-    protected EntityManager entityManager = factory.createEntityManager();
-    protected Query query;
+    @Autowired
+    protected UserRepository userRepository;
+
+    @Autowired
+    protected RoomRepository roomRepository;
 
     protected ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     protected HashMap<Integer, ScheduledFuture> taskQueue = new HashMap<>();
