@@ -1,5 +1,10 @@
 package com.bk.olympia.message;
 
 public enum MessageType {
-    NONE, LOGIN, LOGOUT, QUEUE
+    LOGIN,
+    LOGOUT,
+    JOIN_QUEUE,
+    LEAVE_QUEUE,
+    START_GAME,
+    CREATE_ROOM;
 }
