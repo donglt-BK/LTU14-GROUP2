@@ -87,7 +87,7 @@ public class LoginScreen extends Screen {
 
         submit.addActionListener(actionEvent -> {
             try {
-                ui.showScreen(SCREEN_HOME);
+                ui.showScreen(HOME_SCREEN);
             } catch (ScreenNotFoundException ex) {
                 ex.printStackTrace();
             }

@@ -2,7 +2,6 @@ package com.bk.olympia;
 
 import com.bk.olympia.UI.JFrameUI;
 import com.bk.olympia.UI.ScreenService;
-import com.bk.olympia.config.Constant;
 import com.bk.olympia.exception.ScreenNotFoundException;
 
 import static com.bk.olympia.config.Constant.*;
@@ -36,7 +35,7 @@ public class OlympiaClient {
 		ui.addScreen(ScreenService.generateScreens(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 		try {
-			ui.showScreen(SCREEN_LOGIN);
+			ui.showScreen(LOGIN_SCREEN);
 		} catch (ScreenNotFoundException e) {
 			e.printStackTrace();
 		}
