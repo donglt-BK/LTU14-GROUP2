@@ -12,54 +12,73 @@ import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
+import service.MessagingService;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 @Controller
 public class QueueController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(QueueController.class);
-    private HashMap<Lobby, Integer> lobbyList = new HashMap<>();
+    private TreeMap<Lobby, Integer> lobbyList = new TreeMap<>();
 
-    @MessageMapping("/play/join")
-    public void joinQueue(@Payload Message message) {
-        //TODO: Get user from DB
+    @MessageMapping("/play/get-lobby-list")
+    public void getLobbyList(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Message m = new Message(MessageType.GET_LOBBY_LIST, message.getSender());
+        lobbyList.forEach((lobby, betValue) -> m.addContent(ContentType.LOBBY_ID, lobby.getId())
+                .addContent(ContentType.LOBBY_NAME, lobby.getName())
+                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers().size())
+                .addContent(ContentType.BET_VALUE, betValue));
+        MessagingService.sendTo(user, "/queue/play/get-lobby-list", m);
+    }
+
+    @MessageMapping("/play/create-lobby")
+    public void createLobby(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
+        user.join(lobby);
+        lobbyList.put(lobby, lobby.getBetValue());
+    }
+
+    @MessageMapping("/play/quick-join")
+    public void quickJoin(@Payload Message message) {
         User user = findUserById(message.getSender());
 
         Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
+        user.join(lobby);
+    }
 
-        Message m = new Message(MessageType.JOIN_QUEUE, message.getSender());
-        m.addContent(ContentType.LOBBY_ID, lobby.getId())
-                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getFirstUser().getName());
-        lobby.addUser(user);
+    @MessageMapping("play/join")
+    public void joinLobby(@Payload Message message) {
+        User user = findUserById(message.getSender());
 
-        Message.broadcast(lobby.getUsers(), "/queue/play/join", m);
+        Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
+        user.join(lobby);
     }
 
     @MessageMapping("/play/leave")
-    public void leaveQueue(@Payload Message message) {
-        //TODO: Get user from DB
+    public void leaveLobby(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
-        Message m = new Message(MessageType.LEAVE_QUEUE, message.getSender());
+        Message m = new Message(MessageType.LEAVE_LOBBY, message.getSender());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
 
-        Message.broadcast(lobby.getUsers(), "/queue/play/leave", m);
+        MessagingService.broadcast(lobby.getUsers(), "/queue/play/leave", m);
     }
 
     @MessageMapping("/play/start-game")
     public void startGame(@Payload Message message) {
-        //TODO: Get user from DB
         User user = findUserById(message.getSender());
         ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
         Message m = new Message(MessageType.START_GAME, message.getSender());
         m.addContent(ContentType.START, user.equals(lobby.getFirstUser()));
-        Message.broadcast(lobby.getUsers(), "/queue/play/start-game", m);
+        MessagingService.broadcast(lobby.getUsers(), "/queue/play/start-game", m);
         lobby.getUsers().forEach(u -> {
             players.add(Player.getInstance(u.getId()));
         });
@@ -71,8 +90,8 @@ public class QueueController extends BaseController {
             roomRepository.save(room);
 
             m = new Message(MessageType.CREATE_ROOM, message.getSender());
-            Message.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
-            lobbyList.remove(lobby);
+            MessagingService.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
+            removeLobby(lobby);
         }
     }
 
@@ -80,7 +99,7 @@ public class QueueController extends BaseController {
         return lobbyList.entrySet().stream()
                 .filter(entry -> entry.getValue() == betValue)
                 .map(Map.Entry::getKey)
-                .findFirst()
+                .findAny()
                 .orElse(new Lobby(betValue));
     }
 
@@ -91,10 +110,8 @@ public class QueueController extends BaseController {
                 .orElse(null);
     }
 
-    private User findUserById(int id) {
-//        query = entityManager.createQuery("SELECT u From User u WHERE u.id == " + id);
-//        return query.getResultList() != null ? (User) query.getResultList().get(0) : null;
-
-        return userRepository.findById(id);
+    private void removeLobby(Lobby lobby) {
+        Lobby.addDeletedId(lobby.getId());
+        lobbyList.remove(lobby);
     }
 }

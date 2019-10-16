@@ -1,5 +1,10 @@
 package com.bk.olympia.model.entity;
 
+import com.bk.olympia.model.Lobby;
+import com.bk.olympia.model.Message;
+import com.bk.olympia.model.type.ContentType;
+import com.bk.olympia.model.type.MessageType;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
@@ -87,6 +92,15 @@ public class User {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public void join(Lobby lobby) {
+        Message m = new Message(MessageType.JOIN_LOBBY, this.getId());
+        m.addContent(ContentType.LOBBY_ID, lobby.getId())
+                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getFirstUser().getName());
+        lobby.addUser(this);
+
+        Message.broadcast(lobby.getUsers(), "/queue/play/join", m);
     }
 
     public enum Gender {

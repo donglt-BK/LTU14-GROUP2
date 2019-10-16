@@ -1,12 +1,12 @@
 package com.bk.olympia.model;
 
-import com.bk.olympia.base.Broadcaster;
+import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Message extends Broadcaster {
+public class Message {
     private MessageType type;
     private int sender;
     private Map content;
@@ -46,7 +46,7 @@ public class Message extends Broadcaster {
         return content;
     }
 
-    public <T> T getContent(String type) {
+    public <T> T getContent(ContentType type) {
         return (T) (content.get(type));
     }
 
@@ -54,7 +54,7 @@ public class Message extends Broadcaster {
         this.content = content;
     }
 
-    public <T> Message addContent(String type, T detail) {
+    public <T> Message addContent(ContentType type, T detail) {
         this.content.put(type, detail);
         return this;
     }
