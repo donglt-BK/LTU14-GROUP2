@@ -4,16 +4,21 @@ import com.bk.olympia.UI.JFrameUI;
 
 import javax.swing.*;
 
-public class Screen extends JPanel {
+public abstract class Screen extends JPanel {
     protected String screenName;
     protected JFrameUI ui;
 
     protected Screen(String screenName) {
         this.screenName = screenName;
-        ui = JFrameUI.getInstance();
     }
 
     public String getScreenName() {
         return screenName;
     }
+
+    public void setJFrameUI(JFrameUI jFrameUI) {
+        ui = jFrameUI;
+    }
+
+    public abstract void generate(int windowWidth, int windowHeight);
 }

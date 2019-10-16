@@ -15,6 +15,8 @@ public class JFrameUI {
     private JFrame jFrame;
     private Map<String, Screen> screens;
     private String currentScreen;
+    private int windowWidth;
+    private int windowHeight;
 
     public static JFrameUI getInstance() {
         if (instance == null) instance = new JFrameUI();
@@ -27,6 +29,9 @@ public class JFrameUI {
     }
 
     public JFrameUI config(String title, int windowWidth, int windowHeight) {
+        this.windowWidth = windowWidth;
+        this.windowHeight = windowHeight;
+
         jFrame.setTitle(title);
         jFrame.setSize(windowWidth, windowHeight);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -39,6 +44,8 @@ public class JFrameUI {
     public void addScreen(List<Screen> screens) {
         for (Screen screen : screens) {
             this.screens.put(screen.getScreenName(), screen);
+            screen.setJFrameUI(getInstance());
+            screen.generate(windowWidth, windowHeight);
         }
     }
 

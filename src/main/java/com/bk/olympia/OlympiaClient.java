@@ -32,7 +32,7 @@ public class OlympiaClient {
 	public static void main(String[] args) {
 
 		JFrameUI ui = JFrameUI.getInstance().config(APP_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
-		ui.addScreen(ScreenService.generateScreens(WINDOW_WIDTH, WINDOW_HEIGHT));
+		ui.addScreen(ScreenService.getScreens());
 
 		try {
 			ui.showScreen(LOGIN_SCREEN);
