@@ -1,29 +1,25 @@
 package com.bk.olympia.message;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class Message {
     private MessageType type;
     private int sender;
-    private Map content;
-
-    public Message() {
-    }
+    private HashMap content;
 
     public Message(MessageType type) {
         this.type = type;
         this.sender = 0;
-        this.content = new HashMap();
+        content = new HashMap();
     }
 
     public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
-        this.content = new HashMap();
+        content = new HashMap();
     }
 
-    public Message(MessageType type, int sender, Map content) {
+    public Message(MessageType type, int sender, HashMap content) {
         this.type = type;
         this.sender = sender;
         this.content = content;
@@ -45,7 +41,7 @@ public class Message {
         this.sender = sender;
     }
 
-    public Map getContent() {
+    public HashMap getContent() {
         return content;
     }
 
@@ -60,5 +56,9 @@ public class Message {
     public <T> Message addContent(String type, T detail) {
         this.content.put(type, detail);
         return this;
+    }
+
+    public void pack() {
+
     }
 }

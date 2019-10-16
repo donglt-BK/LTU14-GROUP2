@@ -1,7 +1,8 @@
 package com.bk.olympia.socket;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.bk.olympia.message.Message;
+import com.bk.olympia.message.MessageType;
+import com.google.gson.Gson;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -18,9 +19,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class SocketService {
-    private static final String templateUrl = "ws://{host}:{port}";
 
-    public static StompSession connect(String host, int port, String path) throws ExecutionException, InterruptedException {
+    public static StompSession connect(String url) throws ExecutionException, InterruptedException {
 
         Transport webSocketTransport = new WebSocketTransport(new StandardWebSocketClient());
         List<Transport> transports = Collections.singletonList(webSocketTransport);
@@ -30,24 +30,23 @@ public class SocketService {
 
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
 
-        ListenableFuture<StompSession> f = stompClient.connect(templateUrl + path, new WebSocketHttpHeaders(), new CustomStompSessionHandler(), host, port);
+        ListenableFuture<StompSession> f = stompClient.connect(url, new WebSocketHttpHeaders(), new CustomStompSessionHandler(), "localhost", 8109);
 
         return f.get();
 
     }
 
-    public static void subscribe(StompSession stompSession, String url, StompFrameHandler stompFrameHandler) {
-        stompSession.subscribe(url, stompFrameHandler);
+    public static void listen(StompSession stompSession, StompFrameHandler stompFrameHandler) {
+        stompSession.subscribe("/queue/login", stompFrameHandler);
 
     }
 
-    public static void send(StompSession stompSession, String url, Object object) {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            stompSession.send(url, objectMapper.writeValueAsString(object).getBytes());
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+    public static void sendHello(StompSession stompSession) {
+        Gson gson = new Gson();
+        Message message = new Message(MessageType.LOGIN);
+        message.addContent("username", "admin")
+                .addContent("password", "12345678");
+        stompSession.send("/app/login", gson.toJson(message).getBytes());
     }
 
 }
