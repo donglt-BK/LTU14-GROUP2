@@ -1,17 +1,15 @@
 package com.bk.olympia;
 
-import com.bk.olympia.message.Message;
-import com.bk.olympia.message.MessageType;
-import com.bk.olympia.socket.SocketService;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
+import com.bk.olympia.UI.JFrameUI;
+import com.bk.olympia.UI.ScreenService;
+import com.bk.olympia.config.Constant;
+import com.bk.olympia.exception.ScreenNotFoundException;
 
-import java.lang.reflect.Type;
+import static com.bk.olympia.config.Constant.*;
 
 public class OlympiaClient {
 
-	public static void main(String[] args) throws Exception {
+	/*public static void main(String[] args) {
 		StompSession stompSession = SocketService.connect("localhost", 8109, "/login");
 
 		System.out.println("Subscribing using session " + stompSession);
@@ -30,6 +28,18 @@ public class OlympiaClient {
 		.addContent("password", "donglt");
 
 		SocketService.send(stompSession, "/app/login", m);
+	}*/
+
+	public static void main(String[] args) {
+
+		JFrameUI ui = JFrameUI.getInstance().config(APP_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
+		ui.addScreen(ScreenService.generateScreens(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+		try {
+			ui.showScreen(SCREEN_LOGIN);
+		} catch (ScreenNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
