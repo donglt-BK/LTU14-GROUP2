@@ -11,17 +11,18 @@ CREATE TABLE User(
 );
 
 CREATE TABLE PlayerData(
-	Id INT NOT NULL,
-    Current_Level INT DEFAULT 0,
-    Point_Total INT DEFAULT 0,
-    FOREIGN KEY (Id) REFERENCES User(Id)
+                           Id         INT NOT NULL,
+                           MONEY_LEFT INT NOT NULL,
+                           FOREIGN KEY (Id) REFERENCES User(Id)
 );
 
 CREATE TABLE Room(
-	Id INT PRIMARY KEY AUTO_INCREMENT,
-    Max_Users INT NOT NULL,
-    Bet_Value INT NOT NULL,
-    Max_Questions INT NOT NULL
+                     Id            INT PRIMARY KEY AUTO_INCREMENT,
+                     Lobby_Id      INT NOT NULL,
+                     Max_Users     INT NOT NULL,
+                     Bet_Value     INT NOT NULL,
+                     Current_Level INT DEFAULT 0,
+                     Max_Questions INT NOT NULL
 );
 
 CREATE TABLE RoomPlayer(

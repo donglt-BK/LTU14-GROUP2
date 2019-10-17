@@ -12,7 +12,7 @@
         <class>com.bk.olympia.model.Message</class>
         <class>com.bk.olympia.model.entity.Answer</class>
         <class>com.bk.olympia.model.entity.Player</class>
-        <class>com.bk.olympia.model.entity.QuestionSet</class>
+        <class>com.bk.olympia.model.entity.Question</class>
         <class>com.bk.olympia.model.entity.Room</class>
         <class>com.bk.olympia.model.entity.Topic</class>
 

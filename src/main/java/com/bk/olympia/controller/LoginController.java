@@ -1,5 +1,6 @@
 package com.bk.olympia.controller;
 
+import com.bk.olympia.base.BaseController;
 import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.type.ContentType;
@@ -25,7 +26,7 @@ public class LoginController extends BaseController {
     @MessageMapping("/login")
     @SendToUser("/queue/login")
     public Message login(@Payload Message message) {
-        User u = validateAccount(message);
+        User u = validateAccount(message.getContent(ContentType.USERNAME), message.getContent(ContentType.PASSWORD));
 
         Message m = new Message(MessageType.LOGIN, message.getSender());
         m.addContent(ContentType.USER_ID, u.getId());
@@ -33,15 +34,13 @@ public class LoginController extends BaseController {
         return m;
     }
 
-    private User validateAccount(Message message) {
+    private User validateAccount(String username, String password) {
 //        query = entityManager.createQuery("SELECT u FROM User u WHERE username='" + message.getContent().get(ContentType.USERNAME) + "' AND password='" + message.getContent().get(ContentType.PASSWORD) + "'");
 //        User user = (User) query.getResultList().get(0);
 
-        User user = userRepository.findByUsernameAndPassword(message.getContent(ContentType.USERNAME), message.getContent(ContentType.PASSWORD));
+        User user = userRepository.findByUsernameAndPassword(username, password);
         if (user == null) {
-            user = new User((String) message.getContent().get(ContentType.USERNAME), (String) message.getContent().get(ContentType.PASSWORD));
-            user.setName("player" + user.getId());
-            user.setGender(User.Gender.MALE.getValue());
+            user = new User(username, password);
 
 //            entityManager.getTransaction().begin();
 //            entityManager.persist(user);

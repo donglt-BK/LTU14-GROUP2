@@ -4,6 +4,7 @@ import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
+import service.MessagingService;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -36,6 +37,8 @@ public class User {
     public User(@NotNull String username, @NotNull String password) {
         this.username = username;
         this.password = password;
+        this.name = "Player " + this.id;
+        this.gender = Gender.OTHER.getValue();
     }
 
     public User(@NotNull String username, @NotNull String password, @NotNull String name, int gender) {
@@ -97,10 +100,17 @@ public class User {
     public void join(Lobby lobby) {
         Message m = new Message(MessageType.JOIN_LOBBY, this.getId());
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
-                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getFirstUser().getName());
+                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getHost().getName());
         lobby.addUser(this);
 
-        Message.broadcast(lobby.getUsers(), "/queue/play/join", m);
+        MessagingService.broadcast(lobby.getUsers(), "/queue/play/join", m);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof User)
+            return this.getId() == ((User) obj).getId();
+        else return false;
     }
 
     public enum Gender {

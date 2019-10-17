@@ -11,6 +11,11 @@ public class Answer {
     private int id;
 
     @NotNull
+    @ManyToOne
+    @JoinColumn(name = "Question_Id")
+    private Question question;
+
+    @NotNull
     private String answer;
 
     private boolean isCorrect;

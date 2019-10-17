@@ -12,25 +12,24 @@ public class Player {
     @Id
     private int id;
 
-    private int currentLevel;
-    private int totalPoint;
+    private int moneyLeft;
 
     private static Player instance;
 
-    private Player(@NotNull int id) {
+    private Player(@NotNull int id, @NotNull int moneyLeft) {
         this.id = id;
-        currentLevel = totalPoint = 0;
+        this.moneyLeft = moneyLeft;
     }
 
     public Player() {
 
     }
 
-    public static Player getInstance(@NotNull int id) {
+    public static Player getInstance(@NotNull int id, @NotNull int betValue) {
         if (instance == null) {
             synchronized (Player.class) {
                 if (instance == null)
-                    instance = new Player(id);
+                    instance = new Player(id, betValue);
             }
         }
         return instance;
@@ -44,23 +43,15 @@ public class Player {
         this.id = id;
     }
 
-    public int getCurrentLevel() {
-        return currentLevel;
+    public int getMoneyLeft() {
+        return moneyLeft;
     }
 
-    public void setCurrentLevel(int currentLevel) {
-        this.currentLevel = currentLevel;
+    public void setMoneyLeft(int totalPoint) {
+        this.moneyLeft = totalPoint;
     }
 
-    public int getTotalPoint() {
-        return totalPoint;
-    }
-
-    public void setTotalPoint(int totalPoint) {
-        this.totalPoint = totalPoint;
-    }
-
-    public void resetPlayer() {
-        this.totalPoint = this.currentLevel = 0;
-    }
+//    public void resetPlayer() {
+//        this.moneyLeft = 0;
+//    }
 }

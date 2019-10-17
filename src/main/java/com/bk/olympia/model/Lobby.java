@@ -39,7 +39,7 @@ public class Lobby implements Comparable<Lobby> {
         return users;
     }
 
-    public User getFirstUser() {
+    public User getHost() {
         return users.get(0);
     }
 

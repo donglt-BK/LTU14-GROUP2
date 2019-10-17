@@ -42,12 +42,12 @@ public class Message {
         this.sender = sender;
     }
 
-    public Map getContent() {
-        return content;
-    }
-
     public <T> T getContent(ContentType type) {
         return (T) (content.get(type));
+    }
+
+    public Map getContent() {
+        return content;
     }
 
     public void setContent(HashMap content) {

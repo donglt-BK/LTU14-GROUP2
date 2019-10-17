@@ -8,5 +8,6 @@ public enum ContentType {
     LOBBY_ID,
     LOBBY_NAME,
     LOBBY_PARTICIPANT,
-    START
+    START,
+    ROOM_ID
 }

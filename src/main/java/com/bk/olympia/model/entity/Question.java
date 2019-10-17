@@ -2,10 +2,11 @@ package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 @Table(name = "questionset")
-public class QuestionSet {
+public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -16,15 +17,17 @@ public class QuestionSet {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TopicId")
     private Topic topic;
-    private Answer[] answers;
 
-    public QuestionSet(@NotNull int difficulty, Topic topic, Answer[] answers) {
+    @OneToMany(targetEntity = Answer.class, mappedBy = "question")
+    private List<Answer> answers;
+
+    public Question(@NotNull int difficulty, Topic topic, List<Answer> answers) {
         this.difficulty = difficulty;
         this.topic = topic;
         this.answers = answers;
     }
 
-    public QuestionSet() {
+    public Question() {
 
     }
 
@@ -52,11 +55,11 @@ public class QuestionSet {
         this.topic = topic;
     }
 
-    public Answer[] getAnswers() {
+    public List<Answer> getAnswers() {
         return answers;
     }
 
-    public void setAnswers(Answer[] answers) {
+    public void setAnswers(List<Answer> answers) {
         this.answers = answers;
     }
 }

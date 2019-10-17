@@ -1,4 +1,4 @@
-package com.bk.olympia.controller;
+package com.bk.olympia.base;
 
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;

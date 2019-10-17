@@ -1,5 +1,6 @@
 package com.bk.olympia.controller;
 
+import com.bk.olympia.base.BaseController;
 import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.Player;
@@ -47,7 +48,11 @@ public class QueueController extends BaseController {
         User user = findUserById(message.getSender());
 
         Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
-        user.join(lobby);
+        if (lobby != null)
+            user.join(lobby);
+        else {
+
+        }
     }
 
     @MessageMapping("play/join")
@@ -55,7 +60,11 @@ public class QueueController extends BaseController {
         User user = findUserById(message.getSender());
 
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
-        user.join(lobby);
+        if (lobby != null)
+            user.join(lobby);
+        else {
+
+        }
     }
 
     @MessageMapping("/play/leave")
@@ -76,20 +85,23 @@ public class QueueController extends BaseController {
         ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
+        boolean canStart = user.equals(lobby.getHost());
         Message m = new Message(MessageType.START_GAME, message.getSender());
-        m.addContent(ContentType.START, user.equals(lobby.getFirstUser()));
-        MessagingService.broadcast(lobby.getUsers(), "/queue/play/start-game", m);
+        m.addContent(ContentType.START, canStart);
+        MessagingService.sendTo(user, "/queue/play/start-game", m);
+
         lobby.getUsers().forEach(u -> {
-            players.add(Player.getInstance(u.getId()));
+            players.add(Player.getInstance(u.getId(), lobby.getBetValue()));
         });
 
-        if (user.equals(lobby.getFirstUser())) {
-            Room room = new Room(lobby.getUsers().size(), lobby.getBetValue(), 10, players);
+        if (canStart) {
+            Room room = new Room(lobby.getId(), lobby.getBetValue(), players);
 //            entityManager.persist(room);
 
             roomRepository.save(room);
 
             m = new Message(MessageType.CREATE_ROOM, message.getSender());
+            m.addContent(ContentType.ROOM_ID, room.getId());
             MessagingService.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
             removeLobby(lobby);
         }
@@ -100,7 +112,7 @@ public class QueueController extends BaseController {
                 .filter(entry -> entry.getValue() == betValue)
                 .map(Map.Entry::getKey)
                 .findAny()
-                .orElse(new Lobby(betValue));
+                .orElse(null);
     }
 
     private Lobby findLobbyById(int id) {
