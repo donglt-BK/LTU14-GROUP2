@@ -5,12 +5,14 @@ import com.bk.olympia.exception.ScreenNotFoundException;
 import com.sun.javaws.util.JfxHelper;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class JFrameUI {
     private static JFrameUI instance;
+    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     private JFrame jFrame;
     private Map<String, Screen> screens;
@@ -33,10 +35,12 @@ public class JFrameUI {
         this.windowHeight = windowHeight;
 
         jFrame.setTitle(title);
-        jFrame.setSize(windowWidth, windowHeight);
+        //jFrame.setSize(windowWidth, windowHeight);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setResizable(false);
         jFrame.setVisible(true);
+        jFrame.setBounds((int) (screenSize.getWidth() / 2.5), (int) (screenSize.getHeight() / 2.5), windowWidth, windowHeight);
+
 
         return instance;
     }

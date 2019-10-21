@@ -16,7 +16,7 @@ public class LoginScreen extends Screen {
     private JPasswordField pass;
 
     public LoginScreen() {
-        super("LOGIN");
+        super(LOGIN_SCREEN);
     }
 
     @Override

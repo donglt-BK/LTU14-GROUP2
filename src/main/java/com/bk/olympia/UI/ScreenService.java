@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ScreenService {
     public static List<Screen> getScreens() {
-        List<Screen> screens = new ArrayList<>();
+        List<Screen> screens = new ArrayList<Screen>();
 
         screens.add(new LoginScreen());
         screens.add(new HomeScreen());
