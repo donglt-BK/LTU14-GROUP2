@@ -9,7 +9,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <class>com.bk.olympia.model.entity.User</class>
-        <class>com.bk.olympia.model.Message</class>
+        <class>com.bk.olympia.model.message.Message</class>
         <class>com.bk.olympia.model.entity.Answer</class>
         <class>com.bk.olympia.model.entity.Player</class>
         <class>com.bk.olympia.model.entity.Question</class>

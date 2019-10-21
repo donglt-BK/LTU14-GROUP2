@@ -43,8 +43,9 @@ public class Lobby implements Comparable<Lobby> {
         return users.get(0);
     }
 
-    public boolean addUser(User user) {
-        return users.add(user);
+    public Lobby addUser(User user) {
+        users.add(user);
+        return this;
     }
 
     public boolean removeUser(User user) {

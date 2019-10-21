@@ -6,14 +6,17 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
-    public User findByUsernameAndPassword(String username, String password);
-    public User findById(int id);
+    User findByUsernameAndPassword(String username, String password);
+
+    User findById(int id);
+
+    User findByName(String name);
 
     @Modifying
     @Query("UPDATE User u SET u.gender = ?1 WHERE u.id = ?2")
-    public void setUserGenderById(int gender, int id);
+    void setUserGenderById(int gender, int id);
 
     @Modifying
     @Query("UPDATE User u SET u.name = ?1 WHERE u.id = ?2")
-    public void setUserNameById(String name, int id);
+    void setUserNameById(String name, int id);
 }

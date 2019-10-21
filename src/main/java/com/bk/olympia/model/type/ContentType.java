@@ -1,6 +1,7 @@
 package com.bk.olympia.model.type;
 
 public enum ContentType {
+    STATUS,
     USER_ID,
     USERNAME,
     PASSWORD,
@@ -9,5 +10,7 @@ public enum ContentType {
     LOBBY_NAME,
     LOBBY_PARTICIPANT,
     START,
-    ROOM_ID
+    ROOM_ID,
+    NAME,
+    REPLY
 }

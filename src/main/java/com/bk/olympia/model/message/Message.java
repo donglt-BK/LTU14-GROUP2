@@ -1,4 +1,4 @@
-package com.bk.olympia.model;
+package com.bk.olympia.model.message;
 
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
@@ -46,9 +46,9 @@ public class Message {
         return (T) (content.get(type));
     }
 
-    public Map getContent() {
-        return content;
-    }
+//    public Map getContent() {
+//        return content;
+//    }
 
     public void setContent(HashMap content) {
         this.content = content;

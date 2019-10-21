@@ -1,6 +1,6 @@
 //package com.bk.olympia.controller;
 //
-//import com.bk.olympia.model.Message;
+//import com.bk.olympia.model.message.Message;
 //import com.bk.olympia.model.type.MessageType;
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;

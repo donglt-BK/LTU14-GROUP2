@@ -1,7 +1,7 @@
 package service;
 
-import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.Message;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;

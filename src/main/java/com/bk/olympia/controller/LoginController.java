@@ -1,8 +1,8 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.model.Message;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
@@ -25,7 +25,7 @@ public class LoginController extends BaseController {
 
     @MessageMapping("/login")
     @SendToUser("/queue/login")
-    public Message login(@Payload Message message) {
+    public Message handleLogin(@Payload Message message) {
         User u = validateAccount(message.getContent(ContentType.USERNAME), message.getContent(ContentType.PASSWORD));
 
         Message m = new Message(MessageType.LOGIN, message.getSender());

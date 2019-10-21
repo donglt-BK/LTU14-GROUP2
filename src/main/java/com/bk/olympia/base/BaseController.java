@@ -37,6 +37,10 @@ public abstract class BaseController {
         return userRepository.findById(id);
     }
 
+    protected User findUserByName(String name) {
+        return userRepository.findByName(name);
+    }
+
     protected Room findRoomById(int id) {
         return roomRepository.findById(id);
     }
