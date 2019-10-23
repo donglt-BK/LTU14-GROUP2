@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScreenService {
-    public static List<Screen> generateScreens(int windowWidth, int windowHeight) {
-        List<Screen> screens = new ArrayList<>();
+    public static List<Screen> getScreens() {
+        List<Screen> screens = new ArrayList<Screen>();
 
-        screens.add(new LoginScreen(windowWidth, windowHeight));
-        screens.add(new HomeScreen(windowWidth, windowHeight));
+        screens.add(new LoginScreen());
+        screens.add(new HomeScreen());
         return screens;
     }
 }

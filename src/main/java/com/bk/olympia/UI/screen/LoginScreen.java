@@ -15,9 +15,13 @@ public class LoginScreen extends Screen {
     private JTextField user;
     private JPasswordField pass;
 
-    public LoginScreen(int windowWidth, int windowHeight) {
-        super("LOGIN");
+    public LoginScreen() {
+        super(LOGIN_SCREEN);
+    }
 
+    @Override
+    public void generate(int windowWidth, int windowHeight) {
+        this.removeAll();
         this.setBounds(0, 0, windowWidth, windowHeight);
         this.setLayout(null);
         this.setBackground(Color.BLACK);
@@ -69,7 +73,7 @@ public class LoginScreen extends Screen {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == '\n') {
                     try {
-                        ui.showScreen("HOME");
+                        ui.showScreen(HOME_SCREEN);
                     } catch (ScreenNotFoundException ex) {
                         ex.printStackTrace();
                     }
