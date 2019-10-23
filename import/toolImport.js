@@ -1,3 +1,10 @@
+/**
+ * @author: Ant
+ * @description: 
+ * - Tool import vào CSDL (MySQL) từ file `.csv`
+ * - Để chạy được cần có NodeJS, và cài đặt mysql (`npm install mysql`)
+ */
+
 const mysql = require('mysql');
 const fs = require('fs');
 
@@ -12,18 +19,42 @@ connection.connect(function (err) {
   if (err) throw err;
   else {
     console.log("Connection finished!")
-    const filename = "answer.csv";
-    fs.readFile(filename, "utf8", function (err, data) {
-      if (err) throw err;
-      else {
-        let rows = [];
-        rows = transformCSV(data);
-        insertDataToTable("Answer", "Question_Id, Answer, Is_Correct", rows);
-      }
-    });
+    readCSVToImport("Topic");
+    readCSVToImport("QuestionSet");
+    readCSVToImport("Answer");
   }
 });
 
+/**
+ * Đọc dữ liệu từ file để import
+ * @param {string} filename Tên file cần đọc để import
+ */
+function readCSVToImport(filename = "") {
+  if (!!filename){
+    fs.readFile(`${filename}.csv`, "utf8", function (err, data) {
+      if (err) throw err;
+      else {
+        if (data && data.length > 0) {
+          const transformResult = transformCSV(data);
+          insertDataToTable(filename, transformResult.columnRange, transformResult.rows);
+        }
+        else {
+          console.log("File has no data");
+        }
+      }
+    });
+  }
+  else {
+    console.log("Tên file không đúng dịnh dạng");
+  }
+}
+
+/**
+ * Câu truy vấn Insert vào CSDL
+ * @param {string} tableName Tên bảng
+ * @param {string} columnRange Dải trường dữ liệu cần import
+ * @param {Array} rows Dữ liệu cần import
+ */
 function insertDataToTable(tableName = "", columnRange = "", rows = []) {
   if (!!tableName && !!columnRange) {
     let query = `INSERT INTO ${tableName} (${columnRange}) VALUES ?`;
@@ -31,15 +62,24 @@ function insertDataToTable(tableName = "", columnRange = "", rows = []) {
       console.log(error || response);
     });
   }
-
 }
 
+/**
+ * Chuyển dữ liệu đọc từ file thành
+ * - `rows`: dữ liệu để import
+ * - `columnRange`: dải trường dữ liệu để import
+ * @param {string} data Dữ liệu lấy từ file
+ */
 function transformCSV(data = "") {
-  let result = [];
+  let rows = [],
+    columnRange = "";
+
   const splitNewline = data.split("\n");
-  splitNewline.shift();
+  
+  columnRange = splitNewline.shift();
+  
   splitNewline.map(x => {
-    result.push(x.split(",").map(y => {
+    rows.push(x.split(",").map(y => {
       if (+y) {
         y = +y;
       }
@@ -52,5 +92,9 @@ function transformCSV(data = "") {
       return y;
     }))
   });
-  return result;
+
+  return {
+    rows,
+    columnRange
+  };
 }
