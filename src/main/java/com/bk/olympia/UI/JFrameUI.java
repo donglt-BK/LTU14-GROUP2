@@ -12,8 +12,6 @@ import java.util.Map;
 
 public class JFrameUI {
     private static JFrameUI instance;
-    private static Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-
     private JFrame jFrame;
     private Map<String, Screen> screens;
     private String currentScreen;
@@ -34,14 +32,13 @@ public class JFrameUI {
         this.windowWidth = windowWidth;
         this.windowHeight = windowHeight;
 
+        jFrame.setFont(new Font("Monaco", Font.PLAIN, 12));
         jFrame.setTitle(title);
-        //jFrame.setSize(windowWidth, windowHeight);
+        jFrame.setSize(windowWidth, windowHeight);
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setResizable(false);
         jFrame.setVisible(true);
-        jFrame.setBounds((int) (screenSize.getWidth() / 2.5), (int) (screenSize.getHeight() / 2.5), windowWidth, windowHeight);
-
-
+        jFrame.setLocationRelativeTo(null);
         return instance;
     }
 

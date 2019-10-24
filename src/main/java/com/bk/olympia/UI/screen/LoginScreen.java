@@ -12,6 +12,7 @@ import static com.bk.olympia.config.Constant.*;
 public class LoginScreen extends Screen {
     private JLabel errorNotification;
     private JButton submit;
+    private JButton register;
     private JTextField user;
     private JPasswordField pass;
 
@@ -33,6 +34,10 @@ public class LoginScreen extends Screen {
         submit.setBounds(230, 300, 140, 30);
         submit.setEnabled(false);
 
+        //register
+        register = new JButton("Register");
+        register.setBounds(230, 350, 140, 30);
+        register.setEnabled(false);
         //error message
         errorNotification = new JLabel();
         errorNotification.setBounds(150, 160, 300, 25);
@@ -62,6 +67,7 @@ public class LoginScreen extends Screen {
         this.add(passLabel);
         this.add(pass);
         this.add(submit);
+        this.add(register);
 
         KeyListener submitEnterKeyListener = new KeyListener() {
             @Override
