@@ -46,7 +46,7 @@ public class SocketService {
         Message message = new Message(MessageType.LOGIN);
         message.addContent("username", "admin")
                 .addContent("password", "12345678");
-        stompSession.send("/app/login", gson.toJson(message).getBytes());
+        stompSession.send("/app/login", gson.toJson(message));
     }
 
 }
