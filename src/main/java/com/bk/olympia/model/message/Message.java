@@ -20,7 +20,7 @@ public class Message {
         content = new HashMap();
     }
 
-    public Message(MessageType type, int sender, HashMap content) {
+    public Message(MessageType type, int sender, Map content) {
         this.type = type;
         this.sender = sender;
         this.content = content;

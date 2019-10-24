@@ -1,38 +1,26 @@
 package com.bk.olympia.model.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "PlayerData")
+@Table(name = "player_data")
 public class Player {
-    @NotNull
     @Id
     private int id;
 
-    private int moneyLeft;
+    private int money;
 
-    private static Player instance;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    private Player(@NotNull int id, @NotNull int moneyLeft) {
-        this.id = id;
-        this.moneyLeft = moneyLeft;
-    }
+    @ManyToOne
+    @JoinColumn(name = "room_id")
+    private Room room;
 
-    public Player() {
+    public Player(int a, int b) {
 
-    }
-
-    public static Player getInstance(@NotNull int id, @NotNull int betValue) {
-        if (instance == null) {
-            synchronized (Player.class) {
-                if (instance == null)
-                    instance = new Player(id, betValue);
-            }
-        }
-        return instance;
     }
 
     public int getId() {
@@ -43,15 +31,27 @@ public class Player {
         this.id = id;
     }
 
-    public int getMoneyLeft() {
-        return moneyLeft;
+    public int getMoney() {
+        return money;
     }
 
-    public void setMoneyLeft(int totalPoint) {
-        this.moneyLeft = totalPoint;
+    public void setMoney(int money) {
+        this.money = money;
     }
 
-//    public void resetPlayer() {
-//        this.moneyLeft = 0;
-//    }
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
 }

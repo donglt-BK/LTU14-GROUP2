@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Entity
-@Table(name = "questionset")
+@Table(name = "question_set")
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,7 @@ public class Question {
     private int difficulty;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TopicId")
+    @JoinColumn(name = "topic_id")
     private Topic topic;
 
     @OneToMany(targetEntity = Answer.class, mappedBy = "question")

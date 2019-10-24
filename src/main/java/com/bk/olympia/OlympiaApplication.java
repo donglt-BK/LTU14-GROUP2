@@ -1,6 +1,5 @@
 package com.bk.olympia;
 
-import net.spy.memcached.MemcachedClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

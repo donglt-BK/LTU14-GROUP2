@@ -1,0 +1,74 @@
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="init_table" author="donglt">
+        <createTable tableName="user">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="varchar(20)"/>
+            <column name="password" type="varchar(300)"/>
+            <column name="name" type="int(11)"/>
+            <column name="gender" type="int(11)"/>
+            <column name="balance" type="int(11)" defaultValue="50000"/>
+        </createTable>
+
+        <createTable tableName="topic">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="topic_name" type="varchar(50)"/>
+            <column name="topic_description" type="varchar(500)" defaultValue=""/>
+        </createTable>
+
+        <createTable tableName="room">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="lobby_id" type="int(11)"/>
+            <column name="max_users" type="int(11)"/>
+            <column name="bet_value" type="int(11)"/>
+            <column name="current_level" type="int(11)" defaultValue="0"/>
+            <column name="max_questions" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="room_player">
+            <column name="room_id" type="int(11)"/>
+            <column name="player_id" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="question_set">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="topic_id" type="int(11)"/>
+            <column name="difficulty" type="int(11)"/>
+            <column name="question" type="varchar(1000)"/>
+        </createTable>
+
+        <createTable tableName="player_data">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="int(11)"/>
+            <column name="money" type="int(11)"/>
+        </createTable>
+
+        <createTable tableName="answer">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="question_id" type="int(11)"/>
+            <column name="answer" type="varchar(100)"/>
+            <column name="is_correct" type="bit(1)"/>
+        </createTable>
+    </changeSet>
+
+    <!--<changeSet id="add_column" author="donglt">
+        <addColumn tableName="table_name">
+            <column name="column_name"  type="varchar(255)" defaultValue=""/>
+        </addColumn>
+    </changeSet>-->
+</databaseChangeLog>

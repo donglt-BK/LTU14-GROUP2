@@ -131,7 +131,7 @@ public class QueueController extends BaseController {
         MessagingService.sendTo(user, "/queue/play/start-game", m);
 
         lobby.getUsers().forEach(u -> {
-            players.add(Player.getInstance(u.getId(), lobby.getBetValue()));
+            players.add(new Player(u.getId(), lobby.getBetValue()));
         });
 
         if (canStart) {

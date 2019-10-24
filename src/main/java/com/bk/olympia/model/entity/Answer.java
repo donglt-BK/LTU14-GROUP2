@@ -12,7 +12,7 @@ public class Answer {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "Question_Id")
+    @JoinColumn(name = "question_id")
     private Question question;
 
     @NotNull
