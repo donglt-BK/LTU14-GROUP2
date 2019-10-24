@@ -13,5 +13,6 @@ public enum ContentType {
     ROOM_ID,
     NAME,
     REPLY,
-    GENDER
+    GENDER,
+    BALANCE
 }

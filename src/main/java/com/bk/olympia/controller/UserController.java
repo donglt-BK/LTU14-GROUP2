@@ -16,8 +16,22 @@ import org.springframework.stereotype.Controller;
 public class UserController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @MessageMapping("/user/set-info")
-    @SendToUser("/queue/user/set-info")
+    @MessageMapping("/user/get-info")
+    @SendToUser("/queue/user/get-info")
+    public Message handleGetInfo(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Message m = new Message(MessageType.GET_INFO, message.getSender());
+        m.addContent(ContentType.USER_ID, user.getId())
+                .addContent(ContentType.USERNAME, user.getUsername())
+                .addContent(ContentType.NAME, user.getName())
+                .addContent(ContentType.GENDER, user.getGender())
+                .addContent(ContentType.BALANCE, user.getBalance())
+                .pack();
+        return m;
+    }
+
+    @MessageMapping("/user/change-info")
+    @SendToUser("/queue/user/change-info")
     public Message handleSetInfo(@Payload Message message) {
         User user = userRepository.getOne(message.getSender());
         message.getContent().forEach((k, v) -> {
@@ -35,6 +49,6 @@ public class UserController extends BaseController {
             }
         });
         userRepository.save(user);
-        return new Message(MessageType.CHANGE_INFO, message.getSender());
+        return new Message(MessageType.CHANGE_INFO, message.getSender()).pack();
     }
 }

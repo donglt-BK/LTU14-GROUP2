@@ -14,13 +14,19 @@ public class Message {
     public Message() {
     }
 
+    public Message(MessageType type) {
+        this.type = type;
+        this.sender = -1;
+        content = new HashMap();
+    }
+
     public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
         content = new HashMap();
     }
 
-    public Message(MessageType type, int sender, Map content) {
+    public Message(MessageType type, int sender, HashMap content) {
         this.type = type;
         this.sender = sender;
         this.content = content;
@@ -60,7 +66,7 @@ public class Message {
     }
 
     //TODO: Hàm encrypt gói tin
-    public void pack() {
-
+    public Message pack() {
+        return this;
     }
 }

@@ -3,6 +3,7 @@ package com.bk.olympia.model.type;
 public enum MessageType {
     LOGIN,
     LOGOUT,
+    GET_INFO,
     CHANGE_INFO,
     //    GET_LOBBY_LIST,
     JOIN_LOBBY,

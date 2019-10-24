@@ -8,6 +8,7 @@ import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
+import com.bk.olympia.model.message.MessageDeny;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
@@ -73,9 +74,11 @@ public class QueueController extends BaseController {
     @MessageMapping("/play/join")
     public void handleFindLobby(@Payload Message message) {
         User user = findUserById(message.getSender());
-        MessagingService.sendTo(user, "/queue/play/join", new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()));
+        int betValue = message.getContent(ContentType.BET_VALUE);
 
-        Lobby lobby = findLobbyByBetValue(message.getContent(ContentType.BET_VALUE));
+        MessagingService.sendTo(user, "/queue/play/join", user.getBalance() >= betValue ? new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()) : new MessageDeny(MessageType.JOIN_LOBBY, message.getSender()));
+
+        Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
 
         broadcastLobbyInfo(message, lobby);
@@ -107,6 +110,29 @@ public class QueueController extends BaseController {
         }
     }
 
+    @MessageMapping("/play/change-info")
+    public void handleChangeLobbyInfo(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
+
+        if (user.equals(lobby.getHost())) {
+            message.getContent().forEach((k, v) -> {
+                if (k instanceof ContentType) {
+                    ContentType key = (ContentType) k;
+                    switch (key) {
+                        case NAME:
+                            lobby.setName(message.getContent(ContentType.NAME));
+                            break;
+                        case BET_VALUE:
+                            lobby.setName(message.getContent(ContentType.BET_VALUE));
+                            break;
+                    }
+                }
+            });
+            broadcastLobbyInfo(message, lobby);
+        }
+    }
+
     @MessageMapping("/play/leave")
     public void handleLeaveLobby(@Payload Message message) {
         User user = findUserById(message.getSender());
@@ -116,7 +142,9 @@ public class QueueController extends BaseController {
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
 
-        MessagingService.broadcast(lobby.getUsers(), "/queue/play/leave", m);
+        if (lobby.getUsers().size() > 0)
+            MessagingService.broadcast(lobby.getUsers(), "/queue/play/leave", m);
+        else removeLobby(lobby);
     }
 
     @MessageMapping("/play/start-game")

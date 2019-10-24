@@ -10,7 +10,7 @@
             </column>
             <column name="username" type="varchar(20)"/>
             <column name="password" type="varchar(300)"/>
-            <column name="name" type="int(11)"/>
+            <column name="name" type="varchar(50)"/>
             <column name="gender" type="int(11)"/>
             <column name="balance" type="int(11)" defaultValue="50000"/>
         </createTable>
