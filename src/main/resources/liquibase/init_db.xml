@@ -46,6 +46,7 @@
             <column name="topic_id" type="int(11)"/>
             <column name="difficulty" type="int(11)"/>
             <column name="question" type="varchar(1000)"/>
+            <column name="is_accepted" type="bit(1)" defaultValue="0"/>
         </createTable>
 
         <createTable tableName="player_data">

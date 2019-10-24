@@ -46,9 +46,9 @@ public class Message {
         return (T) (content.get(type));
     }
 
-//    public Map getContent() {
-//        return content;
-//    }
+    public Map getContent() {
+        return content;
+    }
 
     public void setContent(HashMap content) {
         this.content = content;
