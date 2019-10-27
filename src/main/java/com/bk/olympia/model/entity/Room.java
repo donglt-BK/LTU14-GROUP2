@@ -2,13 +2,25 @@ package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 @Entity
 @Table(name = "room")
 public class Room {
-    private static final int DEFAULT_MAX_PLAYERS = 2;
-    private static final int DEFAULT_MAX_QUESTIONS = 10;
+    public static final int DEFAULT_MAX_PLAYERS = 2;
+    public static final int DEFAULT_MAX_QUESTIONS = 10;
+
+    @Transient
+    private ArrayList<Boolean> readyList = new ArrayList<>();
+
+    /**
+     * A Map that contains the topics used for this current room.
+     * The boolean value indicates whether the topic can be chosen (true) or not (false).
+     */
+    @Transient
+    private TreeMap<Topic, Boolean> topics = new TreeMap<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +30,7 @@ public class Room {
     private int lobbyId;
 
     @NotNull
-    private int maxUsers = DEFAULT_MAX_PLAYERS;
+    private int maxPlayers = DEFAULT_MAX_PLAYERS;
 
     @NotNull
     private int betValue;
@@ -29,12 +41,11 @@ public class Room {
     @NotNull
     private int maxQuestions = DEFAULT_MAX_QUESTIONS;
 
-
     @ManyToMany
     @JoinTable(
-            name = "roomplayer",
-            joinColumns = @JoinColumn(name = "roomid"),
-            inverseJoinColumns = @JoinColumn(name = "playerid")
+            name = "room_player",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "player_id")
     )
     private List<Player> playerList;
 
@@ -46,6 +57,7 @@ public class Room {
         this.lobbyId = lobbyId;
         this.betValue = betValue;
         this.playerList = playerList;
+        playerList.forEach(player -> player.setRoom(this));
     }
 
     public Room() {
@@ -64,8 +76,8 @@ public class Room {
         this.lobbyId = lobbyId;
     }
 
-    public int getMaxUsers() {
-        return maxUsers;
+    public int getMaxPlayers() {
+        return maxPlayers;
     }
 
     public int getBetValue() {
@@ -90,5 +102,29 @@ public class Room {
 
     public List<Player> getPlayerList() {
         return playerList;
+    }
+
+    public void addTopic(Topic topic) {
+        this.topics.put(topic, true);
+    }
+
+    public void setChosenTopic(Topic topic) {
+        this.topics.put(topic, false);
+    }
+
+    public TreeMap<Topic, Boolean> getTopics() {
+        return topics;
+    }
+
+    public void addPlayerReady(int position) {
+        this.readyList.add(position, true);
+    }
+
+    public boolean isAllReady() {
+        return this.readyList.stream().allMatch(val -> val);
+    }
+
+    public boolean isPlayerTurn(Player player) {
+        return player.getPosition() == (currentLevel % maxPlayers);
     }
 }

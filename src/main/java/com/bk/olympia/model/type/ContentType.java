@@ -14,5 +14,6 @@ public enum ContentType {
     NAME,
     REPLY,
     GENDER,
-    BALANCE
+    BALANCE,
+    TOPICS,
 }

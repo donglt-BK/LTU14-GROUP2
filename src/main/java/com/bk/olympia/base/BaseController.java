@@ -2,8 +2,7 @@ package com.bk.olympia.base;
 
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.repository.RoomRepository;
-import com.bk.olympia.repository.UserRepository;
+import com.bk.olympia.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -26,6 +25,15 @@ public abstract class BaseController {
 
     @Autowired
     protected RoomRepository roomRepository;
+
+    @Autowired
+    protected TopicRepository topicRepository;
+
+    @Autowired
+    protected QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     protected ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     protected HashMap<Integer, ScheduledFuture> taskQueue = new HashMap<>();

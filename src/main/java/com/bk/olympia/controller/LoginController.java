@@ -4,10 +4,10 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
+import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -25,7 +25,7 @@ public class LoginController extends BaseController {
 //    }
 
     @MessageMapping("/login")
-    @SendToUser("/queue/login")
+    @SendToUser(Destination.LOGIN)
     public Message handleLogin(@Payload Message message) {
         User u = validateAccount(message.getContent(ContentType.USERNAME), message.getContent(ContentType.PASSWORD));
 

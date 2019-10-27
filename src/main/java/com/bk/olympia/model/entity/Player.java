@@ -1,13 +1,15 @@
 package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "player_data")
 public class Player {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private int position;
 
     private int money;
 
@@ -19,7 +21,13 @@ public class Player {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    public Player(int a, int b) {
+    public Player(User user, int position, int money) {
+        this.user = user;
+        this.position = position;
+        this.money = money;
+    }
+
+    public Player() {
 
     }
 
@@ -29,6 +37,14 @@ public class Player {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public int getMoney() {
@@ -53,5 +69,9 @@ public class Player {
 
     public void setRoom(Room room) {
         this.room = room;
+    }
+
+    public void ready() {
+        room.addPlayerReady(position);
     }
 }

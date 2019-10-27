@@ -53,7 +53,9 @@
             <column name="id" type="int(11)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
+            <column name="position" type="int(11)"/>
             <column name="user_id" type="int(11)"/>
+            <column name="room_id" type="int(11)"/>
             <column name="money" type="int(11)"/>
         </createTable>
 

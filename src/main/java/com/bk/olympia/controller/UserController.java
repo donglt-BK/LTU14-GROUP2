@@ -4,6 +4,7 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
+import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ public class UserController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @MessageMapping("/user/get-info")
-    @SendToUser("/queue/user/get-info")
+    @SendToUser(Destination.GET_USER_INFO)
     public Message handleGetInfo(@Payload Message message) {
         User user = findUserById(message.getSender());
         Message m = new Message(MessageType.GET_INFO, message.getSender());
@@ -31,7 +32,7 @@ public class UserController extends BaseController {
     }
 
     @MessageMapping("/user/change-info")
-    @SendToUser("/queue/user/change-info")
+    @SendToUser(Destination.CHANGE_USER_INFO)
     public Message handleSetInfo(@Payload Message message) {
         User user = userRepository.getOne(message.getSender());
         message.getContent().forEach((k, v) -> {

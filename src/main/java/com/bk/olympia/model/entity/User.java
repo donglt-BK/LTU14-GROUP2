@@ -8,6 +8,8 @@ import service.MessagingService;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -29,6 +31,9 @@ public class User {
     private int gender;
 
     private int balance;
+
+    @OneToMany(targetEntity = Player.class, mappedBy = "user")
+    private List<Player> playerList = new ArrayList<>();
 
     public User() {
 
@@ -95,6 +100,14 @@ public class User {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public void addPlayer(Player player) {
+        this.playerList.add(player);
+    }
+
+    public Player getCurrentPlayer() {
+        return playerList.get(playerList.size() - 1);
     }
 
     public void join(Lobby lobby) {

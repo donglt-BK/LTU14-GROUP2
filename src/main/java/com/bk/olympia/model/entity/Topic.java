@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "topic")
-public class Topic {
+public class Topic implements Comparable<Topic> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -51,5 +51,10 @@ public class Topic {
 
     public void setTopicDescription(String topicDescription) {
         this.topicDescription = topicDescription;
+    }
+
+    @Override
+    public int compareTo(Topic t) {
+        return this.topicName.compareTo(t.getTopicName());
     }
 }

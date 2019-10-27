@@ -10,4 +10,6 @@ public enum MessageType {
     LEAVE_LOBBY,
     START_GAME,
     CREATE_ROOM,
+    LOAD_COMPLETE,
+    GET_TOPIC_LIST
 }

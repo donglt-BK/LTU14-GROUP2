@@ -10,8 +10,10 @@ import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.model.message.MessageDeny;
 import com.bk.olympia.model.type.ContentType;
+import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
+import com.bk.olympia.repository.UserList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -76,7 +78,7 @@ public class QueueController extends BaseController {
         User user = findUserById(message.getSender());
         int betValue = message.getContent(ContentType.BET_VALUE);
 
-        MessagingService.sendTo(user, "/queue/play/join", user.getBalance() >= betValue ? new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()) : new MessageDeny(MessageType.JOIN_LOBBY, message.getSender()));
+        MessagingService.sendTo(user, Destination.FIND_LOBBY, user.getBalance() >= betValue ? new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()) : new MessageDeny(MessageType.JOIN_LOBBY, message.getSender()));
 
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
@@ -91,9 +93,9 @@ public class QueueController extends BaseController {
 
         int betValue = message.getContent(ContentType.BET_VALUE);
         if (recipient.getBalance() >= betValue)
-            MessagingService.sendTo(recipient, "/queue/play/invite", message);
+            MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
         else
-            MessagingService.sendTo(user, "queue/error", new ErrorMessage(ErrorType.INVALID_INVITE, message.getSender()));
+            MessagingService.sendTo(user, Destination.ERROR, new ErrorMessage(ErrorType.INVALID_INVITE, message.getSender()));
     }
 
     @MessageMapping("/play/invite-rep")
@@ -101,7 +103,7 @@ public class QueueController extends BaseController {
         User user = findUserById(message.getSender());
         User recipient = findUserByName(message.getContent(ContentType.NAME));
 
-        MessagingService.sendTo(recipient, "queue/play/invite", message);
+        MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
         if (message.getContent(ContentType.REPLY)) {
             Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
             lobby.addUser(recipient)
@@ -143,7 +145,7 @@ public class QueueController extends BaseController {
         lobby.removeUser(user);
 
         if (lobby.getUsers().size() > 0)
-            MessagingService.broadcast(lobby.getUsers(), "/queue/play/leave", m);
+            MessagingService.broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
         else removeLobby(lobby);
     }
 
@@ -156,21 +158,24 @@ public class QueueController extends BaseController {
         boolean canStart = user.equals(lobby.getHost());
         Message m = new Message(MessageType.START_GAME, message.getSender());
         m.addContent(ContentType.START, canStart);
-        MessagingService.sendTo(user, "/queue/play/start-game", m);
+        MessagingService.sendTo(user, Destination.START_GAME, m);
 
         lobby.getUsers().forEach(u -> {
-            players.add(new Player(u.getId(), lobby.getBetValue()));
+            Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
+            players.add(p);
+            u.addPlayer(p);
         });
 
         if (canStart) {
             Room room = new Room(lobby.getId(), lobby.getBetValue(), players);
+            UserList.addRoom(room.getId(), lobby.getUsers());
 //            entityManager.persist(room);
 
             roomRepository.save(room);
 
             m = new Message(MessageType.CREATE_ROOM, message.getSender());
             m.addContent(ContentType.ROOM_ID, room.getId());
-            MessagingService.broadcast(lobby.getUsers(), "/queue/play/create-room", m);
+            MessagingService.broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
             removeLobby(lobby);
         }
     }
@@ -195,7 +200,7 @@ public class QueueController extends BaseController {
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
                 .addContent(ContentType.LOBBY_NAME, lobby.getName())
                 .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers());
-        MessagingService.broadcast(lobby.getUsers(), "/queue/play/join", m);
+        MessagingService.broadcast(lobby.getUsers(), Destination.FIND_LOBBY, m);
     }
 
     private void removeLobby(Lobby lobby) {
