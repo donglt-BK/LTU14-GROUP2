@@ -13,7 +13,7 @@ public class MessagingService {
 
     public static void broadcast(List<User> list, String destination, Message message) {
         message.pack();
-        list.forEach(u -> template.convertAndSendToUser(u.getUsername(), destination, message));
+        list.forEach(u -> template.convertAndSendToUser(String.valueOf(u.getId()), destination, message));
     }
 
     public static void broadcast(Room room, String destination, Message message) {
@@ -22,6 +22,6 @@ public class MessagingService {
 
     public static void sendTo(User user, String destination, Message message) {
         message.pack();
-        template.convertAndSendToUser(user.getUsername(), destination, message);
+        template.convertAndSendToUser(String.valueOf(user.getId()), destination, message);
     }
 }

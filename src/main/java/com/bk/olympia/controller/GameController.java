@@ -1,14 +1,14 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
+import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.exception.InvalidActionException;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
-import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class GameController extends BaseController {
     }
 
     @MessageMapping("/play/get-topic-list")
-    public void handleGetTopicList(@Payload Message message) {
+    public void handleGetTopicList(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
@@ -52,8 +52,6 @@ public class GameController extends BaseController {
             Message m = new Message(MessageType.GET_TOPIC_LIST, message.getSender());
             m.addContent(ContentType.TOPICS, room.getTopics());
             MessagingService.broadcast(room, Destination.GET_TOPIC_LIST, m);
-        } else {
-            MessagingService.sendTo(user, Destination.ERROR, new ErrorMessage(ErrorType.INVALID_ACTION, message.getSender()));
-        }
+        } else throw new InvalidActionException(user.getId());
     }
 }

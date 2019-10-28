@@ -1,17 +1,18 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
+import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.exception.InsufficientBalanceException;
+import com.bk.olympia.exception.InvalidActionException;
+import com.bk.olympia.exception.TargetInsufficientBalanceException;
 import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
-import com.bk.olympia.model.message.MessageDeny;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
-import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import com.bk.olympia.repository.UserList;
 import org.slf4j.Logger;
@@ -74,11 +75,13 @@ public class QueueController extends BaseController {
 //    }
 
     @MessageMapping("/play/join")
-    public void handleFindLobby(@Payload Message message) {
+    public void handleFindLobby(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         int betValue = message.getContent(ContentType.BET_VALUE);
+        if (betValue > user.getBalance())
+            throw new InsufficientBalanceException(user.getId());
 
-        MessagingService.sendTo(user, Destination.FIND_LOBBY, user.getBalance() >= betValue ? new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()) : new MessageDeny(MessageType.JOIN_LOBBY, message.getSender()));
+        MessagingService.sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()));
 
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
@@ -87,15 +90,16 @@ public class QueueController extends BaseController {
     }
 
     @MessageMapping("/play/invite")
-    public void handleInvite(@Payload Message message) {
+    public void handleInvite(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         User recipient = findUserByName(message.getContent(ContentType.NAME));
 
         int betValue = message.getContent(ContentType.BET_VALUE);
+        if (betValue > user.getBalance())
+            throw new InsufficientBalanceException(user.getId());
         if (recipient.getBalance() >= betValue)
             MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
-        else
-            MessagingService.sendTo(user, Destination.ERROR, new ErrorMessage(ErrorType.INVALID_INVITE, message.getSender()));
+        else throw new TargetInsufficientBalanceException(user.getId());
     }
 
     @MessageMapping("/play/invite-rep")
@@ -150,34 +154,34 @@ public class QueueController extends BaseController {
     }
 
     @MessageMapping("/play/start-game")
-    public void handleStartGame(@Payload Message message) {
+    public void handleStartGame(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
-        boolean canStart = user.equals(lobby.getHost());
-        Message m = new Message(MessageType.START_GAME, message.getSender());
-        m.addContent(ContentType.START, canStart);
-        MessagingService.sendTo(user, Destination.START_GAME, m);
+//        boolean canStart = user.equals(lobby.getHost());
+//        Message m = new Message(MessageType.START_GAME, message.getSender());
+//        m.addContent(ContentType.START, canStart);
+//        MessagingService.sendTo(user, Destination.START_GAME, m);
 
-        lobby.getUsers().forEach(u -> {
-            Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
-            players.add(p);
-            u.addPlayer(p);
-        });
+        if (user.equals(lobby.getHost())) {
+            lobby.getUsers().forEach(u -> {
+                Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
+                players.add(p);
+                u.addPlayer(p);
+            });
 
-        if (canStart) {
             Room room = new Room(lobby.getId(), lobby.getBetValue(), players);
             UserList.addRoom(room.getId(), lobby.getUsers());
 //            entityManager.persist(room);
 
             roomRepository.save(room);
 
-            m = new Message(MessageType.CREATE_ROOM, message.getSender());
+            Message m = new Message(MessageType.CREATE_ROOM, message.getSender());
             m.addContent(ContentType.ROOM_ID, room.getId());
             MessagingService.broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
             removeLobby(lobby);
-        }
+        } else throw new InvalidActionException(user.getId());
     }
 
     private Lobby findLobbyByBetValue(int betValue) {
