@@ -44,11 +44,13 @@ public class Lobby implements Comparable<Lobby> {
     }
 
     public Lobby addUser(User user) {
+        user.setLobbyId(this.id);
         users.add(user);
         return this;
     }
 
     public boolean removeUser(User user) {
+        user.setLobbyId(-1);
         return users.remove(user);
     }
 

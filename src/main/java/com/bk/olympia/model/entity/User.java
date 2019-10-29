@@ -1,5 +1,6 @@
 package com.bk.olympia.model.entity;
 
+import com.bk.olympia.base.ReverseArrayList;
 import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
@@ -8,12 +9,14 @@ import service.MessagingService;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "user")
 public class User {
+    private static final int DEFAULT_HISTORY_SIZE = 10;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -33,7 +36,10 @@ public class User {
     private int balance;
 
     @OneToMany(targetEntity = Player.class, mappedBy = "user")
-    private List<Player> playerList = new ArrayList<>();
+    private List<Player> playerList = new ReverseArrayList<>();
+
+    @Transient
+    private int lobbyId = -1;
 
     public User() {
 
@@ -102,12 +108,26 @@ public class User {
         this.balance = balance;
     }
 
+    public int getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(int lobbyId) {
+        this.lobbyId = lobbyId;
+    }
+
     public void addPlayer(Player player) {
         this.playerList.add(player);
+
+        //Truncate list to maximum size
+        playerList = playerList
+                .stream()
+                .limit(DEFAULT_HISTORY_SIZE)
+                .collect(Collectors.toList());
     }
 
     public Player getCurrentPlayer() {
-        return playerList.get(playerList.size() - 1);
+        return playerList.get(0);
     }
 
     public void join(Lobby lobby) {

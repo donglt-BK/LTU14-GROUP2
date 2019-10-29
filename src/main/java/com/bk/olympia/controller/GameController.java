@@ -2,6 +2,7 @@ package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.exception.InvalidActionException;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
@@ -12,6 +13,8 @@ import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
@@ -19,15 +22,26 @@ import service.MessagingService;
 import service.RandomService;
 
 @Controller
-public class GameController extends BaseController {
+public class GameController extends BaseController implements ApplicationListener<ApplicationEvent> {
     private static final Logger logger = LoggerFactory.getLogger(GameController.class);
 
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof DisconnectUserFromRoomEvent) {
+            userDisconnect(((DisconnectUserFromRoomEvent) event).getUser(), ((DisconnectUserFromRoomEvent) event).getPlayer(), ((DisconnectUserFromRoomEvent) event).getRoom());
+        }
+    }
+
     @MessageMapping("/play/load-complete")
-    public void handleLoadComplete(@Payload Message message) {
+    public void processLoadComplete(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
 
+        handleLoadComplete(user, player, room);
+    }
+
+    private void handleLoadComplete(User user, Player player, Room room) {
         player.ready();
         if (room.isAllReady()) {
             MessagingService.broadcast(room, Destination.LOAD_COMPLETE, new Message(MessageType.LOAD_COMPLETE));
@@ -35,11 +49,15 @@ public class GameController extends BaseController {
     }
 
     @MessageMapping("/play/get-topic-list")
-    public void handleGetTopicList(@Payload Message message) throws BaseRuntimeException {
+    public void processGetTopicList(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
 
+        handleGetTopicList(user, player, room);
+    }
+
+    private void handleGetTopicList(User user, Player player, Room room) {
         if (room.isPlayerTurn(player)) {
             if (room.getTopics().size() == 0) {
                 int totalTopic = topicRepository.findTopByOrderByIdDesc();
@@ -49,9 +67,13 @@ public class GameController extends BaseController {
                 }
             }
 
-            Message m = new Message(MessageType.GET_TOPIC_LIST, message.getSender());
+            Message m = new Message(MessageType.GET_TOPIC_LIST, user.getId());
             m.addContent(ContentType.TOPICS, room.getTopics());
             MessagingService.broadcast(room, Destination.GET_TOPIC_LIST, m);
         } else throw new InvalidActionException(user.getId());
+    }
+
+    private void userDisconnect(User user, Player player, Room room) {
+
     }
 }

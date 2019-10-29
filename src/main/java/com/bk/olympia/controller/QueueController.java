@@ -2,6 +2,7 @@ package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.exception.InsufficientBalanceException;
 import com.bk.olympia.exception.InvalidActionException;
 import com.bk.olympia.exception.TargetInsufficientBalanceException;
@@ -17,6 +18,8 @@ import com.bk.olympia.model.type.MessageType;
 import com.bk.olympia.repository.UserList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
@@ -27,7 +30,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Controller
-public class QueueController extends BaseController {
+public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
     private static final Logger logger = LoggerFactory.getLogger(QueueController.class);
     private TreeMap<Lobby, Integer> lobbyList = new TreeMap<>();
 
@@ -74,27 +77,44 @@ public class QueueController extends BaseController {
 //        }
 //    }
 
+
+    @Override
+    public void onApplicationEvent(ApplicationEvent event) {
+        if (event instanceof DisconnectUserFromLobbyEvent) {
+            handleLeaveLobby(((DisconnectUserFromLobbyEvent) event).getUser(), findLobbyById(((DisconnectUserFromLobbyEvent) event).getLobbyId()));
+        }
+    }
+
     @MessageMapping("/play/join")
-    public void handleFindLobby(@Payload Message message) throws BaseRuntimeException {
+    public void processFindLobby(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         int betValue = message.getContent(ContentType.BET_VALUE);
+
+        handleFindLobby(user, betValue);
+    }
+
+    private void handleFindLobby(User user, int betValue) throws BaseRuntimeException {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
 
-        MessagingService.sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, message.getSender()));
+        MessagingService.sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
 
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
 
-        broadcastLobbyInfo(message, lobby);
+        broadcastLobbyInfo(user.getId(), lobby);
     }
 
     @MessageMapping("/play/invite")
-    public void handleInvite(@Payload Message message) throws BaseRuntimeException {
+    public void processInvite(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         User recipient = findUserByName(message.getContent(ContentType.NAME));
-
         int betValue = message.getContent(ContentType.BET_VALUE);
+
+        handleInvite(user, recipient, betValue, message);
+    }
+
+    private void handleInvite(User user, User recipient, int betValue, Message message) throws BaseRuntimeException {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
         if (recipient.getBalance() >= betValue)
@@ -103,24 +123,32 @@ public class QueueController extends BaseController {
     }
 
     @MessageMapping("/play/invite-rep")
-    public void handleReplyInvite(@Payload Message message) {
+    public void processReplyInvite(@Payload Message message) {
         User user = findUserById(message.getSender());
         User recipient = findUserByName(message.getContent(ContentType.NAME));
 
+        handleReplyInvite(user, recipient, message);
+    }
+
+    private void handleReplyInvite(User user, User recipient, Message message) {
         MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
         if (message.getContent(ContentType.REPLY)) {
             Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
             lobby.addUser(recipient)
                     .addUser(user);
-            broadcastLobbyInfo(message, lobby);
+            broadcastLobbyInfo(user.getId(), lobby);
         }
     }
 
     @MessageMapping("/play/change-info")
-    public void handleChangeLobbyInfo(@Payload Message message) {
+    public void processChangeLobbyInfo(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
+        handleChangeLobbyInfo(user, lobby, message);
+    }
+
+    private void handleChangeLobbyInfo(User user, Lobby lobby, Message message) throws BaseRuntimeException {
         if (user.equals(lobby.getHost())) {
             message.getContent().forEach((k, v) -> {
                 if (k instanceof ContentType) {
@@ -135,16 +163,19 @@ public class QueueController extends BaseController {
                     }
                 }
             });
-            broadcastLobbyInfo(message, lobby);
-        }
+            broadcastLobbyInfo(user.getId(), lobby);
+        } else throw new InvalidActionException(user.getId());
     }
 
     @MessageMapping("/play/leave")
-    public void handleLeaveLobby(@Payload Message message) {
+    public void processLeaveLobby(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
+        handleLeaveLobby(user, lobby);
+    }
 
-        Message m = new Message(MessageType.LEAVE_LOBBY, message.getSender());
+    private void handleLeaveLobby(User user, Lobby lobby) {
+        Message m = new Message(MessageType.LEAVE_LOBBY, user.getId());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
 
@@ -154,9 +185,8 @@ public class QueueController extends BaseController {
     }
 
     @MessageMapping("/play/start-game")
-    public void handleStartGame(@Payload Message message) throws BaseRuntimeException {
+    public void processStartGame(@Payload Message message) throws BaseRuntimeException {
         User user = findUserById(message.getSender());
-        ArrayList<Player> players = new ArrayList<>();
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
 //        boolean canStart = user.equals(lobby.getHost());
@@ -164,6 +194,11 @@ public class QueueController extends BaseController {
 //        m.addContent(ContentType.START, canStart);
 //        MessagingService.sendTo(user, Destination.START_GAME, m);
 
+        handleStartGame(user, lobby);
+    }
+
+    private void handleStartGame(User user, Lobby lobby) {
+        ArrayList<Player> players = new ArrayList<>();
         if (user.equals(lobby.getHost())) {
             lobby.getUsers().forEach(u -> {
                 Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
@@ -177,7 +212,7 @@ public class QueueController extends BaseController {
 
             roomRepository.save(room);
 
-            Message m = new Message(MessageType.CREATE_ROOM, message.getSender());
+            Message m = new Message(MessageType.CREATE_ROOM, user.getId());
             m.addContent(ContentType.ROOM_ID, room.getId());
             MessagingService.broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
             removeLobby(lobby);
@@ -199,8 +234,8 @@ public class QueueController extends BaseController {
                 .orElse(null);
     }
 
-    private void broadcastLobbyInfo(Message message, Lobby lobby) {
-        Message m = new Message(MessageType.JOIN_LOBBY, message.getSender());
+    private void broadcastLobbyInfo(int userId, Lobby lobby) {
+        Message m = new Message(MessageType.JOIN_LOBBY, userId);
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
                 .addContent(ContentType.LOBBY_NAME, lobby.getName())
                 .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers());
@@ -209,6 +244,7 @@ public class QueueController extends BaseController {
 
     private void removeLobby(Lobby lobby) {
         Lobby.addDeletedId(lobby.getId());
+        lobby.getUsers().forEach(lobby::removeUser);
         lobbyList.remove(lobby);
     }
 }

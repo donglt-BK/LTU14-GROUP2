@@ -1,6 +1,8 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
+import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
+import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
@@ -12,6 +14,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import service.SpringEventService;
 
 @Controller
 public class UserController extends BaseController {
@@ -51,5 +54,20 @@ public class UserController extends BaseController {
         });
         userRepository.save(user);
         return new Message(MessageType.CHANGE_INFO, message.getSender()).pack();
+    }
+
+    @MessageMapping("/user/logout")
+    @SendToUser(Destination.LOGOUT)
+    public Message handleLogout(@Payload Message message) {
+        User user = findUserById(message.getSender());
+
+        //TODO: Disconnect user from active lobby
+        if (user.getLobbyId() >= 0)
+            SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));
+            //TODO: Disconnect user from active room
+        else {
+            SpringEventService.publishEvent(new DisconnectUserFromRoomEvent(this, user));
+        }
+        return null;
     }
 }

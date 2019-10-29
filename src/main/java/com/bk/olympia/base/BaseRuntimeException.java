@@ -5,7 +5,7 @@ import org.apache.commons.text.StringSubstitutor;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BaseRuntimeException extends RuntimeException {
+public abstract class BaseRuntimeException extends RuntimeException {
     private static final String TEMPLATE = "Invalid attempt: ${error}." +
             "Caused by: User ${userId}.";
     private static StringSubstitutor substitutor;
