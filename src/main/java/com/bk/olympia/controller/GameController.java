@@ -4,9 +4,7 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.exception.InvalidActionException;
-import com.bk.olympia.model.entity.Player;
-import com.bk.olympia.model.entity.Room;
-import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.entity.*;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
@@ -18,8 +16,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
-import service.MessagingService;
 import service.RandomService;
+
+import java.util.List;
 
 @Controller
 public class GameController extends BaseController implements ApplicationListener<ApplicationEvent> {
@@ -44,7 +43,7 @@ public class GameController extends BaseController implements ApplicationListene
     private void handleLoadComplete(User user, Player player, Room room) {
         player.ready();
         if (room.isAllReady()) {
-            MessagingService.broadcast(room, Destination.LOAD_COMPLETE, new Message(MessageType.LOAD_COMPLETE));
+            broadcast(room, Destination.LOAD_COMPLETE, new Message(MessageType.LOAD_COMPLETE));
         }
     }
 
@@ -68,8 +67,43 @@ public class GameController extends BaseController implements ApplicationListene
             }
 
             Message m = new Message(MessageType.GET_TOPIC_LIST, user.getId());
-            m.addContent(ContentType.TOPICS, room.getTopics());
-            MessagingService.broadcast(room, Destination.GET_TOPIC_LIST, m);
+            m.addContent(ContentType.TOPIC, room.getTopics());
+            broadcast(room, Destination.GET_TOPIC_LIST, m);
+        } else throw new InvalidActionException(user.getId());
+    }
+
+    @MessageMapping("/play/pick-topic")
+    public void processPickTopic(@Payload Message message) throws BaseRuntimeException {
+        User user = findUserById(message.getSender());
+        Player player = user.getCurrentPlayer();
+
+        //TODO: Check if player.getRoom() already works or not!?
+        Room room = roomRepository.getOne(player.getRoom().getId());
+        handlePickTopic(user, player, room, message.getContent(ContentType.TOPIC), message);
+    }
+
+    private void handlePickTopic(User user, Player player, Room room, Topic topic, Message message) throws BaseRuntimeException {
+        if (room.isPlayerTurn(player) && room.getTopics().get(topic)) {
+            room.setChosenTopic(topic);
+            broadcast(room, Destination.PICK_TOPIC, message);
+            save(room);
+        } else throw new InvalidActionException(user.getId());
+    }
+
+    @MessageMapping("/play/get-question")
+    public void processGetQuestion(@Payload Message message) throws BaseRuntimeException {
+        User user = findUserById(message.getSender());
+        Player player = user.getCurrentPlayer();
+        Room room = player.getRoom();
+        handleGetQuestion(user, player, room, message.getContent(ContentType.TOPIC));
+    }
+
+    private void handleGetQuestion(User user, Player player, Room room, Topic topic) throws BaseRuntimeException {
+        if (room.isPlayerTurn(player)) {
+            List<Question> questions = questionRepository.findByTopicAndDifficultyAfterOrderByDifficultyAsc(topic, room.getCurrentLevel());
+            Message m = new Message(MessageType.GET_QUESTION, user.getId());
+            m.addContent(ContentType.QUESTION, questions.get(RandomService.getRandomInteger(questions.size())));
+            broadcast(room, Destination.GET_QUESTION, m);
         } else throw new InvalidActionException(user.getId());
     }
 

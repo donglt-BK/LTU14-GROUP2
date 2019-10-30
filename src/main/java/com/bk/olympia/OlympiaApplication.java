@@ -2,11 +2,10 @@ package com.bk.olympia;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.IOException;
-import java.net.InetSocketAddress;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 @SpringBootApplication
+@EnableWebMvc
 public class OlympiaApplication {
 
 	public static void main(String[] args) {

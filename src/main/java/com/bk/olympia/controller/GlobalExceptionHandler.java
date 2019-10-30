@@ -1,20 +1,19 @@
 package com.bk.olympia.controller;
 
+import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.exception.*;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.ErrorType;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice
 public class GlobalExceptionHandler {
 
     @SendToUser(Destination.ERROR)
-    @ExceptionHandler
-    public final Message handleException(Exception e) {
+    @MessageExceptionHandler
+    public final Message handleException(BaseRuntimeException e) {
         if (e instanceof WrongUsernameOrPasswordException) {
             return handleWrongUsernameOrPasswordException((WrongUsernameOrPasswordException) e);
         } else if (e instanceof InsufficientBalanceException) {

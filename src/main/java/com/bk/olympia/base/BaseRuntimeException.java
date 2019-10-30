@@ -6,10 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseRuntimeException extends RuntimeException {
-    private static final String TEMPLATE = "Invalid attempt: ${error}." +
+    private static final String TEMPLATE = "Invalid attempt: ${error}. " +
             "Caused by: User ${userId}.";
     private static StringSubstitutor substitutor;
     private int userId;
+
+    public BaseRuntimeException(String error) {
+        super(pack(error, -1));
+    }
 
     public BaseRuntimeException(String error, int userId) {
         super(pack(error, userId));

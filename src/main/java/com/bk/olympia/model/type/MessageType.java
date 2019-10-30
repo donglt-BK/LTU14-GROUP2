@@ -13,5 +13,7 @@ public enum MessageType {
     START_GAME,
     CREATE_ROOM,
     LOAD_COMPLETE,
-    GET_TOPIC_LIST
+    GET_TOPIC_LIST,
+    PICK_TOPIC,
+    GET_QUESTION,
 }

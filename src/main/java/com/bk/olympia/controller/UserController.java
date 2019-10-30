@@ -5,6 +5,7 @@ import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.model.History;
 import com.bk.olympia.model.entity.Player;
+import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
@@ -88,6 +89,21 @@ public class UserController extends BaseController {
         });
         m.addContent(ContentType.HISTORY, recentHistories);
         return m;
+    }
+
+    @MessageMapping("/user/add-question")
+    @SendToUser(Destination.ADD_QUESTION)
+    public Message processAddQuestion(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        handleAddQuestion(user, message.getContent(ContentType.QUESTION));
+
+        return null;
+    }
+
+    private Message handleAddQuestion(User user, Question question) {
+        //TODO: Add question and check if needed
+        questionRepository.save(question);
+        return null;
     }
 
     @MessageMapping("/user/logout")

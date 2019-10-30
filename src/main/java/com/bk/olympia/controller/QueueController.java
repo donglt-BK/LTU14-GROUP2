@@ -23,7 +23,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
-import service.MessagingService;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -97,7 +96,7 @@ public class QueueController extends BaseController implements ApplicationListen
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
 
-        MessagingService.sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
+        sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
 
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
@@ -118,7 +117,7 @@ public class QueueController extends BaseController implements ApplicationListen
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
         if (recipient.getBalance() >= betValue)
-            MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
+            sendTo(recipient, Destination.INVITE_PLAYER, message);
         else throw new TargetInsufficientBalanceException(user.getId());
     }
 
@@ -131,7 +130,7 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     private void handleReplyInvite(User user, User recipient, Message message) {
-        MessagingService.sendTo(recipient, Destination.INVITE_PLAYER, message);
+        sendTo(recipient, Destination.INVITE_PLAYER, message);
         if (message.getContent(ContentType.REPLY)) {
             Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
             lobby.addUser(recipient)
@@ -180,7 +179,7 @@ public class QueueController extends BaseController implements ApplicationListen
         lobby.removeUser(user);
 
         if (lobby.getUsers().size() > 0)
-            MessagingService.broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
+            broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
         else removeLobby(lobby);
     }
 
@@ -214,7 +213,7 @@ public class QueueController extends BaseController implements ApplicationListen
 
             Message m = new Message(MessageType.CREATE_ROOM, user.getId());
             m.addContent(ContentType.ROOM_ID, room.getId());
-            MessagingService.broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
+            broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
             removeLobby(lobby);
         } else throw new InvalidActionException(user.getId());
     }
@@ -239,7 +238,7 @@ public class QueueController extends BaseController implements ApplicationListen
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
                 .addContent(ContentType.LOBBY_NAME, lobby.getName())
                 .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers());
-        MessagingService.broadcast(lobby.getUsers(), Destination.FIND_LOBBY, m);
+        broadcast(lobby.getUsers(), Destination.FIND_LOBBY, m);
     }
 
     private void removeLobby(Lobby lobby) {

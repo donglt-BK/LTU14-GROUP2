@@ -5,7 +5,6 @@ import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.MessageType;
-import service.MessagingService;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -21,6 +20,8 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private String uid;
 
     @NotNull
     private String username;
@@ -59,7 +60,6 @@ public class User {
         this.password = password;
         this.name = name;
         this.gender = gender;
-        this.balance = 0;
     }
 
     public int getId() {
@@ -68,6 +68,14 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getUsername() {
@@ -142,7 +150,7 @@ public class User {
                 .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getHost().getName());
         lobby.addUser(this);
 
-        MessagingService.broadcast(lobby.getUsers(), "/queue/play/join", m);
+//        broadcast(lobby.getUsers(), "/queue/play/join", m);
     }
 
     @Override

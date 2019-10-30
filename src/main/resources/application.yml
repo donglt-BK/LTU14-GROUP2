@@ -6,6 +6,6 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
-    drop-first: true
+    drop-first: false
 server:
   port: 8109

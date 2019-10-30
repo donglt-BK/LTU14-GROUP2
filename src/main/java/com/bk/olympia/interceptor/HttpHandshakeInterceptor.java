@@ -1,9 +1,5 @@
 package com.bk.olympia.interceptor;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
@@ -12,6 +8,9 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
+
+import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Component
 public class HttpHandshakeInterceptor implements HandshakeInterceptor {
@@ -36,5 +35,6 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
                                Exception ex) {
         logger.info("Call afterHandshake");
     }
+
 
 }

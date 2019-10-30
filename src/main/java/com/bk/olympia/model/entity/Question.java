@@ -2,6 +2,7 @@ package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,7 @@ public class Question {
     private Topic topic;
 
     @OneToMany(targetEntity = Answer.class, mappedBy = "question")
+    @Size(max = 4)
     private List<Answer> answers;
 
     public Question(@NotNull int difficulty, Topic topic, List<Answer> answers) {

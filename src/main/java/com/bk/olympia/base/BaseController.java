@@ -1,7 +1,10 @@
 package com.bk.olympia.base;
 
+import com.bk.olympia.model.entity.Player;
+import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.Message;
 import com.bk.olympia.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -9,6 +12,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 @Controller
@@ -52,4 +56,40 @@ public abstract class BaseController {
     protected Room findRoomById(int id) {
         return roomRepository.findById(id);
     }
+
+    protected void save(Room room) {
+        roomRepository.save(room);
+    }
+
+    protected void save(Question question) {
+        questionRepository.save(question);
+    }
+
+    protected void save(Player player) {
+
+    }
+
+    protected void save(User user) {
+        userRepository.save(user);
+    }
+
+    public void broadcast(List<User> list, String destination, Message message) {
+        message.pack();
+        list.forEach(u -> template.convertAndSendToUser(u.getUid(), destination, message));
+    }
+
+    public void broadcast(Room room, String destination, Message message) {
+        broadcast(UserList.getUsers(room.getId()), destination, message);
+    }
+
+    public void sendTo(User user, String destination, Message message) {
+        message.pack();
+        template.convertAndSendToUser(user.getUid(), destination, message);
+    }
+
+//    public void sendToGuest(String username, String destination, Message message) {
+//        message.pack();
+//        template.convertAndSendToUser(username, destination, message);
+//    }
+
 }

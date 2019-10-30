@@ -9,7 +9,7 @@ import java.util.Map;
 public class Message {
     private MessageType type;
     private int sender;
-    private Map content;
+    private Map<ContentType, Object> content;
 
     public Message() {
     }
@@ -17,19 +17,13 @@ public class Message {
     public Message(MessageType type) {
         this.type = type;
         this.sender = -1;
-        content = new HashMap();
+        content = new HashMap<>();
     }
 
     public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
-        content = new HashMap();
-    }
-
-    public Message(MessageType type, int sender, HashMap content) {
-        this.type = type;
-        this.sender = sender;
-        this.content = content;
+        content = new HashMap<>();
     }
 
     public MessageType getType() {
@@ -54,10 +48,6 @@ public class Message {
 
     public Map getContent() {
         return content;
-    }
-
-    public void setContent(HashMap content) {
-        this.content = content;
     }
 
     public <T> Message addContent(ContentType type, T detail) {
