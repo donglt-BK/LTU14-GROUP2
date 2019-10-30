@@ -3,6 +3,9 @@ package com.bk.olympia.controller;
 import com.bk.olympia.base.BaseController;
 import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
+import com.bk.olympia.model.History;
+import com.bk.olympia.model.entity.Player;
+import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
@@ -16,15 +19,21 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import service.SpringEventService;
 
+import java.util.ArrayList;
+
 @Controller
 public class UserController extends BaseController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @MessageMapping("/user/get-info")
     @SendToUser(Destination.GET_USER_INFO)
-    public Message handleGetInfo(@Payload Message message) {
+    public Message processGetInfo(@Payload Message message) {
         User user = findUserById(message.getSender());
-        Message m = new Message(MessageType.GET_INFO, message.getSender());
+        return handleGetInfo(user);
+    }
+
+    private Message handleGetInfo(User user) {
+        Message m = new Message(MessageType.GET_INFO, user.getId());
         m.addContent(ContentType.USER_ID, user.getId())
                 .addContent(ContentType.USERNAME, user.getUsername())
                 .addContent(ContentType.NAME, user.getName())
@@ -36,8 +45,12 @@ public class UserController extends BaseController {
 
     @MessageMapping("/user/change-info")
     @SendToUser(Destination.CHANGE_USER_INFO)
-    public Message handleSetInfo(@Payload Message message) {
+    public Message processSetInfo(@Payload Message message) {
         User user = userRepository.getOne(message.getSender());
+        return handleSetInfo(user, message);
+    }
+
+    private Message handleSetInfo(User user, Message message) {
         message.getContent().forEach((k, v) -> {
             if (k instanceof ContentType) {
                 ContentType key = (ContentType) k;
@@ -56,11 +69,35 @@ public class UserController extends BaseController {
         return new Message(MessageType.CHANGE_INFO, message.getSender()).pack();
     }
 
+    @MessageMapping("/user/get-recent-history")
+    @SendToUser(Destination.GET_RECENT_HISTORY)
+    public Message processGetHistory(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        return handleGetHistory(user);
+    }
+
+    private Message handleGetHistory(User user) {
+        ArrayList<Player> playerHistory = (ArrayList<Player>) user.getPlayerList();
+        ArrayList<Room> roomHistory = new ArrayList<>();
+        playerHistory.forEach(p -> roomHistory.add(p.getRoom()));
+        Message m = new Message(MessageType.GET_RECENT_HISTORY, user.getId());
+
+        ArrayList<History> recentHistories = new ArrayList<>();
+        roomHistory.forEach(room -> {
+            recentHistories.add(new History(room, user));
+        });
+        m.addContent(ContentType.HISTORY, recentHistories);
+        return m;
+    }
+
     @MessageMapping("/user/logout")
     @SendToUser(Destination.LOGOUT)
-    public Message handleLogout(@Payload Message message) {
+    public Message processLogout(@Payload Message message) {
         User user = findUserById(message.getSender());
+        return handleLogout(user);
+    }
 
+    private Message handleLogout(User user) {
         //TODO: Disconnect user from active lobby
         if (user.getLobbyId() >= 0)
             SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));

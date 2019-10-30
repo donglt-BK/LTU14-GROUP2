@@ -5,6 +5,8 @@ public enum MessageType {
     LOGOUT,
     GET_INFO,
     CHANGE_INFO,
+    GET_RECENT_HISTORY,
+    ADD_QUESTION,
     //    GET_LOBBY_LIST,
     JOIN_LOBBY,
     LEAVE_LOBBY,

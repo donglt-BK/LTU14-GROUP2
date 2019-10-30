@@ -32,6 +32,9 @@
             <column name="bet_value" type="int(11)"/>
             <column name="current_level" type="int(11)" defaultValue="0"/>
             <column name="max_questions" type="int(11)"/>
+            <column name="winner" type="int(11)"/>
+            <column name="created_at" type="timestamp" defaultValueComputed="CURRENT_TIMESTAMP"/>
+            <column name="ended_at" type="timestamp"/>
         </createTable>
 
         <createTable tableName="room_player">

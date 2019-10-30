@@ -3,6 +3,7 @@ package com.bk.olympia.model.entity;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
@@ -40,6 +41,15 @@ public class Room {
 
     @NotNull
     private int maxQuestions = DEFAULT_MAX_QUESTIONS;
+
+    @NotNull
+    private int winner = -1;
+
+    @NotNull
+    private Date createdAt;
+
+    @NotNull
+    private Date endedAt;
 
     @ManyToMany
     @JoinTable(
@@ -102,6 +112,26 @@ public class Room {
 
     public List<Player> getPlayerList() {
         return playerList;
+    }
+
+    public int getWinner() {
+        return winner;
+    }
+
+    public void setWinner(int winner) {
+        this.winner = winner;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public Date getEndedAt() {
+        return endedAt;
+    }
+
+    public void setEndedAt(Date endedAt) {
+        this.endedAt = endedAt;
     }
 
     public void addTopic(Topic topic) {

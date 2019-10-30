@@ -16,4 +16,5 @@ public enum ContentType {
     GENDER,
     BALANCE,
     TOPICS,
+    HISTORY,
 }

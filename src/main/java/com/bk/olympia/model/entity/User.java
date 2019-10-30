@@ -9,6 +9,7 @@ import service.MessagingService;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +37,7 @@ public class User {
     private int balance;
 
     @OneToMany(targetEntity = Player.class, mappedBy = "user")
+    @Size(max = DEFAULT_HISTORY_SIZE)
     private List<Player> playerList = new ReverseArrayList<>();
 
     @Transient
@@ -114,6 +116,10 @@ public class User {
 
     public void setLobbyId(int lobbyId) {
         this.lobbyId = lobbyId;
+    }
+
+    public List<Player> getPlayerList() {
+        return playerList;
     }
 
     public void addPlayer(Player player) {
