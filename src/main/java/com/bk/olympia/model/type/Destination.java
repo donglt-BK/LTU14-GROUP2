@@ -1,8 +1,8 @@
 package com.bk.olympia.model.type;
 
 public class Destination {
-    public static final String LOGIN = "/queue/login";
-    public static final String SIGN_UP = "/queue/sign_up";
+    public static final String LOGIN = "/queue/auth/login";
+    public static final String SIGN_UP = "/queue/auth/sign_up";
     public static final String LOGOUT = "/queue/user/logout";
 
     public static final String GET_USER_INFO = "/queue/user/get-info";
