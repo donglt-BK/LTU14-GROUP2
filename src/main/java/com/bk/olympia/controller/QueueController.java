@@ -10,10 +10,12 @@ import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
+import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import com.bk.olympia.repository.UserList;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -85,14 +88,14 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     @MessageMapping("/play/join")
-    public void processFindLobby(@Payload Message message) throws BaseRuntimeException {
+    public void processFindLobby(@Payload Message message) {
         User user = findUserById(message.getSender());
         int betValue = message.getContent(ContentType.BET_VALUE);
 
         handleFindLobby(user, betValue);
     }
 
-    private void handleFindLobby(User user, int betValue) throws BaseRuntimeException {
+    private void handleFindLobby(User user, int betValue) {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
 
@@ -105,7 +108,7 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     @MessageMapping("/play/invite")
-    public void processInvite(@Payload Message message) throws BaseRuntimeException {
+    public void processInvite(@Payload Message message) {
         User user = findUserById(message.getSender());
         User recipient = findUserByName(message.getContent(ContentType.NAME));
         int betValue = message.getContent(ContentType.BET_VALUE);
@@ -113,7 +116,7 @@ public class QueueController extends BaseController implements ApplicationListen
         handleInvite(user, recipient, betValue, message);
     }
 
-    private void handleInvite(User user, User recipient, int betValue, Message message) throws BaseRuntimeException {
+    private void handleInvite(User user, User recipient, int betValue, Message message) {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
         if (recipient.getBalance() >= betValue)
@@ -140,14 +143,14 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     @MessageMapping("/play/change-info")
-    public void processChangeLobbyInfo(@Payload Message message) throws BaseRuntimeException {
+    public void processChangeLobbyInfo(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
         handleChangeLobbyInfo(user, lobby, message);
     }
 
-    private void handleChangeLobbyInfo(User user, Lobby lobby, Message message) throws BaseRuntimeException {
+    private void handleChangeLobbyInfo(User user, Lobby lobby, Message message) {
         if (user.equals(lobby.getHost())) {
             message.getContent().forEach((k, v) -> {
                 if (k instanceof ContentType) {
@@ -184,7 +187,7 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     @MessageMapping("/play/start-game")
-    public void processStartGame(@Payload Message message) throws BaseRuntimeException {
+    public void processStartGame(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
 
@@ -245,5 +248,18 @@ public class QueueController extends BaseController implements ApplicationListen
         Lobby.addDeletedId(lobby.getId());
         lobby.getUsers().forEach(lobby::removeUser);
         lobbyList.remove(lobby);
+    }
+
+    @Override
+    @SendToUser(Destination.ERROR)
+    public Message handleException(BaseRuntimeException e) {
+        logger.error(e.getMessage());
+        if (e instanceof InsufficientBalanceException)
+            return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
+        else if (e instanceof TargetInsufficientBalanceException)
+            return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
+        else if (e instanceof InvalidActionException)
+            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
+        return null;
     }
 }

@@ -5,9 +5,12 @@ import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
+import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Controller;
 
@@ -41,6 +44,10 @@ public abstract class BaseController {
 
     protected ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
     protected HashMap<Integer, ScheduledFuture> taskQueue = new HashMap<>();
+
+    @MessageExceptionHandler
+    @SendToUser(Destination.ERROR)
+    public abstract Message handleException(BaseRuntimeException e);
 
     protected User findUserById(int id) {
 //        query = entityManager.createQuery("SELECT u From User u WHERE u.id == " + id);

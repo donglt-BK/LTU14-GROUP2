@@ -5,9 +5,11 @@ import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.exception.InvalidActionException;
 import com.bk.olympia.model.entity.*;
+import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
+import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +50,7 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @MessageMapping("/play/get-topic-list")
-    public void processGetTopicList(@Payload Message message) throws BaseRuntimeException {
+    public void processGetTopicList(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
@@ -73,7 +75,7 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @MessageMapping("/play/pick-topic")
-    public void processPickTopic(@Payload Message message) throws BaseRuntimeException {
+    public void processPickTopic(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
 
@@ -82,7 +84,7 @@ public class GameController extends BaseController implements ApplicationListene
         handlePickTopic(user, player, room, message.getContent(ContentType.TOPIC), message);
     }
 
-    private void handlePickTopic(User user, Player player, Room room, Topic topic, Message message) throws BaseRuntimeException {
+    private void handlePickTopic(User user, Player player, Room room, Topic topic, Message message) {
         if (room.isPlayerTurn(player) && room.getTopics().get(topic)) {
             room.setChosenTopic(topic);
             broadcast(room, Destination.PICK_TOPIC, message);
@@ -91,14 +93,14 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @MessageMapping("/play/get-question")
-    public void processGetQuestion(@Payload Message message) throws BaseRuntimeException {
+    public void processGetQuestion(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
         handleGetQuestion(user, player, room, message.getContent(ContentType.TOPIC));
     }
 
-    private void handleGetQuestion(User user, Player player, Room room, Topic topic) throws BaseRuntimeException {
+    private void handleGetQuestion(User user, Player player, Room room, Topic topic) {
         if (room.isPlayerTurn(player)) {
             List<Question> questions = questionRepository.findByTopicAndDifficultyAfterOrderByDifficultyAsc(topic, room.getCurrentLevel());
             Message m = new Message(MessageType.GET_QUESTION, user.getId());
@@ -109,5 +111,13 @@ public class GameController extends BaseController implements ApplicationListene
 
     private void userDisconnect(User user, Player player, Room room) {
 
+    }
+
+    @Override
+    public Message handleException(BaseRuntimeException e) {
+        logger.error(e.getMessage());
+        if (e instanceof InvalidActionException)
+            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
+        return null;
     }
 }

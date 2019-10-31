@@ -15,7 +15,6 @@ import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -76,8 +75,8 @@ public class LoginController extends BaseController {
         } else throw new UsernameAlreadyTakenException();
     }
 
-    @MessageExceptionHandler
     @SendToUser(Destination.ERROR)
+    @Override
     public Message handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
         if (e instanceof WrongUsernameOrPasswordException)
