@@ -1,5 +1,6 @@
 package com.bk.olympia.socket;
 
+import com.bk.olympia.message.ContentType;
 import com.bk.olympia.message.Message;
 import com.bk.olympia.message.MessageType;
 import com.google.gson.Gson;
@@ -37,15 +38,15 @@ public class SocketService {
     }
 
     public static void listen(StompSession stompSession, StompFrameHandler stompFrameHandler) {
-        stompSession.subscribe("/queue/login", stompFrameHandler);
+        stompSession.subscribe("/user/queue/login", stompFrameHandler);
 
     }
 
     public static void sendHello(StompSession stompSession) {
         Gson gson = new Gson();
         Message message = new Message(MessageType.LOGIN);
-        message.addContent("username", "admin")
-                .addContent("password", "12345678");
+        message.addContent(ContentType.USERNAME, "admin")
+                .addContent(ContentType.PASSWORD, "12345678");
         stompSession.send("/app/login", gson.toJson(message).getBytes());
     }
 
