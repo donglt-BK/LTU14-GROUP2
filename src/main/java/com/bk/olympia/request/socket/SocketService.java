@@ -18,10 +18,10 @@ public class SocketService {
 
     public void login(String username, String password, ResponseHandler handler) {
         try {
-            stompSession = SocketSendingService.connect("localhost", 8109, "/login");
+            stompSession = SocketSendingService.connect("localhost", 8109, "/auth");
 
             System.out.println("Subscribing using session " + stompSession);
-            SocketSendingService.subscribe(stompSession, "/queue/login", new StompFrameHandler() {
+            SocketSendingService.subscribe(stompSession, "queue/auth/login", new StompFrameHandler() {
                 public Type getPayloadType(StompHeaders stompHeaders) {
                     return byte[].class;
                 }
@@ -35,7 +35,7 @@ public class SocketService {
             Message message = new Message(MessageType.LOGIN);
             message.addContent(USERNAME, username).addContent(PASSWORD, password);
 
-            SocketSendingService.send(stompSession, "/app/login", message);
+            SocketSendingService.send(stompSession, "/app/auth/login", message);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             handler.error(e.getMessage());

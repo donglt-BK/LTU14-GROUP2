@@ -1,6 +1,7 @@
 package com.bk.olympia.UI.screen;
 
 import com.bk.olympia.exception.ScreenNotFoundException;
+import com.bk.olympia.message.Message;
 import com.bk.olympia.request.socket.ResponseHandler;
 import com.bk.olympia.request.socket.SocketService;
 
@@ -111,7 +112,7 @@ public class LoginScreen extends Screen {
 
             @Override
             public void error(String errorMessage) {
-                //show error
+                System.out.println(errorMessage);
             }
         });
     }
