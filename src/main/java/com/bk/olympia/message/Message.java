@@ -1,11 +1,15 @@
 package com.bk.olympia.message;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Message {
     private MessageType type;
     private int sender;
-    private HashMap content;
+    private Map content;
+
+    public Message() {
+    }
 
     public Message(MessageType type) {
         this.type = type;
@@ -19,7 +23,7 @@ public class Message {
         content = new HashMap();
     }
 
-    public Message(MessageType type, int sender, HashMap content) {
+    public Message(MessageType type, int sender, Map content) {
         this.type = type;
         this.sender = sender;
         this.content = content;
@@ -41,23 +45,28 @@ public class Message {
         this.sender = sender;
     }
 
-    public HashMap getContent() {
+    public Map getContent() {
         return content;
     }
 
-    public <T> T getContent(String type) {
-        return (T) content.get(type);
+    public <T> T getContent(ContentType type) {
+        return (T) (content.get(type));
     }
 
-    public void setContent(HashMap content) {
+//    public Map getContent() {
+//        return content;
+//    }
+
+    public void setContent(Map content) {
         this.content = content;
     }
 
-    public <T> Message addContent(String type, T detail) {
+    public <T> Message addContent(ContentType type, T detail) {
         this.content.put(type, detail);
         return this;
     }
 
+    //TODO: Hàm encrypt gói tin
     public void pack() {
 
     }
