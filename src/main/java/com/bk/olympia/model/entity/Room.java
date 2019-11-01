@@ -2,10 +2,7 @@ package com.bk.olympia.model.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TreeMap;
+import java.util.*;
 
 @Entity
 @Table(name = "room")
@@ -21,7 +18,7 @@ public class Room {
      * The boolean value indicates whether the topic can be chosen (true) or not (false).
      */
     @Transient
-    private TreeMap<Topic, Boolean> topics = new TreeMap<>();
+    private Map<Topic, Boolean> topics = new TreeMap<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -142,8 +139,30 @@ public class Room {
         this.topics.put(topic, false);
     }
 
-    public TreeMap<Topic, Boolean> getTopics() {
+    public Map<Topic, Boolean> getTopics() {
         return topics;
+    }
+
+    public Integer[] getTopicIds() {
+        return topics.keySet().stream()
+                .map(Topic::getId)
+                .toArray(Integer[]::new);
+    }
+
+    public String[] getTopicNames() {
+        return topics.keySet().stream()
+                .map(Topic::getTopicName)
+                .toArray(String[]::new);
+    }
+
+    public String[] getTopicDescriptions() {
+        return topics.keySet().stream()
+                .map(Topic::getTopicDescription)
+                .toArray(String[]::new);
+    }
+
+    public Boolean[] getTopicChosen() {
+        return topics.values().toArray(new Boolean[maxQuestions]);
     }
 
     public void addPlayerReady(int position) {
@@ -154,7 +173,15 @@ public class Room {
         return this.readyList.stream().allMatch(val -> val);
     }
 
+    public void resetReady() {
+        Collections.fill(readyList, Boolean.FALSE);
+    }
+
     public boolean isPlayerTurn(Player player) {
         return player.getPosition() == (currentLevel % maxPlayers);
+    }
+
+    public void update() {
+        playerList.forEach(p -> p.setRoom(this));
     }
 }

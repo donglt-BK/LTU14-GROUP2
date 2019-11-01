@@ -16,16 +16,16 @@ public class Answer {
     private Question question;
 
     @NotNull
-    private String answer;
+    private String answerDetail;
 
     private boolean isCorrect;
 
     public Answer(@NotNull String answer) {
-        this.answer = answer;
+        this.answerDetail = answer;
     }
 
     public Answer(@NotNull String answer, boolean isCorrect) {
-        this.answer = answer;
+        this.answerDetail = answer;
         this.isCorrect = isCorrect;
     }
 
@@ -41,12 +41,12 @@ public class Answer {
         this.id = id;
     }
 
-    public String getAnswer() {
-        return answer;
+    public String getAnswerDetail() {
+        return answerDetail;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setAnswerDetail(String answer) {
+        this.answerDetail = answer;
     }
 
     public boolean isCorrect() {

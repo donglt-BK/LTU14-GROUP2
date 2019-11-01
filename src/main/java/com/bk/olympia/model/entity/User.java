@@ -114,8 +114,8 @@ public class User {
         return balance;
     }
 
-    public void setBalance(int balance) {
-        this.balance = balance;
+    public void addBalance(int balance) {
+        this.balance += balance;
     }
 
     public int getLobbyId() {

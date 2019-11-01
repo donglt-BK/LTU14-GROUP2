@@ -66,6 +66,7 @@ public abstract class BaseController {
 
     protected void save(Room room) {
         roomRepository.save(room);
+        room.update();
     }
 
     protected void save(Question question) {

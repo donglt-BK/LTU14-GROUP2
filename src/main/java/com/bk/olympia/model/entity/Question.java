@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "question_set")
@@ -11,6 +12,9 @@ public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @Column(name = "question")
+    private String questionDetail;
 
     @NotNull
     private int difficulty;
@@ -23,10 +27,13 @@ public class Question {
     @Size(max = 4)
     private List<Answer> answers;
 
-    public Question(@NotNull int difficulty, Topic topic, List<Answer> answers) {
-        this.difficulty = difficulty;
+    private boolean isAccepted;
+
+    public Question(Topic topic, String questionDetail, List<Answer> answers) {
         this.topic = topic;
+        this.questionDetail = questionDetail;
         this.answers = answers;
+        this.isAccepted = false;
     }
 
     public Question() {
@@ -39,6 +46,14 @@ public class Question {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getQuestionDetail() {
+        return questionDetail;
+    }
+
+    public void setQuestionDetail(String questionDetail) {
+        this.questionDetail = questionDetail;
     }
 
     public int getDifficulty() {
@@ -57,11 +72,26 @@ public class Question {
         this.topic = topic;
     }
 
-    public List<Answer> getAnswers() {
-        return answers;
+    public List<String> getAnswers() {
+        return answers.stream().map(Answer::getAnswerDetail).collect(Collectors.toList());
     }
 
     public void setAnswers(List<Answer> answers) {
         this.answers = answers;
+    }
+
+    public boolean isAccepted() {
+        return isAccepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        isAccepted = accepted;
+    }
+
+    public Answer getCorrectAnswer() {
+        return answers.stream()
+                .filter(Answer::isCorrect)
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -1,6 +1,7 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
+import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.model.History;
@@ -95,14 +96,12 @@ public class UserController extends BaseController {
     @SendToUser(Destination.ADD_QUESTION)
     public Message processAddQuestion(@Payload Message message) {
         User user = findUserById(message.getSender());
-        handleAddQuestion(user, message.getContent(ContentType.QUESTION));
-
-        return null;
+        return handleAddQuestion(user, message.getContent(ContentType.QUESTION), message.getContent(ContentType.ANSWER));
     }
 
-    private Message handleAddQuestion(User user, Question question) {
+    private Message handleAddQuestion(User user, String question, String[] answers) {
         //TODO: Add question and check if needed
-        questionRepository.save(question);
+        questionRepository.save(new Question());
         return null;
     }
 
@@ -121,6 +120,11 @@ public class UserController extends BaseController {
         else {
             SpringEventService.publishEvent(new DisconnectUserFromRoomEvent(this, user));
         }
+        return null;
+    }
+
+    @Override
+    public Message handleException(BaseRuntimeException e) {
         return null;
     }
 }

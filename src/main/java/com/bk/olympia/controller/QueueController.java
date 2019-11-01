@@ -4,8 +4,9 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.exception.InsufficientBalanceException;
-import com.bk.olympia.exception.InvalidActionException;
 import com.bk.olympia.exception.TargetInsufficientBalanceException;
+import com.bk.olympia.exception.UnauthorizedActionException;
+import com.bk.olympia.exception.UserNameNotFoundException;
 import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
@@ -18,6 +19,7 @@ import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import com.bk.olympia.repository.UserList;
+import com.google.common.util.concurrent.Striped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
@@ -30,11 +32,13 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReadWriteLock;
 
 @Controller
 public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
     private static final Logger logger = LoggerFactory.getLogger(QueueController.class);
-    private TreeMap<Lobby, Integer> lobbyList = new TreeMap<>();
+    private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
+    private Map<Lobby, Integer> lobbyList = new TreeMap<>();
 
 //    @MessageMapping("/play/get-lobby-list")
 //    public void getLobbyList(@Payload Message message) {
@@ -100,7 +104,6 @@ public class QueueController extends BaseController implements ApplicationListen
             throw new InsufficientBalanceException(user.getId());
 
         sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
-
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
 
@@ -119,8 +122,17 @@ public class QueueController extends BaseController implements ApplicationListen
     private void handleInvite(User user, User recipient, int betValue, Message message) {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
-        if (recipient.getBalance() >= betValue)
-            sendTo(recipient, Destination.INVITE_PLAYER, message);
+        if (recipient == null)
+            throw new UserNameNotFoundException(user.getId());
+        if (recipient.getBalance() >= betValue) {
+            ReadWriteLock lock = lockStriped.get(recipient);
+            lock.readLock().lock();
+            try {
+                sendTo(recipient, Destination.INVITE_PLAYER, message);
+            } finally {
+                lock.readLock().unlock();
+            }
+        }
         else throw new TargetInsufficientBalanceException(user.getId());
     }
 
@@ -166,7 +178,7 @@ public class QueueController extends BaseController implements ApplicationListen
                 }
             });
             broadcastLobbyInfo(user.getId(), lobby);
-        } else throw new InvalidActionException(user.getId());
+        } else throw new UnauthorizedActionException(user.getId());
     }
 
     @MessageMapping("/play/leave")
@@ -218,15 +230,21 @@ public class QueueController extends BaseController implements ApplicationListen
             m.addContent(ContentType.ROOM_ID, room.getId());
             broadcast(lobby.getUsers(), Destination.CREATE_ROOM, m);
             removeLobby(lobby);
-        } else throw new InvalidActionException(user.getId());
+        } else throw new UnauthorizedActionException(user.getId());
     }
 
     private Lobby findLobbyByBetValue(int betValue) {
-        return lobbyList.entrySet().stream()
-                .filter(entry -> entry.getValue() == betValue)
-                .map(Map.Entry::getKey)
-                .findAny()
-                .orElse(new Lobby(betValue));
+        ReadWriteLock lock = lockStriped.get(betValue);
+        lock.readLock().lock();
+        try {
+            return lobbyList.entrySet().stream()
+                    .filter(entry -> entry.getValue() == betValue)
+                    .map(Map.Entry::getKey)
+                    .findAny()
+                    .orElse(new Lobby(betValue));
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     private Lobby findLobbyById(int id) {
@@ -256,9 +274,11 @@ public class QueueController extends BaseController implements ApplicationListen
         logger.error(e.getMessage());
         if (e instanceof InsufficientBalanceException)
             return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
+        else if (e instanceof UserNameNotFoundException)
+            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
         else if (e instanceof TargetInsufficientBalanceException)
             return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof InvalidActionException)
+        else if (e instanceof UnauthorizedActionException)
             return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
         return null;
     }

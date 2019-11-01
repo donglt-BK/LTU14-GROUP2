@@ -11,7 +11,7 @@ public interface QuestionRepository extends JpaRepository<Question, Integer> {
 
     List<Question> findByTopicOrderByDifficultyAsc(Topic topic);
 
-    List<Question> findByTopicAndDifficultyAfterOrderByDifficultyAsc(Topic topic, int difficulty);
+    List<Question> findByTopicAndIsAcceptedAndDifficultyAfterOrderByDifficultyAsc(Topic topic, boolean isAccepted, int difficulty);
 
 //    @Query("SELECT q.id FROM Question q ORDER BY q.id DESC ")
 //    public int getQuestionTotal();

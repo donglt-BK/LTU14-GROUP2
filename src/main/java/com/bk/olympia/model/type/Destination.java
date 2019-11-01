@@ -16,10 +16,13 @@ public class Destination {
     public static final String START_GAME = "/queue/play/start-game";
     public static final String CREATE_ROOM = "/queue/play/create-room";
 
-    public static final String LOAD_COMPLETE = "/queue/play/load-complete";
+    public static final String READY = "/queue/play/ready";
     public static final String GET_TOPIC_LIST = "/queue/play/get-topic-list";
     public static final String PICK_TOPIC = "/queue/play/pick-topic";
     public static final String GET_QUESTION = "/queue/play/get_question";
+    public static final String SUBMIT_ANSWER = "/queue/play/submit_answer";
+    public static final String GET_ANSWER = "/queue/play/get_answer";
+    public static final String GAME_OVER = "/queue/play/game_over";
 
     public static final String ERROR = "/queue/error";
 }
