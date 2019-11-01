@@ -12,10 +12,5 @@ public enum ContentType {
     START,
     ROOM_ID,
     NAME,
-    REPLY,
-    GENDER,
-    BALANCE,
-    TOPIC,
-    HISTORY,
-    QUESTION,
+    REPLY
 }

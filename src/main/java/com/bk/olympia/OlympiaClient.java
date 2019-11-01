@@ -3,13 +3,10 @@ package com.bk.olympia;
 import com.bk.olympia.UI.JFrameUI;
 import com.bk.olympia.UI.ScreenService;
 import com.bk.olympia.exception.ScreenNotFoundException;
-import com.bk.olympia.message.ContentType;
-import com.bk.olympia.message.Message;
-import com.bk.olympia.message.MessageType;
-import com.bk.olympia.socket.SocketService;
+import com.bk.olympia.request.socket.ResponseHandler;
+import com.bk.olympia.request.socket.SocketService;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
-import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.lang.reflect.Type;
 
@@ -17,12 +14,11 @@ import static com.bk.olympia.config.Constant.*;
 
 public class OlympiaClient {
 
-/*
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		StompSession stompSession = SocketService.connect("localhost", 8109, "/login");
 
 		System.out.println("Subscribing using session " + stompSession);
-		SocketService.subscribe(stompSession, "/user/queue/login", new StompFrameHandler() {
+		SocketService.subscribe(stompSession, "/queue/login", new StompFrameHandler() {
 			public Type getPayloadType(StompHeaders stompHeaders) {
 				return byte[].class;
 			}
@@ -33,12 +29,11 @@ public class OlympiaClient {
 		});
 
 		Message m = new Message(MessageType.LOGIN);
-		m.addContent(ContentType.USERNAME, "donglt")
-		.addContent(ContentType.PASSWORD, "donglt");
+		m.addContent("username", "donglt")
+		.addContent("password", "donglt");
 
 		SocketService.send(stompSession, "/app/login", m);
-	}
-*/
+	}*/
 
 	public static void main(String[] args) {
 

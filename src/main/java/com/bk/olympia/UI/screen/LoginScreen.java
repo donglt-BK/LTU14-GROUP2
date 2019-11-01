@@ -1,6 +1,9 @@
 package com.bk.olympia.UI.screen;
 
 import com.bk.olympia.exception.ScreenNotFoundException;
+import com.bk.olympia.message.Message;
+import com.bk.olympia.request.socket.ResponseHandler;
+import com.bk.olympia.request.socket.SocketService;
 
 import javax.swing.*;
 import java.awt.*;
@@ -78,11 +81,7 @@ public class LoginScreen extends Screen {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == '\n') {
-                    try {
-                        ui.showScreen(HOME_SCREEN);
-                    } catch (ScreenNotFoundException ex) {
-                        ex.printStackTrace();
-                    }
+                    login();
                 }
             }
 
@@ -95,13 +94,26 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-        submit.addActionListener(actionEvent -> {
-            try {
-                ui.showScreen(HOME_SCREEN);
-            } catch (ScreenNotFoundException ex) {
-                ex.printStackTrace();
+        submit.addActionListener(actionEvent -> login());
+    }
+
+    private void login() {
+
+        SocketService.getInstance().login(user.getText(), String.valueOf(pass.getPassword()), new ResponseHandler() {
+            @Override
+            public void success(Object response) {
+                try {
+                    ui.showScreen(HOME_SCREEN);
+                } catch (ScreenNotFoundException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void error(String errorMessage) {
+                System.out.println(errorMessage);
             }
         });
-
     }
 }

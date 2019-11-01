@@ -1,8 +1,6 @@
-package com.bk.olympia.socket;
+package com.bk.olympia.request.handler;
 
 import org.springframework.messaging.simp.stomp.*;
-
-import java.lang.reflect.Type;
 
 public class CustomStompSessionHandler extends StompSessionHandlerAdapter {
     public void afterConnected(StompSession stompSession, StompHeaders stompHeaders) {

@@ -1,9 +1,12 @@
-package com.bk.olympia.socket;
+package com.bk.olympia.request.socket;
 
 import com.bk.olympia.message.ContentType;
 import com.bk.olympia.message.Message;
+import com.bk.olympia.request.handler.CustomStompSessionHandler;
+import com.bk.olympia.message.Message;
 import com.bk.olympia.message.MessageType;
 import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -19,9 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-public class SocketService {
+public class SocketSendingService {
+    private static final String templateUrl = "ws://{host}:{port}";
 
-    public static StompSession connect(String url) throws ExecutionException, InterruptedException {
+    public static StompSession connect(String host, int port, String path) throws ExecutionException, InterruptedException {
 
         Transport webSocketTransport = new WebSocketTransport(new StandardWebSocketClient());
         List<Transport> transports = Collections.singletonList(webSocketTransport);
@@ -31,23 +35,22 @@ public class SocketService {
 
         WebSocketStompClient stompClient = new WebSocketStompClient(sockJsClient);
 
-        ListenableFuture<StompSession> f = stompClient.connect(url, new WebSocketHttpHeaders(), new CustomStompSessionHandler(), "localhost", 8109);
+        ListenableFuture<StompSession> f = stompClient.connect(templateUrl + path, new WebSocketHttpHeaders(), new CustomStompSessionHandler(), host, port);
 
         return f.get();
 
     }
 
-    public static void listen(StompSession stompSession, StompFrameHandler stompFrameHandler) {
-        stompSession.subscribe("/user/queue/login", stompFrameHandler);
+    public static void subscribe(StompSession stompSession, String url, StompFrameHandler stompFrameHandler) {
+        stompSession.subscribe(url, stompFrameHandler);
 
     }
 
-    public static void sendHello(StompSession stompSession) {
+    public static void send(StompSession stompSession, String url, Object object) {
         Gson gson = new Gson();
-        Message message = new Message(MessageType.LOGIN);
-        message.addContent(ContentType.USERNAME, "admin")
-                .addContent(ContentType.PASSWORD, "12345678");
-        stompSession.send("/app/login", gson.toJson(message).getBytes());
+        System.out.println(gson.toJson(object));
+        stompSession.send("/app" + url, gson.toJson(object).getBytes());
+
     }
 
 }
