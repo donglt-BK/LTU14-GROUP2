@@ -35,7 +35,7 @@ public class SocketService {
             Message message = new Message(MessageType.LOGIN);
             message.addContent(USERNAME, username).addContent(PASSWORD, password);
 
-            SocketSendingService.send(stompSession, "/app/auth/login", message);
+            SocketSendingService.send(stompSession, "/auth/login", message);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             handler.error(e.getMessage());

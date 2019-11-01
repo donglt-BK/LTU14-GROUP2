@@ -49,7 +49,7 @@ public class SocketSendingService {
     public static void send(StompSession stompSession, String url, Object object) {
         Gson gson = new Gson();
         System.out.println(gson.toJson(object));
-        stompSession.send(url, gson.toJson(object).getBytes());
+        stompSession.send("/app" + url, gson.toJson(object).getBytes());
 
     }
 
