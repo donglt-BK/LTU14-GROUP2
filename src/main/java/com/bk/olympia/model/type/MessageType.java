@@ -19,5 +19,6 @@ public enum MessageType {
     GET_QUESTION,
     SUBMIT_ANSWER,
     GET_ANSWER,
-    GAME_OVER
+    GAME_OVER,
+    ERROR
 }

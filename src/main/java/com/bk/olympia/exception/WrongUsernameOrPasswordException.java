@@ -4,6 +4,6 @@ import com.bk.olympia.base.BaseRuntimeException;
 
 public class WrongUsernameOrPasswordException extends BaseRuntimeException {
     public WrongUsernameOrPasswordException() {
-        super("Wrong Username or Password");
+        super("Wrong Username or Password", -1);
     }
 }

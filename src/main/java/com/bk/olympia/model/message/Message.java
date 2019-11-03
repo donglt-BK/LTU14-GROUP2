@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Message {
     private MessageType type;
-    private int sender;
+    protected int sender;
     private Map<ContentType, Object> content;
 
     public Message() {
