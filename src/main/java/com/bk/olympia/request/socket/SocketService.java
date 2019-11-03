@@ -35,8 +35,20 @@ public class SocketService {
                 }
             });
 
+            SocketSendingService.subscribe(stompSession, "/user/queue/error", new StompFrameHandler() {
+                public Type getPayloadType(StompHeaders stompHeaders) {
+                    return byte[].class;
+                }
+
+                public void handleFrame(StompHeaders stompHeaders, Object o) {
+                    System.out.println("Received error message" + new String((byte[]) o));
+                    handler.success(o);
+                }
+            });
+
             Message message = new Message(MessageType.LOGIN);
-            message.addContent(USERNAME, username).addContent(PASSWORD, password);
+            message.addContent(USERNAME, username)
+                    .addContent(PASSWORD, password);
 
             SocketSendingService.send(stompSession, "/auth/login", message);
         } catch (ExecutionException | InterruptedException e) {
