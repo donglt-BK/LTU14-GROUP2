@@ -32,10 +32,20 @@ public class LoginScreen extends Screen {
 
         Color gray = new Color(210, 210, 210);
 
-        //login button
+        //loginBtn button
         loginBtn = new JButton("Login");
         loginBtn.setBounds(230, 300, 140, 30);
         loginBtn.setEnabled(true);
+        loginBtn.addActionListener((e) -> {
+            String userInput = user.getText();
+            if (userInput != null && userInput.trim().length()>0){
+             login();
+            }
+            else {
+                errorNotification.setText("Vui lòng nhập tài khoản và mật khẩu");
+                errorNotification.setEnabled(true);
+            }
+        });
 
         //register
         registerBtn = new JButton("Register");
@@ -113,6 +123,7 @@ public class LoginScreen extends Screen {
             @Override
             public void success(Object response) {
                 try {
+                    System.out.println(">>" + response);
                     ui.showScreen(HOME_SCREEN);
                 } catch (ScreenNotFoundException e) {
                     e.printStackTrace();
@@ -122,6 +133,7 @@ public class LoginScreen extends Screen {
 
             @Override
             public void error(String errorMessage) {
+                errorNotification.setText(errorMessage);
                 System.out.println(errorMessage);
                 System.out.println("Login failed");
             }
