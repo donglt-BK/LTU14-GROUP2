@@ -19,8 +19,6 @@ public class HomeScreen extends Screen {
         this.setLayout(new GridLayout(1, 3));
         this.setBackground(Color.gray);
 
-        invite.setBounds(this.getWidth()/2, this.getHeight()/2+210, 200, 200);
-        findGame.setBounds(this.getWidth()/2, this.getHeight()/2, 200, 200);
         this.add(findGame);
         this.add(invite);
     }

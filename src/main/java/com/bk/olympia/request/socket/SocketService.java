@@ -14,7 +14,7 @@ import static com.bk.olympia.message.ContentType.*;
 public class SocketService {
     private static SocketService instance;
     private static final String host = "localhost";
-    private static final int port = 8019;
+    private static final int port = 8109;
 
 
     private StompSession stompSession;
@@ -73,9 +73,15 @@ public class SocketService {
                 }
             });
 
-            //Message message = new Message(MessageType.);
-        } catch (Exception e) {
+            Message message = new Message(MessageType.SIGNUP);
+            message.addContent(USERNAME, username)
+                    .addContent(PASSWORD, password)
+                    .addContent(GENDER, gender);
+
+            SocketSendingService.send(stompSession, "/auth/sign_up", message);
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
+            handler.error(e.getMessage());
         }
     }
 
