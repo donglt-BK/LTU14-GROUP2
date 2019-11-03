@@ -21,7 +21,7 @@ public class SocketService {
             stompSession = SocketSendingService.connect("localhost", 8109, "/auth");
 
             System.out.println("Subscribing using session " + stompSession);
-            SocketSendingService.subscribe(stompSession, "queue/auth/login", new StompFrameHandler() {
+            SocketSendingService.subscribe(stompSession, "/user/queue/auth/login", new StompFrameHandler() {
                 public Type getPayloadType(StompHeaders stompHeaders) {
                     return byte[].class;
                 }
@@ -32,8 +32,20 @@ public class SocketService {
                 }
             });
 
+            SocketSendingService.subscribe(stompSession, "/user/queue/error", new StompFrameHandler() {
+                public Type getPayloadType(StompHeaders stompHeaders) {
+                    return byte[].class;
+                }
+
+                public void handleFrame(StompHeaders stompHeaders, Object o) {
+                    System.out.println("Received error message" + new String((byte[]) o));
+                    handler.success(o);
+                }
+            });
+
             Message message = new Message(MessageType.LOGIN);
-            message.addContent(USERNAME, username).addContent(PASSWORD, password);
+            message.addContent(USERNAME, username)
+                    .addContent(PASSWORD, password);
 
             SocketSendingService.send(stompSession, "/auth/login", message);
         } catch (ExecutionException | InterruptedException e) {
