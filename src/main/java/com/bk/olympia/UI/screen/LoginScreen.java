@@ -14,8 +14,8 @@ import static com.bk.olympia.config.Constant.*;
 
 public class LoginScreen extends Screen {
     private JLabel errorNotification;
-    private JButton submit;
-    private JButton register;
+    private JButton loginBtn;
+    private JButton registerBtn;
     private JTextField user;
     private JPasswordField pass;
 
@@ -32,15 +32,15 @@ public class LoginScreen extends Screen {
 
         Color gray = new Color(210, 210, 210);
 
-        //submit button
-        submit = new JButton("Login");
-        submit.setBounds(230, 300, 140, 30);
-        submit.setEnabled(false);
+        //login button
+        loginBtn = new JButton("Login");
+        loginBtn.setBounds(230, 300, 140, 30);
+        loginBtn.setEnabled(true);
 
         //register
-        register = new JButton("Register");
-        register.setBounds(230, 350, 140, 30);
-        register.setEnabled(false);
+        registerBtn = new JButton("Register");
+        registerBtn.setBounds(230, 350, 140, 30);
+        registerBtn.setEnabled(true);
         //error message
         errorNotification = new JLabel();
         errorNotification.setBounds(150, 160, 300, 25);
@@ -69,8 +69,8 @@ public class LoginScreen extends Screen {
         this.add(user);
         this.add(passLabel);
         this.add(pass);
-        this.add(submit);
-        this.add(register);
+        this.add(loginBtn);
+        this.add(registerBtn);
 
         KeyListener submitEnterKeyListener = new KeyListener() {
             @Override
@@ -94,7 +94,12 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-        submit.addActionListener(actionEvent -> login());
+        loginBtn.addActionListener(actionEvent -> login());
+        registerBtn.addActionListener(actionEvent -> register());
+    }
+
+    private void register() {
+
     }
 
     private void login() {
@@ -113,6 +118,7 @@ public class LoginScreen extends Screen {
             @Override
             public void error(String errorMessage) {
                 System.out.println(errorMessage);
+                System.out.println("Login failed");
             }
         });
     }
