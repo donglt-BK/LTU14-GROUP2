@@ -104,7 +104,7 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-        loginBtn.addActionListener(actionEvent -> login());
+//        loginBtn.addActionListener(actionEvent -> login());
         registerBtn.addActionListener(actionEvent -> register());
     }
 
@@ -128,7 +128,7 @@ public class LoginScreen extends Screen {
 
             @Override
             public void error(String errorMessage) {
-                errorNotification.setText(errorMessage);
+                errorNotification.setText("Login failed");
                 System.out.println(errorMessage);
                 System.out.println("Login failed");
             }
