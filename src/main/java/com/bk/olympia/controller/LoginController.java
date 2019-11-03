@@ -9,12 +9,14 @@ import com.bk.olympia.exception.WrongUsernameOrPasswordException;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
+import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.model.type.ErrorType;
 import com.bk.olympia.model.type.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -67,7 +69,10 @@ public class LoginController extends BaseController {
             if (password != null && !password.trim().isEmpty()) {
                 if (name != null && !name.trim().isEmpty()) {
                     User user = new User(username, password, name, gender);
-                    return handleLogin(principal, user);
+                    user.setUid(principal.getName());
+                    save(user);
+
+                    return new MessageAccept(MessageType.SIGN_UP, user.getId());
                 }
                 throw new NameCannotBeNullException();
             }
@@ -75,8 +80,9 @@ public class LoginController extends BaseController {
         } else throw new UsernameAlreadyTakenException();
     }
 
-    @SendToUser(Destination.ERROR)
     @Override
+    @MessageExceptionHandler
+    @SendToUser(Destination.ERROR)
     public Message handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
         if (e instanceof WrongUsernameOrPasswordException)
