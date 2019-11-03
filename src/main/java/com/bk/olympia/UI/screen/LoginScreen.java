@@ -35,12 +35,22 @@ public class LoginScreen extends Screen {
         //submit button
         submit = new JButton("Login");
         submit.setBounds(230, 300, 140, 30);
-        submit.setEnabled(false);
+        submit.setEnabled(true);
+        submit.addActionListener((e) -> {
+            String userInput = user.getText();
+            if (userInput != null && userInput.trim().length()>0){
+             login();
+            }
+            else {
+                errorNotification.setText("Vui lòng nhập tài khoản và mật khẩu");
+                errorNotification.setEnabled(true);
+            }
+        });
 
         //register
         register = new JButton("Register");
         register.setBounds(230, 350, 140, 30);
-        register.setEnabled(false);
+        register.setEnabled(true);
         //error message
         errorNotification = new JLabel();
         errorNotification.setBounds(150, 160, 300, 25);
@@ -94,7 +104,7 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-        submit.addActionListener(actionEvent -> login());
+//        submit.addActionListener(actionEvent -> login());
     }
 
     private void login() {
@@ -103,6 +113,7 @@ public class LoginScreen extends Screen {
             @Override
             public void success(Object response) {
                 try {
+                    System.out.println(">>" + response);
                     ui.showScreen(HOME_SCREEN);
                 } catch (ScreenNotFoundException e) {
                     e.printStackTrace();
@@ -112,6 +123,7 @@ public class LoginScreen extends Screen {
 
             @Override
             public void error(String errorMessage) {
+                errorNotification.setText(errorMessage);
                 System.out.println(errorMessage);
             }
         });
