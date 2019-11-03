@@ -99,6 +99,11 @@ public class LoginScreen extends Screen {
     }
 
     private void register() {
+        try {
+            ui.showScreen(SIGNUP_SCREEN);
+        } catch (ScreenNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
