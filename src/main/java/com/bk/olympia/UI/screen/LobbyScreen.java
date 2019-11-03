@@ -6,7 +6,7 @@ import static com.bk.olympia.config.Constant.*;
 
 public class LobbyScreen extends Screen {
 
-    protected LobbyScreen() {
+    public LobbyScreen() {
         super(LOBBY_SCREEN);
     }
 
@@ -15,5 +15,6 @@ public class LobbyScreen extends Screen {
         this.setBounds(0, 0, windowWidth, windowHeight);
         this.setLayout(new GridLayout(1, 3));
         this.setBackground(Color.BLACK);
+
     }
 }

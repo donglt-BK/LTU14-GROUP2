@@ -13,12 +13,15 @@ import static com.bk.olympia.message.ContentType.*;
 
 public class SocketService {
     private static SocketService instance;
+    private static final String host = "localhost";
+    private static final int port = 8019;
+
 
     private StompSession stompSession;
 
     public void login(String username, String password, ResponseHandler handler) {
         try {
-            stompSession = SocketSendingService.connect("localhost", 8109, "/auth");
+            stompSession = SocketSendingService.connect(host, port, "/auth");
 
             System.out.println("Subscribing using session " + stompSession);
             SocketSendingService.subscribe(stompSession, "/user/queue/auth/login", new StompFrameHandler() {
@@ -51,6 +54,28 @@ public class SocketService {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             handler.error(e.getMessage());
+        }
+    }
+
+    public void signUp(String username, String password, String name, int gender, ResponseHandler handler) {
+        try {
+            stompSession = SocketSendingService.connect(host, port, "/auth");
+            System.out.println(stompSession);
+            SocketSendingService.subscribe(stompSession, "/user/queue/auth/sign_up", new StompFrameHandler() {
+                @Override
+                public Type getPayloadType(StompHeaders stompHeaders) {
+                    return byte[].class;
+                }
+
+                @Override
+                public void handleFrame(StompHeaders stompHeaders, Object o) {
+                    handler.success(o);
+                }
+            });
+
+            //Message message = new Message(MessageType.);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
