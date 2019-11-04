@@ -15,10 +15,13 @@ public class SignUpScreen extends Screen {
     private JTextField user;
     private JPasswordField pass;
     private JTextField name;
-    //TODO: add gender picker
+    String[] genderString = {"Nam", "Nữ", "Khác"};
+    private JComboBox gender = new JComboBox(genderString);
     private JButton backBtn;
     private JButton registerBtn;
     private JLabel errorNotification;
+
+
 
     public SignUpScreen() {
         super(SIGNUP_SCREEN);
@@ -58,9 +61,19 @@ public class SignUpScreen extends Screen {
         name.setBounds(250, 300, 200, 25);
         name.setBackground(gray);
 
+        //gender
+        JLabel genderLabel = new JLabel("Sex: ");
+        genderLabel.setBounds(150, 350, 100,25);
+        genderLabel.setForeground(gray);
+
+        gender.setSelectedIndex(0);
+        gender.setBackground(gray);
+        gender.setBounds(250, 350, 200, 25);
+        gender.setEnabled(true);
+
         //register
         registerBtn = new JButton("Register");
-        registerBtn.setBounds(230, 350, 140, 30);
+        registerBtn.setBounds(230, 400, 140, 30);
         registerBtn.setEnabled(true);
         //error message
         errorNotification = new JLabel();
@@ -79,6 +92,8 @@ public class SignUpScreen extends Screen {
         this.add(pass);
         this.add(nameLabel);
         this.add(name);
+        this.add(genderLabel);
+        this.add(gender);
         this.add(registerBtn);
         this.add(backBtn);
 
@@ -115,7 +130,7 @@ public class SignUpScreen extends Screen {
         catch (ScreenNotFoundException e){
             e.printStackTrace();
         }
-//        SocketService.getInstance().signUp(user.getText(), String.valueOf(pass.getPassword()), name.getText(), 0, new ResponseHandler() {
+//        SocketService.getInstance().signUp(user.getText(), String.valueOf(pass.getPassword()), name.getText(), gender.getSelectedIndex(), new ResponseHandler() {
 //            @Override
 //            public void success(Object response) {
 //                try {
