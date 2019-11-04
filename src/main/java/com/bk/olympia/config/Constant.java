@@ -10,5 +10,7 @@ public class Constant {
         LOBBY_SCREEN = "LOBBY",
         SIGNUP_SCREEN = "SIGN UP";
 
+    public static final String EMPTY_STRING = "";
     public  static  final Color gray = new Color(210, 210, 210);
 }
+

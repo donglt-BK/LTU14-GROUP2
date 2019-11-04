@@ -35,17 +35,8 @@ public class LoginScreen extends Screen {
         //loginBtn button
         loginBtn = new JButton("Login");
         loginBtn.setBounds(230, 300, 140, 30);
+        loginBtn.setToolTipText("This field is required");
         loginBtn.setEnabled(true);
-        loginBtn.addActionListener((e) -> {
-            String userInput = user.getText();
-            if (userInput != null && userInput.trim().length()>0){
-             login();
-            }
-            else {
-                errorNotification.setText("Vui lòng nhập tài khoản và mật khẩu");
-                errorNotification.setEnabled(true);
-            }
-        });
 
         //register
         registerBtn = new JButton("Register");
@@ -91,7 +82,7 @@ public class LoginScreen extends Screen {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == '\n') {
-                    login();
+                    checkLogin();
                 }
             }
 
@@ -104,7 +95,7 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-//        loginBtn.addActionListener(actionEvent -> login());
+        loginBtn.addActionListener(actionEvent -> checkLogin());
         registerBtn.addActionListener(actionEvent -> register());
     }
 
@@ -117,26 +108,47 @@ public class LoginScreen extends Screen {
 
     }
 
-    private void login() {
+    private void checkLogin() {
+        String userInput = user.getText();
+        if (userInput != null && userInput.trim().length()>0){
+            login();
+        }
+        else {
+            errorNotification.setText("Vui lòng nhập tài khoản và mật khẩu");
+            errorNotification.setEnabled(true);
+        }
+    }
 
-        SocketService.getInstance().login(user.getText(), String.valueOf(pass.getPassword()), new ResponseHandler() {
-            @Override
-            public void success(Object response) {
+    private void login() {
                 try {
-                    System.out.println(">>" + response);
                     ui.showScreen(HOME_SCREEN);
+                    clearInputs();
                 } catch (ScreenNotFoundException e) {
                     e.printStackTrace();
                 }
+//        SocketService.getInstance().login(user.getText(), String.valueOf(pass.getPassword()), new ResponseHandler() {
+//            @Override
+//            public void success(Object response) {
+//                try {
+//                    System.out.println(">>" + response);
+//                    ui.showScreen(HOME_SCREEN);
+//                } catch (ScreenNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//            @Override
+//            public void error(String errorMessage) {
+//                errorNotification.setText("Login failed");
+//                System.out.println(errorMessage);
+//                System.out.println("Login failed");
+//            }
+//        });
+    }
 
-            }
-
-            @Override
-            public void error(String errorMessage) {
-                errorNotification.setText("Login failed");
-                System.out.println(errorMessage);
-                System.out.println("Login failed");
-            }
-        });
+    private void clearInputs() {
+        user.setText(EMPTY_STRING);
+        pass.setText(EMPTY_STRING);
     }
 }
