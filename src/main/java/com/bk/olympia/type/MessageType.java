@@ -16,4 +16,5 @@ public enum MessageType {
     GET_TOPIC_LIST,
     PICK_TOPIC,
     GET_QUESTION,
+    SIGNUP
 }

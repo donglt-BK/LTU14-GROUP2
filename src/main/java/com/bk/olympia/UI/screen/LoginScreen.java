@@ -121,7 +121,6 @@ public class LoginScreen extends Screen {
     }
 
     private void login() {
-
         SocketService.getInstance().login(user.getText(), String.valueOf(pass.getPassword()), new ResponseHandler() {
             @Override
             public void success(Message response) {
@@ -135,15 +134,13 @@ public class LoginScreen extends Screen {
 
             @Override
             public void error(ErrorMessage errorMessage) {
-                System.out.println("Error");
                 System.out.println("Error login: " + errorMessage.getErrorType());
             }
-        }
+        });
+    }
 
     private void clearInputs() {
         user.setText(EMPTY_STRING);
         pass.setText(EMPTY_STRING);
-
-        });
     }
 }
