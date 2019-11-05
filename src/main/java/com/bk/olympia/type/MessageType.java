@@ -2,19 +2,24 @@ package com.bk.olympia.type;
 
 public enum MessageType {
     LOGIN,
+    SIGN_UP,
     LOGOUT,
     GET_INFO,
     CHANGE_INFO,
     GET_RECENT_HISTORY,
+    GET_ALL_TOPICS,
     ADD_QUESTION,
     //    GET_LOBBY_LIST,
     JOIN_LOBBY,
     LEAVE_LOBBY,
     START_GAME,
     CREATE_ROOM,
-    LOAD_COMPLETE,
+    READY,
     GET_TOPIC_LIST,
     PICK_TOPIC,
     GET_QUESTION,
-    SIGNUP
+    SUBMIT_ANSWER,
+    GET_ANSWER,
+    GAME_OVER,
+    ERROR
 }

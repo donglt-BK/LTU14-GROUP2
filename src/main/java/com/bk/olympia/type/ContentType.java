@@ -2,26 +2,36 @@ package com.bk.olympia.type;
 
 public enum ContentType {
     STATUS,
+
     USER_ID,
     USERNAME,
     PASSWORD,
-    BET_VALUE,
+    NAME,
+    GENDER,
+    BALANCE,
+
+    HISTORY_ROOM_ID,
+    HISTORY_CREATED_AT,
+    HISTORY_ENDED_AT,
+    HISTORY_RESULT_TYPE,
+    HISTORY_BALANCE_CHANGED,
+
+    REPLY,
     LOBBY_ID,
     LOBBY_NAME,
     LOBBY_PARTICIPANT,
+    BET_VALUE,
     START,
+
     ROOM_ID,
-    NAME,
-    REPLY,
-    GENDER,
-    BALANCE,
     TOPIC_ID,
     TOPIC_NAME,
     TOPIC_DESCRIPTION,
     IS_TOPIC_CHOSEN,
-    HISTORY,
+    QUESTION_ID,
     QUESTION,
     ANSWER,
+    CORRECT_ANSWER_POSITION,
     DIFFICULTY,
     MONEY_PLACED,
     WINNER
