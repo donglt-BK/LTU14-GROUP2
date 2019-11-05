@@ -43,8 +43,18 @@ public class HomeScreen extends Screen {
         this.add(welcomeLabel);
         this.add(invitePane);
 
+        findBtn.addActionListener(e -> onFindPlayer());
         logoutBtn.addActionListener(e -> checkLogout());
         inviteBtn.addActionListener(e -> onInvitePlayer(this));
+    }
+
+    private void onFindPlayer() {
+        try{
+            //TODO: call Find Player API & loading screen
+            ui.showScreen(LOBBY_SCREEN);
+        }catch (ScreenNotFoundException e){
+            e.printStackTrace();
+        }
     }
 
     private void onInvitePlayer(HomeScreen that) {
@@ -61,10 +71,6 @@ public class HomeScreen extends Screen {
         logout();
     }
     private void logout() {
-        try{
-            ui.showScreen(LOGIN_SCREEN);
-        }catch (ScreenNotFoundException e){
-            e.printStackTrace();
-        }
+        ui.changeScreen(LOGIN_SCREEN);
     }
 }

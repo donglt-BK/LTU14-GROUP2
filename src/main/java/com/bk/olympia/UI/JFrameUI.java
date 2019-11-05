@@ -2,7 +2,6 @@ package com.bk.olympia.UI;
 
 import com.bk.olympia.UI.screen.Screen;
 import com.bk.olympia.exception.ScreenNotFoundException;
-import com.sun.javaws.util.JfxHelper;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,5 +61,13 @@ public class JFrameUI {
         jFrame.repaint();
 
         currentScreen = screenName;
+    }
+
+    public void changeScreen(String screenName) {
+        try{
+            this.showScreen(screenName);
+        }catch (ScreenNotFoundException e){
+            e.printStackTrace();
+        }
     }
 }

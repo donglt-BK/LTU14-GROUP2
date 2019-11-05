@@ -1,9 +1,6 @@
 package com.bk.olympia.UI.screen;
 
 import com.bk.olympia.exception.ScreenNotFoundException;
-import com.bk.olympia.request.socket.ResponseHandler;
-import com.bk.olympia.request.socket.SocketService;
-import com.sun.javafx.tools.ant.Info;
 
 import javax.swing.*;
 import java.awt.*;
