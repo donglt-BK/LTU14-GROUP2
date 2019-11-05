@@ -1,4 +1,4 @@
-package com.bk.olympia.model.type;
+package com.bk.olympia.constant;
 
 public class Destination {
     public static final String LOGIN = "/queue/auth/login";
@@ -9,6 +9,7 @@ public class Destination {
     public static final String CHANGE_USER_INFO = "/queue/user/change-info";
     public static final String GET_RECENT_HISTORY = "/queue/user/get-recent-history";
     public static final String ADD_QUESTION = "/queue/user/add-questions";
+    public static final String GET_ALL_TOPICS = "/queue/user/get-all-topics";
 
     public static final String FIND_LOBBY = "/queue/play/join";
     public static final String INVITE_PLAYER = "/queue/play/invite";

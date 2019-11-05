@@ -1,4 +1,4 @@
-package com.bk.olympia.model.type;
+package com.bk.olympia.constant;
 
 public enum ErrorType {
     AUTHENTICATION,

@@ -1,7 +1,7 @@
 package com.bk.olympia.model.message;
 
-import com.bk.olympia.model.type.ErrorType;
-import com.bk.olympia.model.type.MessageType;
+import com.bk.olympia.constant.ErrorType;
+import com.bk.olympia.constant.MessageType;
 
 public class ErrorMessage extends Message {
     private ErrorType errorType;

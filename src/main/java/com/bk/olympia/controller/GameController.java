@@ -2,16 +2,16 @@ package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.constant.ContentType;
+import com.bk.olympia.constant.Destination;
+import com.bk.olympia.constant.ErrorType;
+import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.exception.AnswerPlacingViolationException;
 import com.bk.olympia.exception.UnauthorizedActionException;
 import com.bk.olympia.model.entity.*;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
-import com.bk.olympia.model.type.ContentType;
-import com.bk.olympia.model.type.Destination;
-import com.bk.olympia.model.type.ErrorType;
-import com.bk.olympia.model.type.MessageType;
 import com.google.common.util.concurrent.Striped;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,20 +41,21 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @MessageMapping("/play/ready")
-    public void processLoadComplete(@Payload Message message) {
+    public void handleReady(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
 
-        handleLoadComplete(user, player, room);
+        handleReady(user, player, room);
     }
 
-    private void handleLoadComplete(User user, Player player, Room room) {
+    private void handleReady(User user, Player player, Room room) {
         player.ready();
         if (room.isAllReady()) {
             broadcast(room, Destination.READY, new Message(MessageType.READY));
             room.resetReady();
         }
+        save(room);
     }
 
     @MessageMapping("/play/get-topic-list")
@@ -135,7 +136,7 @@ public class GameController extends BaseController implements ApplicationListene
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
-        Question question = questionRepository.findById((int) message.getContent(ContentType.QUESTION));
+        Question question = questionRepository.findById((int) message.getContent(ContentType.QUESTION_ID));
         handleSubmitAnswer(user, player, room, question, message.getContent(ContentType.MONEY_PLACED));
     }
 
@@ -155,15 +156,15 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @MessageMapping("/play/get-answer")
-    public void processGetAnswer(@Payload Message message) {
+    public void processGetCorrectAnswer(@Payload Message message) {
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
-        Question question = questionRepository.findById((int) message.getContent(ContentType.QUESTION));
-        handleGetAnswer(user, player, room, question);
+        Question question = questionRepository.findById((int) message.getContent(ContentType.QUESTION_ID));
+        handleGetCorrectAnswer(user, player, room, question);
     }
 
-    private void handleGetAnswer(User user, Player player, Room room, Question question) {
+    private void handleGetCorrectAnswer(User user, Player player, Room room, Question question) {
         if (room.isPlayerTurn(player)) {
             room.addLevel();
             save(room);
@@ -185,6 +186,7 @@ public class GameController extends BaseController implements ApplicationListene
     private void handleGameOver(User user, Player player, Room room) {
         if (player.getMoney() == 0) {
             Message m = new Message(MessageType.GAME_OVER, user.getId());
+            m.addContent(ContentType.BET_VALUE, room.getBetValue());
 
             if (room.getPlayerList().size() == Room.DEFAULT_MAX_PLAYERS) {
                 Player otherPlayer = Collections.max(room.getPlayerList(), Comparator.comparing(Player::getMoney));
@@ -192,7 +194,7 @@ public class GameController extends BaseController implements ApplicationListene
                     otherPlayer.getUser().addBalance(room.getBetValue());
                     save(otherPlayer);
 
-                    m.addContent(ContentType.WINNER, otherPlayer.getId());
+                    m.addContent(ContentType.WINNER, new int[]{otherPlayer.getId()});
                 } else if (otherPlayer.getMoney() == 0) {
                     ReadWriteLock lock = lockStriped.get(room.getId());
                     lock.readLock().lock();
@@ -207,10 +209,10 @@ public class GameController extends BaseController implements ApplicationListene
                 }
             } else {
                 room.getPlayerList().remove(player);
-                m.addContent(ContentType.WINNER, -1);
+                m.addContent(ContentType.WINNER, null);
             }
             player.getUser().addBalance(-room.getBetValue());
-            save(player);
+            save(user);
             broadcast(room, Destination.GAME_OVER, m);
         }
     }

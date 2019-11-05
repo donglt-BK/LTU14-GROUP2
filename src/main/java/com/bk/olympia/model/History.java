@@ -1,5 +1,6 @@
 package com.bk.olympia.model;
 
+import com.bk.olympia.constant.ResultType;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 
@@ -9,15 +10,15 @@ public class History {
     private final int roomId;
     private final Date createdAt;
     private final Date endedAt;
-    private final boolean isWon;
+    private final ResultType resultType;
     private final int balanceChanged;
 
     public History(Room room, User user) {
         this.roomId = room.getId();
         this.createdAt = room.getCreatedAt();
         this.endedAt = room.getEndedAt();
-        this.isWon = room.getWinner() == user.getId();
-        this.balanceChanged = isWon ? room.getBetValue() : -room.getBetValue();
+        this.resultType = room.getWinner() != user.getId() ? room.getWinner() == -1 ? ResultType.DRAW : ResultType.LOSE : ResultType.WIN;
+        this.balanceChanged = room.getBetValue() * resultType.getModifier();
     }
 
     public int getRoomId() {
@@ -32,8 +33,8 @@ public class History {
         return endedAt;
     }
 
-    public boolean isWon() {
-        return isWon;
+    public ResultType getResultType() {
+        return resultType;
     }
 
     public int getBalanceChanged() {

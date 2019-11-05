@@ -1,4 +1,4 @@
-package com.bk.olympia.model.type;
+package com.bk.olympia.constant;
 
 public enum MessageType {
     LOGIN,
@@ -7,6 +7,7 @@ public enum MessageType {
     GET_INFO,
     CHANGE_INFO,
     GET_RECENT_HISTORY,
+    GET_ALL_TOPICS,
     ADD_QUESTION,
     //    GET_LOBBY_LIST,
     JOIN_LOBBY,

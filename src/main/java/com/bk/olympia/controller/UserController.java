@@ -2,18 +2,20 @@ package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
 import com.bk.olympia.base.BaseRuntimeException;
+import com.bk.olympia.base.HistoryList;
+import com.bk.olympia.base.TopicList;
+import com.bk.olympia.constant.ContentType;
+import com.bk.olympia.constant.Destination;
+import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
-import com.bk.olympia.model.History;
-import com.bk.olympia.model.entity.Player;
+import com.bk.olympia.model.entity.Answer;
 import com.bk.olympia.model.entity.Question;
-import com.bk.olympia.model.entity.Room;
+import com.bk.olympia.model.entity.Topic;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
-import com.bk.olympia.model.type.ContentType;
-import com.bk.olympia.model.type.Destination;
-import com.bk.olympia.model.type.MessageType;
+import com.bk.olympia.model.message.MessageAccept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import service.SpringEventService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class UserController extends BaseController {
@@ -80,16 +83,28 @@ public class UserController extends BaseController {
     }
 
     private Message handleGetHistory(User user) {
-        ArrayList<Player> playerHistory = (ArrayList<Player>) user.getPlayerList();
-        ArrayList<Room> roomHistory = new ArrayList<>();
-        playerHistory.forEach(p -> roomHistory.add(p.getRoom()));
+        HistoryList historyList = new HistoryList(user);
         Message m = new Message(MessageType.GET_RECENT_HISTORY, user.getId());
+        m.addContent(ContentType.HISTORY_ROOM_ID, historyList.getHistoryRoomIds())
+                .addContent(ContentType.HISTORY_CREATED_AT, historyList.getCreatedAts())
+                .addContent(ContentType.HISTORY_ENDED_AT, historyList.getEndedAts())
+                .addContent(ContentType.HISTORY_RESULT_TYPE, historyList.getResultTypes())
+                .addContent(ContentType.HISTORY_BALANCE_CHANGED, historyList.getBalanceChanges());
+        return m;
+    }
 
-        ArrayList<History> recentHistories = new ArrayList<>();
-        roomHistory.forEach(room -> {
-            recentHistories.add(new History(room, user));
-        });
-        m.addContent(ContentType.HISTORY, recentHistories);
+    @MessageMapping("/user/get-all-topics")
+    @SendToUser(Destination.GET_ALL_TOPICS)
+    public Message processGetAllTopics(@Payload Message message) {
+        return handleGetAllTopics(message);
+    }
+
+    private Message handleGetAllTopics(Message message) {
+        TopicList topicList = new TopicList(topicRepository.findAll());
+        Message m = new Message(MessageType.GET_ALL_TOPICS, message.getSender());
+        m.addContent(ContentType.TOPIC_ID, topicList.getTopicIds())
+                .addContent(ContentType.TOPIC_NAME, topicList.getTopicNames())
+                .addContent(ContentType.TOPIC_DESCRIPTION, topicList.getTopicDescriptions());
         return m;
     }
 
@@ -97,13 +112,18 @@ public class UserController extends BaseController {
     @SendToUser(Destination.ADD_QUESTION)
     public Message processAddQuestion(@Payload Message message) {
         User user = findUserById(message.getSender());
-        return handleAddQuestion(user, message.getContent(ContentType.QUESTION), message.getContent(ContentType.ANSWER));
+        Topic topic = findTopicById(message.getContent(ContentType.TOPIC_ID));
+        return handleAddQuestion(user, topic, message.getContent(ContentType.QUESTION), message.getContent(ContentType.ANSWER), message.getContent(ContentType.CORRECT_ANSWER_POSITION));
     }
 
-    private Message handleAddQuestion(User user, String question, String[] answers) {
+    private Message handleAddQuestion(User user, Topic topic, String question, String[] answers, int correctAnswerPos) {
         //TODO: Add question and check if needed
-        questionRepository.save(new Question());
-        return null;
+        List<Answer> answerList = new ArrayList<>();
+        for (int i = 0; i < answers.length; i++) {
+            answerList.add(new Answer(answers[i], correctAnswerPos == i));
+        }
+        questionRepository.save(new Question(topic, question, answerList));
+        return new MessageAccept(MessageType.ADD_QUESTION, user.getId());
     }
 
     @MessageMapping("/user/logout")
@@ -114,10 +134,8 @@ public class UserController extends BaseController {
     }
 
     private Message handleLogout(User user) {
-        //TODO: Disconnect user from active lobby
         if (user.getLobbyId() >= 0)
             SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));
-            //TODO: Disconnect user from active room
         else {
             SpringEventService.publishEvent(new DisconnectUserFromRoomEvent(this, user));
         }

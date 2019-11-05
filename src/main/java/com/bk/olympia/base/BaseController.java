@@ -1,12 +1,9 @@
 package com.bk.olympia.base;
 
-import com.bk.olympia.model.entity.Player;
-import com.bk.olympia.model.entity.Question;
-import com.bk.olympia.model.entity.Room;
-import com.bk.olympia.model.entity.User;
+import com.bk.olympia.constant.Destination;
+import com.bk.olympia.model.entity.*;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
-import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
@@ -63,6 +60,10 @@ public abstract class BaseController {
 
     protected Room findRoomById(int id) {
         return roomRepository.findById(id);
+    }
+
+    protected Topic findTopicById(int id) {
+        return topicRepository.findById(id);
     }
 
     protected void save(Room room) {
