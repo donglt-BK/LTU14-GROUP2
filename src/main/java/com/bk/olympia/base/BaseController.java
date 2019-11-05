@@ -4,6 +4,7 @@ import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.Destination;
 import com.bk.olympia.repository.*;
@@ -47,7 +48,7 @@ public abstract class BaseController {
 
     @MessageExceptionHandler
     @SendToUser(Destination.ERROR)
-    public abstract Message handleException(BaseRuntimeException e);
+    public abstract ErrorMessage handleException(BaseRuntimeException e);
 
     protected User findUserById(int id) {
 //        query = entityManager.createQuery("SELECT u From User u WHERE u.id == " + id);

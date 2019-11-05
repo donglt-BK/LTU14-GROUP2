@@ -270,7 +270,7 @@ public class QueueController extends BaseController implements ApplicationListen
 
     @Override
     @SendToUser(Destination.ERROR)
-    public Message handleException(BaseRuntimeException e) {
+    public ErrorMessage handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
         if (e instanceof InsufficientBalanceException)
             return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());

@@ -224,7 +224,7 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     @Override
-    public Message handleException(BaseRuntimeException e) {
+    public ErrorMessage handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
         if (e instanceof UnauthorizedActionException)
             return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());

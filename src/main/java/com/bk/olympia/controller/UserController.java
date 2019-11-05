@@ -9,6 +9,7 @@ import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.type.ContentType;
 import com.bk.olympia.model.type.Destination;
@@ -124,7 +125,7 @@ public class UserController extends BaseController {
     }
 
     @Override
-    public Message handleException(BaseRuntimeException e) {
+    public ErrorMessage handleException(BaseRuntimeException e) {
         return null;
     }
 }

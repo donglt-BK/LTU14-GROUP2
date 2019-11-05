@@ -72,16 +72,12 @@ public class LoginController extends BaseController {
                     save(user);
 
                     return new MessageAccept(MessageType.SIGN_UP, user.getId());
-                }
-                throw new NameCannotBeNullException();
-            }
-            throw new NameCannotBeNullException();
+                } else throw new NameCannotBeNullException();
+            } else throw new PasswordCannotBeNullException();
         } else throw new UsernameAlreadyTakenException();
     }
 
     @Override
-//    @MessageExceptionHandler
-//    @SendToUser(Destination.ERROR)
     public ErrorMessage handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
         if (e instanceof WrongUsernameOrPasswordException)
