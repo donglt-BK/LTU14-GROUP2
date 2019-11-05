@@ -15,6 +15,9 @@ import static com.bk.olympia.type.ErrorType.*;
 
 public class SocketService {
     private static SocketService instance;
+    private static final String host = "localhost";
+    private static final int port = 8109;
+
 
     private StompSession authSession;
     private boolean ready;
@@ -62,6 +65,34 @@ public class SocketService {
         Message message = new Message(MessageType.LOGIN);
         message.addContent(USERNAME, username).addContent(PASSWORD, password);
         SocketSendingService.send(authSession, "/auth/login", message);
+    }
+
+    public void signUp(String username, String password, String name, int gender, ResponseHandler handler) {
+        try {
+            stompSession = SocketSendingService.connect(host, port, "/auth");
+            System.out.println(stompSession);
+            SocketSendingService.subscribe(stompSession, "/user/queue/auth/sign_up", new StompFrameHandler() {
+                @Override
+                public Type getPayloadType(StompHeaders stompHeaders) {
+                    return byte[].class;
+                }
+
+                @Override
+                public void handleFrame(StompHeaders stompHeaders, Object o) {
+                    handler.success(o);
+                }
+            });
+
+            Message message = new Message(MessageType.SIGNUP);
+            message.addContent(USERNAME, username)
+                    .addContent(PASSWORD, password)
+                    .addContent(GENDER, gender);
+
+            SocketSendingService.send(stompSession, "/auth/sign_up", message);
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            handler.error(e.getMessage());
+        }
     }
 
     public static SocketService getInstance() {

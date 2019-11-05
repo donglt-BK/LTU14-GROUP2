@@ -15,7 +15,14 @@ public enum ContentType {
     REPLY,
     GENDER,
     BALANCE,
-    TOPIC,
+    TOPIC_ID,
+    TOPIC_NAME,
+    TOPIC_DESCRIPTION,
+    IS_TOPIC_CHOSEN,
     HISTORY,
     QUESTION,
+    ANSWER,
+    DIFFICULTY,
+    MONEY_PLACED,
+    WINNER
 }

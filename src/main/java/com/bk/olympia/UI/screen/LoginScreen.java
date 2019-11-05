@@ -15,8 +15,8 @@ import static com.bk.olympia.config.Constant.*;
 
 public class LoginScreen extends Screen {
     private JLabel errorNotification;
-    private JButton submit;
-    private JButton register;
+    private JButton loginBtn;
+    private JButton registerBtn;
     private JTextField user;
     private JPasswordField pass;
 
@@ -33,15 +33,16 @@ public class LoginScreen extends Screen {
 
         Color gray = new Color(210, 210, 210);
 
-        //submit button
-        submit = new JButton("Login");
-        submit.setBounds(230, 300, 140, 30);
-        submit.setEnabled(false);
+        //loginBtn button
+        loginBtn = new JButton("Login");
+        loginBtn.setBounds(230, 300, 140, 30);
+        loginBtn.setToolTipText("This field is required");
+        loginBtn.setEnabled(true);
 
         //register
-        register = new JButton("Register");
-        register.setBounds(230, 350, 140, 30);
-        register.setEnabled(false);
+        registerBtn = new JButton("Register");
+        registerBtn.setBounds(230, 350, 140, 30);
+        registerBtn.setEnabled(true);
         //error message
         errorNotification = new JLabel();
         errorNotification.setBounds(150, 160, 300, 25);
@@ -70,8 +71,8 @@ public class LoginScreen extends Screen {
         this.add(user);
         this.add(passLabel);
         this.add(pass);
-        this.add(submit);
-        this.add(register);
+        this.add(loginBtn);
+        this.add(registerBtn);
 
         KeyListener submitEnterKeyListener = new KeyListener() {
             @Override
@@ -82,7 +83,7 @@ public class LoginScreen extends Screen {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyChar() == '\n') {
-                    login();
+                    checkLogin();
                 }
             }
 
@@ -95,7 +96,28 @@ public class LoginScreen extends Screen {
         user.addKeyListener(submitEnterKeyListener);
         pass.addKeyListener(submitEnterKeyListener);
 
-        submit.addActionListener(actionEvent -> login());
+        loginBtn.addActionListener(actionEvent -> checkLogin());
+        registerBtn.addActionListener(actionEvent -> register());
+    }
+
+    private void register() {
+        try {
+            ui.showScreen(SIGNUP_SCREEN);
+        } catch (ScreenNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void checkLogin() {
+        String userInput = user.getText();
+        if (userInput != null && userInput.trim().length()>0){
+            login();
+        }
+        else {
+            errorNotification.setText("Vui lòng nhập tài khoản và mật khẩu");
+            errorNotification.setEnabled(true);
+        }
     }
 
     private void login() {
@@ -105,6 +127,7 @@ public class LoginScreen extends Screen {
             public void success(Message response) {
                 try {
                     ui.showScreen(HOME_SCREEN);
+                    clearInputs();
                 } catch (ScreenNotFoundException e) {
                     e.printStackTrace();
                 }
@@ -115,6 +138,12 @@ public class LoginScreen extends Screen {
                 System.out.println("Error");
                 System.out.println("Error login: " + errorMessage.getErrorType());
             }
+        }
+
+    private void clearInputs() {
+        user.setText(EMPTY_STRING);
+        pass.setText(EMPTY_STRING);
+
         });
     }
 }
