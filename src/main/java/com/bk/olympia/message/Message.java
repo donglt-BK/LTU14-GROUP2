@@ -1,32 +1,31 @@
 package com.bk.olympia.message;
 
+import com.bk.olympia.type.ContentType;
+import com.bk.olympia.type.MessageType;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonDeserialize
 public class Message {
     private MessageType type;
     private int sender;
-    private Map content;
+    private Map<ContentType, Object> content;
 
     public Message() {
     }
 
     public Message(MessageType type) {
         this.type = type;
-        this.sender = 0;
-        content = new HashMap();
+        this.sender = -1;
+        content = new HashMap<>();
     }
 
     public Message(MessageType type, int sender) {
         this.type = type;
         this.sender = sender;
-        content = new HashMap();
-    }
-
-    public Message(MessageType type, int sender, Map content) {
-        this.type = type;
-        this.sender = sender;
-        this.content = content;
+        content = new HashMap<>();
     }
 
     public MessageType getType() {
@@ -45,20 +44,12 @@ public class Message {
         this.sender = sender;
     }
 
-    public Map getContent() {
-        return content;
-    }
-
     public <T> T getContent(ContentType type) {
         return (T) (content.get(type));
     }
 
-//    public Map getContent() {
-//        return content;
-//    }
-
-    public void setContent(Map content) {
-        this.content = content;
+    public Map getContent() {
+        return content;
     }
 
     public <T> Message addContent(ContentType type, T detail) {
@@ -67,7 +58,7 @@ public class Message {
     }
 
     //TODO: Hàm encrypt gói tin
-    public void pack() {
-
+    public Message pack() {
+        return this;
     }
 }

@@ -1,12 +1,7 @@
 package com.bk.olympia.request.socket;
 
-import com.bk.olympia.message.ContentType;
-import com.bk.olympia.message.Message;
 import com.bk.olympia.request.handler.CustomStompSessionHandler;
-import com.bk.olympia.message.Message;
-import com.bk.olympia.message.MessageType;
 import com.google.gson.Gson;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -42,7 +37,7 @@ public class SocketSendingService {
     }
 
     public static void subscribe(StompSession stompSession, String url, StompFrameHandler stompFrameHandler) {
-        stompSession.subscribe(url, stompFrameHandler);
+        stompSession.subscribe("/user" + url, stompFrameHandler);
 
     }
 

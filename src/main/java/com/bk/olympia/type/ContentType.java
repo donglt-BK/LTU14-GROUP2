@@ -1,4 +1,4 @@
-package com.bk.olympia.message;
+package com.bk.olympia.type;
 
 public enum ContentType {
     STATUS,
@@ -12,5 +12,10 @@ public enum ContentType {
     START,
     ROOM_ID,
     NAME,
-    REPLY
+    REPLY,
+    GENDER,
+    BALANCE,
+    TOPIC,
+    HISTORY,
+    QUESTION,
 }
