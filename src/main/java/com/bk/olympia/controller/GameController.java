@@ -1,19 +1,15 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
-import com.bk.olympia.constant.ErrorType;
 import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.event.DisconnectUserFromRoomEvent;
 import com.bk.olympia.exception.AnswerPlacingViolationException;
 import com.bk.olympia.exception.UnauthorizedActionException;
 import com.bk.olympia.model.entity.*;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.google.common.util.concurrent.Striped;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -30,8 +26,12 @@ import java.util.stream.IntStream;
 
 @Controller
 public class GameController extends BaseController implements ApplicationListener<ApplicationEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(GameController.class);
     private Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
+
+    @Override
+    protected void init() {
+        this.logger = LoggerFactory.getLogger(ChatController.class);
+    }
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
@@ -225,13 +225,4 @@ public class GameController extends BaseController implements ApplicationListene
         return questionRepository.findByTopicAndIsAcceptedAndDifficultyAfterOrderByDifficultyAsc(topic, true, minDifficulty);
     }
 
-    @Override
-    public ErrorMessage handleException(BaseRuntimeException e) {
-        logger.error(e.getMessage());
-        if (e instanceof UnauthorizedActionException)
-            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
-        if (e instanceof AnswerPlacingViolationException)
-            return new ErrorMessage(ErrorType.ANSWER_PLACING_VIOLATION, e.getUserId());
-        return null;
-    }
 }

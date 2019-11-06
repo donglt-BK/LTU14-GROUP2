@@ -1,17 +1,13 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
-import com.bk.olympia.constant.ErrorType;
 import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.exception.*;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -23,7 +19,10 @@ import java.security.Principal;
 @Controller
 public class LoginController extends BaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger("LoginController");
+    @Override
+    protected void init() {
+        this.logger = LoggerFactory.getLogger(LoginController.class);
+    }
 
     @MessageMapping("/auth/login")
     @SendToUser(Destination.LOGIN)
@@ -71,19 +70,5 @@ public class LoginController extends BaseController {
                 } else throw new PasswordCannotBeNullException();
             } else throw new NameAlreadyTakenException();
         } else throw new UsernameAlreadyTakenException();
-    }
-
-    @Override
-    public ErrorMessage handleException(BaseRuntimeException e) {
-        logger.error(e.getMessage());
-        if (e instanceof WrongUsernameOrPasswordException)
-            return new ErrorMessage(ErrorType.AUTHENTICATION, e.getUserId());
-        else if (e instanceof UsernameAlreadyTakenException)
-            return new ErrorMessage(ErrorType.USERNAME_ALREADY_TAKEN, e.getUserId());
-        else if (e instanceof PasswordCannotBeNullException)
-            return new ErrorMessage(ErrorType.PASSWORD_IS_NULL, e.getUserId());
-        else if (e instanceof NameCannotBeNullException)
-            return new ErrorMessage(ErrorType.NAME_IS_NULL, e.getUserId());
-        return null;
     }
 }

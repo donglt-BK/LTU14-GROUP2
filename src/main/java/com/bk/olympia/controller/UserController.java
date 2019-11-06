@@ -1,7 +1,6 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.base.HistoryList;
 import com.bk.olympia.base.TopicList;
 import com.bk.olympia.constant.ContentType;
@@ -13,10 +12,8 @@ import com.bk.olympia.model.entity.Answer;
 import com.bk.olympia.model.entity.Question;
 import com.bk.olympia.model.entity.Topic;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -29,7 +26,11 @@ import java.util.List;
 
 @Controller
 public class UserController extends BaseController {
-    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+
+    @Override
+    protected void init() {
+        this.logger = LoggerFactory.getLogger(UserController.class);
+    }
 
     @MessageMapping("/user/get-info")
     @SendToUser(Destination.GET_USER_INFO)
@@ -139,11 +140,6 @@ public class UserController extends BaseController {
         else {
             SpringEventService.publishEvent(new DisconnectUserFromRoomEvent(this, user));
         }
-        return null;
-    }
-
-    @Override
-    public ErrorMessage handleException(BaseRuntimeException e) {
         return null;
     }
 }

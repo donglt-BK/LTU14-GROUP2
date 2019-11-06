@@ -20,7 +20,6 @@ import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.repository.UserList;
 import com.google.common.util.concurrent.Striped;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -36,7 +35,6 @@ import java.util.concurrent.locks.ReadWriteLock;
 
 @Controller
 public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
-    private static final Logger logger = LoggerFactory.getLogger(QueueController.class);
     private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
     private Map<Lobby, Integer> lobbyList = new TreeMap<>();
 
@@ -83,6 +81,10 @@ public class QueueController extends BaseController implements ApplicationListen
 //        }
 //    }
 
+    @Override
+    protected void init() {
+        this.logger = LoggerFactory.getLogger(QueueController.class);
+    }
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {

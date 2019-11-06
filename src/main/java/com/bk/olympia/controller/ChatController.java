@@ -1,14 +1,12 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.constant.Destination;
-import com.bk.olympia.constant.ErrorType;
 import com.bk.olympia.exception.UnauthorizedActionException;
 import com.bk.olympia.exception.UserNameNotFoundException;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -17,6 +15,12 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ChatController extends BaseController {
+
+    @Override
+    protected void init() {
+        this.logger = LoggerFactory.getLogger(ChatController.class);
+    }
+
     @MessageMapping("/topic/public")
     @SendTo(Destination.PUBLIC_CHAT)
     public Message processPublicChat(@Payload Message message) {
@@ -47,12 +51,5 @@ public class ChatController extends BaseController {
         if (user.getCurrentPlayer().getRoom().getId() == roomId)
             broadcast(Destination.ROOM_CHAT + roomId, message);
         else throw new UnauthorizedActionException(user.getId());
-    }
-
-    @Override
-    public ErrorMessage handleException(BaseRuntimeException e) {
-        if (e instanceof UserNameNotFoundException)
-            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
-        return null;
     }
 }
