@@ -6,10 +6,7 @@ import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
 import com.bk.olympia.constant.ErrorType;
 import com.bk.olympia.constant.MessageType;
-import com.bk.olympia.exception.NameCannotBeNullException;
-import com.bk.olympia.exception.PasswordCannotBeNullException;
-import com.bk.olympia.exception.UsernameAlreadyTakenException;
-import com.bk.olympia.exception.WrongUsernameOrPasswordException;
+import com.bk.olympia.exception.*;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
@@ -46,11 +43,9 @@ public class LoginController extends BaseController {
     }
 
     private User validateAccount(String username, String password) {
-        User user = userRepository.findByUsernameAndPassword(username, password);
-        if (user == null) {
+        return userRepository.findByUsernameAndPassword(username, password).orElseGet(() -> {
             throw new WrongUsernameOrPasswordException();
-        }
-        return user;
+        });
     }
 
     @MessageMapping("/auth/sign_up")
@@ -64,16 +59,17 @@ public class LoginController extends BaseController {
     }
 
     private Message handleSignUp(Principal principal, String username, String password, String name, int gender) {
-        if (userRepository.findByUsername(username) == null) {
-            if (password != null && !password.trim().isEmpty()) {
-                if (name != null && !name.trim().isEmpty()) {
-                    User user = new User(username, password, name, gender);
-                    user.setUid(principal.getName());
-                    save(user);
-
-                    return new MessageAccept(MessageType.SIGN_UP, user.getId());
-                } else throw new NameCannotBeNullException();
-            } else throw new PasswordCannotBeNullException();
+        if (userRepository.findByUsername(username).isPresent()) {
+            if (userRepository.findByName(name).isPresent()) {
+                if (password != null && !password.trim().isEmpty()) {
+                    if (name != null && !name.trim().isEmpty()) {
+                        User user = new User(username, password, name, gender);
+                        user.setUid(principal.getName());
+                        save(user);
+                        return new MessageAccept(MessageType.SIGN_UP, user.getId());
+                    } else throw new NameCannotBeNullException();
+                } else throw new PasswordCannotBeNullException();
+            } else throw new NameAlreadyTakenException();
         } else throw new UsernameAlreadyTakenException();
     }
 

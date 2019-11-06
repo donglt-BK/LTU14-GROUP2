@@ -25,5 +25,10 @@ public class Destination {
     public static final String GET_ANSWER = "/queue/play/get_answer";
     public static final String GAME_OVER = "/queue/play/game_over";
 
+    public static final String PUBLIC_CHAT = "/topic/public";
+    public static final String PRIVATE_CHAT = "/topic/private/user/";
+    public static final String ROOM_CHAT = "/topic/private/room/";
+    public static final String LOBBY_CHAT = "/topic/private/lobby/";
+
     public static final String ERROR = "/queue/error";
 }

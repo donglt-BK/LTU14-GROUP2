@@ -55,7 +55,7 @@ public abstract class BaseController {
     }
 
     protected User findUserByName(String name) {
-        return userRepository.findByName(name);
+        return userRepository.findByName(name).orElse(null);
     }
 
     protected Room findRoomById(int id) {
@@ -83,23 +83,22 @@ public abstract class BaseController {
         userRepository.save(user);
     }
 
-    public void broadcast(List<User> list, String destination, Message message) {
+    protected void broadcast(String destination, Message message) {
+        assert destination.startsWith("/topic/");
+        template.convertAndSend(destination, message);
+    }
+
+    protected void broadcast(List<User> list, String destination, Message message) {
         message.pack();
         list.forEach(u -> template.convertAndSendToUser(u.getUid(), destination, message));
     }
 
-    public void broadcast(Room room, String destination, Message message) {
+    protected void broadcast(Room room, String destination, Message message) {
         broadcast(UserList.getUsers(room.getId()), destination, message);
     }
 
-    public void sendTo(User user, String destination, Message message) {
+    protected void sendTo(User user, String destination, Message message) {
         message.pack();
         template.convertAndSendToUser(user.getUid(), destination, message);
     }
-
-//    public void sendToGuest(String username, String destination, Message message) {
-//        message.pack();
-//        template.convertAndSendToUser(username, destination, message);
-//    }
-
 }

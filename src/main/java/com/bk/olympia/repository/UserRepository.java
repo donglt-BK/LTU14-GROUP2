@@ -5,12 +5,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
-    User findByUsernameAndPassword(String username, String password);
+import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
-    User findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByUsernameAndPassword(String username, String password);
+
+    Optional<User> findByUsername(String username);
     User findById(int id);
-    User findByName(String name);
+
+    Optional<User> findByName(@NotNull String name);
 
     @Modifying
     @Query("UPDATE User u SET u.gender = ?1 WHERE u.id = ?2")
