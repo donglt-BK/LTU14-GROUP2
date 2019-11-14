@@ -1,5 +1,6 @@
 package com.bk.olympia.model;
 
+import com.bk.olympia.base.IReadiable;
 import com.bk.olympia.model.entity.User;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Lobby implements Comparable<Lobby> {
+public class Lobby implements Comparable<Lobby>, IReadiable {
     private static final AtomicInteger autoId = new AtomicInteger(1);
     private static List<Integer> deletedIds = new ArrayList<>();
 
@@ -15,6 +16,7 @@ public class Lobby implements Comparable<Lobby> {
     private String name = "Let's play!!";
     private ArrayList<User> users;
     private final int betValue;
+    private ArrayList<Boolean> readyList = new ArrayList<>();
 
     public Lobby(int betValue) {
         this.id = generateNewId();
@@ -73,5 +75,29 @@ public class Lobby implements Comparable<Lobby> {
     @Override
     public int compareTo(Lobby o) {
         return this.getId() - o.getId();
+    }
+
+    @Override
+    public void addPlayerReady(int position) {
+        this.readyList.add(position, true);
+    }
+
+    @Override
+    public boolean isAllReady() {
+        return this.readyList.stream().skip(1).allMatch(val -> val);
+    }
+
+    @Override
+    public void resetReady() {
+
+    }
+
+    @Override
+    public void removePlayerReady(int position) {
+        this.readyList.add(position, false);
+    }
+
+    public ArrayList<Boolean> getReadyList() {
+        return readyList;
     }
 }

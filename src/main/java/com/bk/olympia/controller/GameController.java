@@ -52,7 +52,9 @@ public class GameController extends BaseController implements ApplicationListene
     private void handleReady(User user, Player player, Room room) {
         player.ready();
         if (room.isAllReady()) {
-            broadcast(room, Destination.READY, new Message(MessageType.READY));
+            Message m = new Message(MessageType.READY, user.getId());
+            m.addContent(ContentType.READY, true);
+            broadcast(room, Destination.READY, m);
             room.resetReady();
         }
         save(room);
