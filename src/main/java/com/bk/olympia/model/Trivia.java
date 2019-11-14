@@ -1,9 +1,7 @@
 package com.bk.olympia.model;
 
-import com.bk.olympia.DatabaseService;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.bk.olympia.DatabaseImport;
 
-@JsonIgnoreProperties()
 public class Trivia {
     private String category;
     private String difficulty;
@@ -21,7 +19,7 @@ public class Trivia {
     }
 
     public int getDifficulty() {
-        return DatabaseService.convertDifficulty(difficulty);
+        return DatabaseImport.convertDifficulty(difficulty);
     }
 
     public void setDifficulty(String difficulty) {
@@ -29,7 +27,7 @@ public class Trivia {
     }
 
     public String getQuestion() {
-        return DatabaseService.convertHtmlCharacter(question);
+        return DatabaseImport.convertHtmlCharacters(question);
     }
 
     public void setQuestion(String question) {

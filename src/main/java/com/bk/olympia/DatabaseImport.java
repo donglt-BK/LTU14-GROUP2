@@ -25,12 +25,11 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 @Service
-public class DatabaseService implements CommandLineRunner {
-    private static DatabaseService instance;
-    private final Logger logger = LoggerFactory.getLogger(DatabaseService.class);
+public class DatabaseImport implements CommandLineRunner {
+    private final Logger logger = LoggerFactory.getLogger(DatabaseImport.class);
 
     @Value("${spring.liquibase.drop-first}")
-    private static boolean isDropFirst;
+    private boolean isDropFirst;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -40,12 +39,6 @@ public class DatabaseService implements CommandLineRunner {
 
     @Autowired
     private AnswerRepository answerRepository;
-
-    public static DatabaseService getInstance() {
-        if (instance == null)
-            instance = new DatabaseService();
-        return instance;
-    }
 
     public static int convertDifficulty(String difficulty) {
         switch (difficulty) {
@@ -60,7 +53,7 @@ public class DatabaseService implements CommandLineRunner {
         }
     }
 
-    public static String convertHtmlCharacter(String s) {
+    public static String convertHtmlCharacters(String s) {
         return StringEscapeUtils.unescapeHtml4(s);
     }
 
@@ -80,20 +73,24 @@ public class DatabaseService implements CommandLineRunner {
         ArrayList<Trivia> trivias = gson.fromJson(jsonArray, type);
 
         for (Trivia trivia : trivias) {
+            /**
+             * Init Topic table
+             */
             if (!topicRepository.findByTopicName(trivia.getCategory()).isPresent()) {
-                topic = new Topic();
-                topic.setTopicName(trivia.getCategory());
+                topic = new Topic(trivia.getCategory(), trivia.getCategory());
                 topicRepository.save(topic);
             }
-        }
 
-        for (Trivia trivia : trivias) {
+            /**
+             * Init Question table
+             */
             topic = topicRepository.findByTopicName(trivia.getCategory()).get();
             question = new Question(topic, trivia.getQuestion(), trivia.getDifficulty());
             questionRepository.save(question);
-        }
 
-        for (Trivia trivia : trivias) {
+            /**
+             * Init Answer table
+             */
             question = questionRepository.findByQuestionDetail(trivia.getQuestion());
             answer = new Answer(trivia.getCorrectAnswer(), true);
             answer.setQuestion(question);

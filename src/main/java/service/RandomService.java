@@ -20,6 +20,6 @@ public class RandomService {
     }
 
     public static int getRandomInteger(int min, int max) {
-        return r.nextInt(max - min + 1);
+        return r.nextInt(max - min + 1) + min;
     }
 }
