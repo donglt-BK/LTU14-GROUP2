@@ -31,3 +31,12 @@
 * Trò chơi sẽ kết thúc khi một trong hai người chơi hết tiền.
 * Nếu sau 10 hiệp mà cả 2 người chơi vẫn còn tiền, hệ thống sẽ xét người chiến thắng dựa trên số tiền còn lại của từng người chơi. Nếu cả 2 người chơi có số tiền bằng nhau, trận đấu sẽ kết thúc với kết quả hoà. Cả 2 người chơi đều có thể giữ lại số tiền cược ban đầu. Luật áp dụng tương tự trong mỗi hiệp đấu.
 
+## Hướng dẫn cài đặt
+
+### JavaFX scene builder
+* Vào trang sau để download binary:
+[Trang download](https://www.oracle.com/java/technologies/javafxscenebuilder-1x-archive-downloads.html)
+* Chọn *javafx_scenebuilder-2_0-windows.msi* để tải (cần phải đăng nhập để tải)
+* Cài đặt *JavaFX Scene Builder* theo hướng dẫn của installer.
+* Vào *Intellij*, chọn **Settings/Preferences** (`Ctrl+Alt+S`), chọn **JavaFX** trong phần **Languages and Frameworks**.
+* Chọn đường dẫn đến file thực thi của *JavaFX Scene Builder* đã cài đặt và nhấn **OK**.

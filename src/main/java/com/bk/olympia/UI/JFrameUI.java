@@ -8,6 +8,9 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.stage.*;
 
 public class JFrameUI {
     private static JFrameUI instance;

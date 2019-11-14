@@ -54,7 +54,7 @@ public class SocketService {
         SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new CustomStompFrameHandler(handler, false));
         SocketSendingService.subscribe(authSession, "/queue/error", new CustomStompFrameHandler(handler, true));
 
-        Message message = new Message(MessageType.SIGNUP);
+        Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)
                 .addContent(PASSWORD, password)
                 .addContent(GENDER, gender);
