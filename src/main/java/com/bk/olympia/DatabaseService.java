@@ -15,9 +15,8 @@ import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import service.RandomService;
@@ -29,6 +28,9 @@ import java.util.ArrayList;
 public class DatabaseService implements CommandLineRunner {
     private static DatabaseService instance;
     private final Logger logger = LoggerFactory.getLogger(DatabaseService.class);
+
+    @Value("${spring.liquibase.drop-first}")
+    private static boolean isDropFirst;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -62,7 +64,6 @@ public class DatabaseService implements CommandLineRunner {
         return StringEscapeUtils.unescapeHtml4(s);
     }
 
-    @EventListener(ApplicationReadyEvent.class)
     public void init() {
         final String url = "https://opentdb.com/api.php?amount=100&type=multiple";
         Gson gson = new Gson();
@@ -108,8 +109,10 @@ public class DatabaseService implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        logger.info("Init database");
-        init();
-        logger.info("Database init completed");
+        if (isDropFirst) {
+            logger.info("Init database");
+            init();
+            logger.info("Database init completed");
+        }
     }
 }
