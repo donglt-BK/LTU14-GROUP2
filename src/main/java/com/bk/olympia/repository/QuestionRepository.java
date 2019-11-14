@@ -9,8 +9,8 @@ import java.util.List;
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
     Question findById(int id);
 
+    Question findByQuestionDetail(String questionDetail);
     List<Question> findByTopicOrderByDifficultyAsc(Topic topic);
-
     List<Question> findByTopicAndIsAcceptedAndDifficultyAfterOrderByDifficultyAsc(Topic topic, boolean isAccepted, int difficulty);
 
 //    @Query("SELECT q.id FROM Question q ORDER BY q.id DESC ")

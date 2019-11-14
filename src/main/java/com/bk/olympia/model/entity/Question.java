@@ -36,6 +36,13 @@ public class Question {
         this.isAccepted = false;
     }
 
+    public Question(Topic topic, String questionDetail, int difficulty) {
+        this.topic = topic;
+        this.questionDetail = questionDetail;
+        this.difficulty = difficulty;
+        this.isAccepted = true;
+    }
+
     public Question() {
 
     }

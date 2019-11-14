@@ -18,4 +18,8 @@ public class RandomService {
     public static int getRandomInteger(int max) {
         return r.nextInt(max);
     }
+
+    public static int getRandomInteger(int min, int max) {
+        return r.nextInt(max - min + 1);
+    }
 }

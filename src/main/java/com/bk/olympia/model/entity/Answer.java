@@ -16,6 +16,7 @@ public class Answer {
     private Question question;
 
     @NotNull
+    @Column(name = "answer")
     private String answerDetail;
 
     private boolean isCorrect;
@@ -55,5 +56,13 @@ public class Answer {
 
     public void setCorrect(boolean correct) {
         isCorrect = correct;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 }
