@@ -6,4 +6,6 @@ public interface IReadiable {
     boolean isAllReady();
 
     void resetReady();
+
+    void removePlayerReady(int position);
 }

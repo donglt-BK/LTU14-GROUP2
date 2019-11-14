@@ -1,6 +1,5 @@
 package com.bk.olympia.model.entity;
 
-import com.bk.olympia.base.ReverseArrayList;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.model.Lobby;
@@ -9,6 +8,7 @@ import com.bk.olympia.model.message.Message;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +40,7 @@ public class User {
     @OneToMany(targetEntity = Player.class, mappedBy = "user", fetch = FetchType.LAZY)
     @OrderBy("id DESC")
     @Size(max = DEFAULT_HISTORY_SIZE)
-    private List<Player> playerList = new ReverseArrayList<>();
+    private List<Player> playerList = new ArrayList<>();
 
     @Transient
     private int lobbyId = -1;

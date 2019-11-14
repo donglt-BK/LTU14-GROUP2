@@ -1,12 +1,14 @@
 package com.bk.olympia.model.entity;
 
+import com.bk.olympia.base.IReadiable;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
 @Table(name = "room")
-public class Room {
+public class Room implements IReadiable {
     public static final int DEFAULT_MAX_PLAYERS = 2;
     public static final int DEFAULT_MAX_QUESTIONS = 10;
 
@@ -165,16 +167,24 @@ public class Room {
         return topics.values().toArray(new Boolean[maxQuestions]);
     }
 
+    @Override
     public void addPlayerReady(int position) {
         this.readyList.add(position, true);
     }
 
+    @Override
     public boolean isAllReady() {
         return this.readyList.stream().allMatch(val -> val);
     }
 
+    @Override
     public void resetReady() {
         Collections.fill(readyList, Boolean.FALSE);
+    }
+
+    @Override
+    public void removePlayerReady(int position) {
+
     }
 
     public boolean isPlayerTurn(Player player) {

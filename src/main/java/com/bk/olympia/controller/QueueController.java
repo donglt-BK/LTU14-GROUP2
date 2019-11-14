@@ -200,16 +200,30 @@ public class QueueController extends BaseController implements ApplicationListen
         else removeLobby(lobby);
     }
 
+    @MessageMapping("/play/ready")
+    public void processReady(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Lobby lobby = findLobbyById(user.getLobbyId());
+        handleReady(user, lobby);
+    }
+
+    private void handleReady(User user, Lobby lobby) {
+        if (lobby.getHost().equals(user))
+            throw new UnauthorizedActionException(user.getId());
+        int pos = lobby.getUsers().indexOf(user);
+        if (!lobby.getReadyList().get(pos))
+            lobby.addPlayerReady(pos);
+        else lobby.removePlayerReady(pos);
+        Message m = new Message(MessageType.READY, user.getId());
+        m.addContent(ContentType.READY, lobby.getReadyList().get(pos));
+        broadcast(lobby.getUsers(), Destination.READY, m);
+    }
+
+
     @MessageMapping("/play/start-game")
     public void processStartGame(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
-
-//        boolean canStart = user.equals(lobby.getHost());
-//        Message m = new Message(MessageType.START_GAME, message.getSender());
-//        m.addContent(ContentType.START, canStart);
-//        MessagingService.sendTo(user, Destination.START_GAME, m);
-
         handleStartGame(user, lobby);
     }
 
@@ -219,14 +233,11 @@ public class QueueController extends BaseController implements ApplicationListen
             lobby.getUsers().forEach(u -> {
                 Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
                 players.add(p);
-//                u.addPlayer(p);
                 save(p);
             });
 
             Room room = new Room(lobby.getId(), lobby.getBetValue(), players);
             UserList.addRoom(room.getId(), lobby.getUsers());
-//            entityManager.persist(room);
-
             roomRepository.save(room);
 
             Message m = new Message(MessageType.CREATE_ROOM, user.getId());
