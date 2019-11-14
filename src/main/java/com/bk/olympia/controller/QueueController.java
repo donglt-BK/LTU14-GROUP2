@@ -219,7 +219,8 @@ public class QueueController extends BaseController implements ApplicationListen
             lobby.getUsers().forEach(u -> {
                 Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
                 players.add(p);
-                u.addPlayer(p);
+//                u.addPlayer(p);
+                save(p);
             });
 
             Room room = new Room(lobby.getId(), lobby.getBetValue(), players);

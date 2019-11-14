@@ -19,7 +19,7 @@ public class Question {
     @NotNull
     private int difficulty;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "topic_id")
     private Topic topic;
 

@@ -38,6 +38,9 @@ public abstract class BaseController {
     protected RoomRepository roomRepository;
 
     @Autowired
+    protected PlayerRepository playerRepository;
+
+    @Autowired
     protected TopicRepository topicRepository;
 
     @Autowired
@@ -52,35 +55,7 @@ public abstract class BaseController {
     @PostConstruct
     protected abstract void init();
 
-    @MessageExceptionHandler
-    @SendToUser(Destination.ERROR)
-    protected ErrorMessage handleException(BaseRuntimeException e) {
-        logger.error(e.getMessage());
-        if (e instanceof WrongUsernameOrPasswordException)
-            return new ErrorMessage(ErrorType.AUTHENTICATION, e.getUserId());
-        else if (e instanceof UsernameAlreadyTakenException)
-            return new ErrorMessage(ErrorType.USERNAME_ALREADY_TAKEN, e.getUserId());
-        else if (e instanceof PasswordCannotBeNullException)
-            return new ErrorMessage(ErrorType.PASSWORD_IS_NULL, e.getUserId());
-        else if (e instanceof NameCannotBeNullException)
-            return new ErrorMessage(ErrorType.NAME_IS_NULL, e.getUserId());
-        else if (e instanceof InsufficientBalanceException)
-            return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UserNameNotFoundException)
-            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
-        else if (e instanceof TargetInsufficientBalanceException)
-            return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UnauthorizedActionException)
-            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
-        else if (e instanceof AnswerPlacingViolationException)
-            return new ErrorMessage(ErrorType.ANSWER_PLACING_VIOLATION, e.getUserId());
-        return null;
-    }
-
     protected User findUserById(int id) {
-//        query = entityManager.createQuery("SELECT u From User u WHERE u.id == " + id);
-//        return query.getResultList() != null ? (User) query.getResultList().get(0) : null;
-
         return userRepository.findById(id);
     }
 
@@ -106,7 +81,7 @@ public abstract class BaseController {
     }
 
     protected void save(Player player) {
-
+        playerRepository.save(player);
     }
 
     protected void save(User user) {
@@ -130,5 +105,30 @@ public abstract class BaseController {
     protected void sendTo(User user, String destination, Message message) {
         message.pack();
         template.convertAndSendToUser(user.getUid(), destination, message);
+    }
+
+    @MessageExceptionHandler
+    @SendToUser(Destination.ERROR)
+    protected ErrorMessage handleException(BaseRuntimeException e) {
+        logger.error(e.getMessage());
+        if (e instanceof WrongUsernameOrPasswordException)
+            return new ErrorMessage(ErrorType.AUTHENTICATION, e.getUserId());
+        else if (e instanceof UsernameAlreadyTakenException)
+            return new ErrorMessage(ErrorType.USERNAME_ALREADY_TAKEN, e.getUserId());
+        else if (e instanceof PasswordCannotBeNullException)
+            return new ErrorMessage(ErrorType.PASSWORD_IS_NULL, e.getUserId());
+        else if (e instanceof NameCannotBeNullException)
+            return new ErrorMessage(ErrorType.NAME_IS_NULL, e.getUserId());
+        else if (e instanceof InsufficientBalanceException)
+            return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
+        else if (e instanceof UserNameNotFoundException)
+            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
+        else if (e instanceof TargetInsufficientBalanceException)
+            return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
+        else if (e instanceof UnauthorizedActionException)
+            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
+        else if (e instanceof AnswerPlacingViolationException)
+            return new ErrorMessage(ErrorType.ANSWER_PLACING_VIOLATION, e.getUserId());
+        return null;
     }
 }

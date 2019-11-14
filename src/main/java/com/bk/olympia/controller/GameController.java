@@ -131,6 +131,10 @@ public class GameController extends BaseController implements ApplicationListene
         } else throw new UnauthorizedActionException(user.getId());
     }
 
+    private List<Question> getQuestionList(Topic topic, int minDifficulty) {
+        return questionRepository.findByTopicAndIsAcceptedAndDifficultyAfterOrderByDifficultyAsc(topic, true, minDifficulty);
+    }
+
     @MessageMapping("/play/submit-answer")
     public void processSubmitAnswer(@Payload Message message) {
         User user = findUserById(message.getSender());
@@ -220,9 +224,4 @@ public class GameController extends BaseController implements ApplicationListene
     private void userDisconnect(User user, Player player, Room room) {
         handleGameOver(user, player, room);
     }
-
-    private List<Question> getQuestionList(Topic topic, int minDifficulty) {
-        return questionRepository.findByTopicAndIsAcceptedAndDifficultyAfterOrderByDifficultyAsc(topic, true, minDifficulty);
-    }
-
 }
