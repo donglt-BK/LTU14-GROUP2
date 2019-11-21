@@ -1,8 +1,6 @@
 package com.bk.olympia.base;
 
 import com.bk.olympia.constant.Destination;
-import com.bk.olympia.constant.ErrorType;
-import com.bk.olympia.exception.*;
 import com.bk.olympia.model.entity.*;
 import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
@@ -111,24 +109,6 @@ public abstract class BaseController {
     @SendToUser(Destination.ERROR)
     protected ErrorMessage handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
-        if (e instanceof WrongUsernameOrPasswordException)
-            return new ErrorMessage(ErrorType.AUTHENTICATION, e.getUserId());
-        else if (e instanceof UsernameAlreadyTakenException)
-            return new ErrorMessage(ErrorType.USERNAME_ALREADY_TAKEN, e.getUserId());
-        else if (e instanceof PasswordCannotBeNullException)
-            return new ErrorMessage(ErrorType.PASSWORD_IS_NULL, e.getUserId());
-        else if (e instanceof NameCannotBeNullException)
-            return new ErrorMessage(ErrorType.NAME_IS_NULL, e.getUserId());
-        else if (e instanceof InsufficientBalanceException)
-            return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UserNameNotFoundException)
-            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
-        else if (e instanceof TargetInsufficientBalanceException)
-            return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UnauthorizedActionException)
-            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
-        else if (e instanceof AnswerPlacingViolationException)
-            return new ErrorMessage(ErrorType.ANSWER_PLACING_VIOLATION, e.getUserId());
-        return null;
+        return new ErrorMessage(e.getType(), e.getUserId());
     }
 }
