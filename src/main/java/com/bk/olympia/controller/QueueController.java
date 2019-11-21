@@ -1,10 +1,8 @@
 package com.bk.olympia.controller;
 
 import com.bk.olympia.base.BaseController;
-import com.bk.olympia.base.BaseRuntimeException;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
-import com.bk.olympia.constant.ErrorType;
 import com.bk.olympia.constant.MessageType;
 import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.exception.InsufficientBalanceException;
@@ -15,7 +13,6 @@ import com.bk.olympia.model.Lobby;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
-import com.bk.olympia.model.message.ErrorMessage;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.repository.UserList;
@@ -25,7 +22,6 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
@@ -200,7 +196,7 @@ public class QueueController extends BaseController implements ApplicationListen
         else removeLobby(lobby);
     }
 
-    @MessageMapping("/play/ready")
+    @MessageMapping("/play/lobby-ready")
     public void processReady(@Payload Message message) {
         User user = findUserById(message.getSender());
         Lobby lobby = findLobbyById(user.getLobbyId());
@@ -214,9 +210,9 @@ public class QueueController extends BaseController implements ApplicationListen
         if (!lobby.getReadyList().get(pos))
             lobby.addPlayerReady(pos);
         else lobby.removePlayerReady(pos);
-        Message m = new Message(MessageType.READY, user.getId());
+        Message m = new Message(MessageType.LOBBY_READY, user.getId());
         m.addContent(ContentType.READY, lobby.getReadyList().get(pos));
-        broadcast(lobby.getUsers(), Destination.READY, m);
+        broadcast(lobby.getUsers(), Destination.LOBBY_READY, m);
     }
 
 
@@ -280,20 +276,5 @@ public class QueueController extends BaseController implements ApplicationListen
         Lobby.addDeletedId(lobby.getId());
         lobby.getUsers().forEach(lobby::removeUser);
         lobbyList.remove(lobby);
-    }
-
-    @Override
-    @SendToUser(Destination.ERROR)
-    public ErrorMessage handleException(BaseRuntimeException e) {
-        logger.error(e.getMessage());
-        if (e instanceof InsufficientBalanceException)
-            return new ErrorMessage(ErrorType.INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UserNameNotFoundException)
-            return new ErrorMessage(ErrorType.WRONG_NAME, e.getUserId());
-        else if (e instanceof TargetInsufficientBalanceException)
-            return new ErrorMessage(ErrorType.TARGET_INSUFFICIENT_BALANCE, e.getUserId());
-        else if (e instanceof UnauthorizedActionException)
-            return new ErrorMessage(ErrorType.INVALID_ACTION, e.getUserId());
-        return null;
     }
 }

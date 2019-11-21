@@ -12,6 +12,7 @@ public enum MessageType {
     //    GET_LOBBY_LIST,
     JOIN_LOBBY,
     LEAVE_LOBBY,
+    LOBBY_READY,
     START_GAME,
     CREATE_ROOM,
     READY,
