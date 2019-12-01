@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TextField alignment="CENTER" layoutX="270.0" layoutY="134.0" promptText="enter your username" />
+      <TextField alignment="CENTER" layoutX="270.0" layoutY="235.0" promptText="enter your email" />
+      <PasswordField alignment="CENTER" layoutX="270.0" layoutY="187.0" promptText="enter your password" />
+      <Label layoutX="187.0" layoutY="192.0" text="Password" />
+      <Label layoutX="185.0" layoutY="139.0" text="Username" />
+      <Label layoutX="201.0" layoutY="240.0" text="Email" />
+      <Button layoutX="341.0" layoutY="295.0" mnemonicParsing="false" text="Register" />
+      <Button layoutX="252.0" layoutY="295.0" mnemonicParsing="false" text="Cancel" />
+   </children>
+</AnchorPane>
