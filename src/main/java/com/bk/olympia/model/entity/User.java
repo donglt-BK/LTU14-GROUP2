@@ -37,7 +37,7 @@ public class User {
 
     private int balance;
 
-    @OneToMany(targetEntity = Player.class, mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(targetEntity = Player.class, mappedBy = "user", fetch = FetchType.EAGER)
     @OrderBy("id DESC")
     @Size(max = DEFAULT_HISTORY_SIZE)
     private List<Player> playerList = new ArrayList<>();

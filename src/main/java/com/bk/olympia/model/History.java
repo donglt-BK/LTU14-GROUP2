@@ -4,12 +4,12 @@ import com.bk.olympia.constant.ResultType;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class History {
     private final int roomId;
-    private final Date createdAt;
-    private final Date endedAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime endedAt;
     private final ResultType resultType;
     private final int balanceChanged;
 
@@ -25,11 +25,11 @@ public class History {
         return roomId;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Date getEndedAt() {
+    public LocalDateTime getEndedAt() {
         return endedAt;
     }
 
