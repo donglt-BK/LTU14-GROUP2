@@ -10,6 +10,7 @@ public class UserSession {
     private String name;
     private String username;
     private int balance;
+    private boolean isAlpha = false;
 
     private static UserSession instance;
     public static UserSession getInstance(){
@@ -44,5 +45,13 @@ public class UserSession {
 
     public int getBalance() {
         return balance;
+    }
+
+    public boolean isAlpha() {
+        return isAlpha;
+    }
+
+    public void setAlpha(boolean alpha) {
+        isAlpha = alpha;
     }
 }
