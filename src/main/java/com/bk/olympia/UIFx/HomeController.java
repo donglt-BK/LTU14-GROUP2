@@ -1,5 +1,6 @@
 package com.bk.olympia.UIFx;
 
+import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
 import com.bk.olympia.type.ContentType;
 import javafx.animation.KeyFrame;
@@ -48,6 +49,19 @@ public class HomeController extends ScreenService {
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
                         //TODO to lobby screen
+                        if (!lobbyParticipant.isEmpty()){
+                            String currentUserId = String.valueOf(UserSession.getInstance().getUserId());
+                            if (lobbyParticipant.get(0).equals(currentUserId) ) {
+                                UserSession.getInstance().setAlpha(true);
+                            }
+                            else {
+                                UserSession.getInstance().setAlpha(false);
+                            }
+                            changeScreen(event, LOBBY_SCREEN);
+                        }
+                        else {
+                            showError("No lobby participant!", "Ask your admin about this feature~!");
+                        }
                     }
                 }),
                 errorMessage -> Platform.runLater(() ->
