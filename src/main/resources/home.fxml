@@ -14,10 +14,6 @@
       <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
       <TextField fx:id="playerId" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's id" />
       <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
-      <Hyperlink fx:id="next_scene" layoutX="457.0" layoutY="331.0" onAction="#nextScene" text="next scene">
-         <font>
-            <Font size="19.0" />
-         </font>
-      </Hyperlink>
+      <Hyperlink fx:id="next_scene" layoutX="457.0" layoutY="331.0" onAction="#nextScene" text="Next scene" />
    </children>
 </AnchorPane>

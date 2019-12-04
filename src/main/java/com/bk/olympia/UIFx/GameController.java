@@ -1,8 +1,12 @@
 package com.bk.olympia.UIFx;
 
 import javafx.event.ActionEvent;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
@@ -17,25 +21,36 @@ public class GameController extends ScreenService {
     public Button minus_C_10, plus_C_10, minus_C_100, plus_C_100, clear_C, all_in_C;
     public Button minus_D_10, plus_D_10, minus_D_100, plus_D_100, clear_D, all_in_D;
     public Label money;
+    public TextField chatbox_input;
+
+    static List<Label> messages = new ArrayList<>();
+    public ScrollPane chatbox_scroll;
+
+    private int index = 0;
+
+    private final VBox chatBox = new VBox(5);
+
+    public void initialize(){
+        chatbox_scroll.setContent(chatBox);
+        chatbox_input.setPromptText("Enter your message...");
+    }
 
     public void onPressLeave(ActionEvent event) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirm leave");
-        alert.setHeaderText("You will lose your current credit. Do you still dare to quit?");
-        alert.getButtonTypes().clear();
+        alert.setHeaderText("You will lose your current credit. Do you really want to quit?");
+        /*alert.getButtonTypes().clear();
 
         ButtonType confirm = new ButtonType("Confirm");
         ButtonType cancel = new ButtonType("Cancel");
         alert.getButtonTypes().setAll(confirm, cancel);
-        alert.showAndWait();
+        alert.showAndWait();*/
 
         Optional<ButtonType> option = alert.showAndWait();
 
-        if (option.get() == confirm) {
+        if (option.get() == ButtonType.OK) {
             //TODO: subtract current credit to balance
             changeScreen(event, HOME_SCREEN);
-        } else if (option.get() == cancel) {
-
         }
     }
 
@@ -53,7 +68,7 @@ public class GameController extends ScreenService {
 
         if (!isNullOrEmpty(answerAInput) && !isNullOrEmpty(answerBInput)&&!isNullOrEmpty(answerCInput)&&!isNullOrEmpty(answerDInput)){
             showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
-            cancelBtn.setVisible(false);
+            cancelBtn.setDisable(true);
         }
         else {
             depositA = Integer.parseInt(answerAInput.length() > 0 ? answerAInput : "0");
@@ -61,8 +76,8 @@ public class GameController extends ScreenService {
             depositC = Integer.parseInt(answerCInput.length() > 0 ? answerCInput : "0");
             depositD = Integer.parseInt(answerDInput.length() > 0 ? answerDInput : "0");
 
-            cancelBtn.setVisible(true);
-            confirmBtn.setVisible(false);
+            cancelBtn.setDisable(false);
+            confirmBtn.setDisable(true);
             //TODO: call api confirm answer
             //If confirm -> invisible cancelBtn
         }
@@ -73,11 +88,29 @@ public class GameController extends ScreenService {
         answer_B_input.setText("");
         answer_C_input.setText("");
         answer_D_input.setText("");
-        cancelBtn.setVisible(false);
-        confirmBtn.setVisible(true);
+        cancelBtn.setDisable(true);
+        confirmBtn.setDisable(false);
     }
 
     public void onDepositInputChange(ActionEvent event){
         System.out.println("in");
+    }
+
+    public void sendMessage(ActionEvent event) {
+        String message = chatbox_input.getText();
+        if(!isNullOrEmpty(message)){
+            messages.add(new Label("Khoa: "+message));
+            if(index%2==0){
+                messages.get(index).setAlignment(Pos.TOP_LEFT);
+                System.out.println("1");
+            }
+            else{
+                messages.get(index).setAlignment(Pos.TOP_RIGHT);
+                System.out.println("2");
+            }
+            chatBox.getChildren().add(messages.get(index));
+            chatbox_input.setText("");
+            index++;
+        }
     }
 }

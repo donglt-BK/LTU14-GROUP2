@@ -51,9 +51,9 @@ public class LobbyController extends ScreenService {
                     response -> {
                         Boolean isAlpha = UserSession.getInstance().isAlpha();
                         if (hisReady.equals(Color.GREEN) && isAlpha) {
-                            startBtn.setVisible(true);
+                            startBtn.setDisable(false);
                         } else {
-                            startBtn.setVisible(false);
+                            startBtn.setDisable(true);
                         }
                     },
                     error -> {
