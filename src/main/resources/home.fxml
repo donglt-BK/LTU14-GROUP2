@@ -5,14 +5,14 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-
-<AnchorPane fx:controller="com.bk.olympia.UIFx.HomeController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.HomeController">
    <children>
-      <Button layoutX="248.0" layoutY="126.0" mnemonicParsing="false" text="Find a player" onAction="#findPlayer"/>
-      <Button layoutX="240.0" layoutY="259.0" mnemonicParsing="false" text="Invite a player" onAction="#invitePlayer" />
-      <Text layoutX="175.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the game! Now you can..." />
-      <Text layoutX="286.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Or...." />
-      <Hyperlink layoutX="20.0" layoutY="10.0" text="Sign Out" onAction="#signOut"/>
-      <TextField alignment="CENTER" layoutX="207.0" layoutY="211.0" promptText="enter a player's id" fx:id="playerId"/>
+      <Button layoutX="248.0" layoutY="126.0" mnemonicParsing="false" onAction="#findPlayer" text="Find a player" />
+      <Button layoutX="243.0" layoutY="259.0" mnemonicParsing="false" onAction="#invitePlayer" text="Invite a player" />
+      <Text layoutX="187.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the game! Now you can..." />
+      <Text layoutX="276.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Or...." />
+      <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
+      <TextField fx:id="playerId" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's id" />
+      <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
    </children>
 </AnchorPane>
