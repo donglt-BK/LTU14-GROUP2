@@ -59,6 +59,48 @@ public class SocketService {
         SocketSendingService.send(authSession, "/auth/sign_up", message);
     }
 
+    public void getHistory(int userId, ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+        SocketSendingService.subscribe(authSession, "/queue/user/add-question", new StompHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+
+        Message message = new Message(MessageType.GET_RECENT_HISTORY, userId);
+        SocketSendingService.send(authSession, "/user/get-recent-history", message);
+    }
+
+    public void findGame(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+
+        SocketSendingService.subscribe(authSession, "/queue/play/join", new StompHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+
+        Message message = new Message(MessageType.JOIN_LOBBY, -1);
+        message.addContent(BET_VALUE, 2000);
+        SocketSendingService.send(authSession, "/play/join", message);
+    }
+
+    //TODO check url
+    public void invite(String playerID, ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+
+        SocketSendingService.subscribe(authSession, "/queue/play/invite", new StompHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+
+        Message message = new Message(MessageType.JOIN_LOBBY, -1);
+        message.addContent(BET_VALUE, 2000)
+        .addContent(NAME, playerID);
+        SocketSendingService.send(authSession, "/play/invite", message);
+    }
+
     public static SocketService getInstance() {
         if (instance == null)
             instance = new SocketService();
