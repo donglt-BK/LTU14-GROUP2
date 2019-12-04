@@ -52,17 +52,23 @@ public class HomeController extends ScreenService {
                             String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                             List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
 
-                            UserSession.getInstance().setLobby(lobbyId, lobbyName, lobbyParticipant);
+                            if (UserSession.getInstance().getCurrentLobbyId() != null) {
+                                //new
+                                UserSession.getInstance().setLobby(lobbyId, lobbyName, lobbyParticipant);
 
-                            if (!lobbyParticipant.isEmpty()) {
-                                if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
-                                    UserSession.getInstance().setAlpha(true);
+                                if (!lobbyParticipant.isEmpty()) {
+                                    if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
+                                        UserSession.getInstance().setAlpha(true);
+                                    } else {
+                                        UserSession.getInstance().setAlpha(false);
+                                    }
+                                    changeScreen(event, LOBBY_SCREEN);
                                 } else {
-                                    UserSession.getInstance().setAlpha(false);
+                                    showError("No lobby participant!", "Ask your admin about this feature~!");
                                 }
-                                changeScreen(event, LOBBY_SCREEN);
                             } else {
-                                showError("No lobby participant!", "Ask your admin about this feature~!");
+                                //joinning
+                                List<String> newParticipant = UserSession.getInstance().setLobbyParticipant(lobbyParticipant);
                             }
                         }
                     }

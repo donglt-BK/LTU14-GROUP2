@@ -2,6 +2,7 @@ package com.bk.olympia.model;
 
 import com.bk.olympia.type.ContentType;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ public class UserSession {
     private String currentLobbyId;
     private String lobbyName;
     private List<String> lobbyParticipant;
+
+    private String roomId;
 
     private static UserSession instance;
     public static UserSession getInstance(){
@@ -86,5 +89,20 @@ public class UserSession {
 
     public List<String> getLobbyParticipant() {
         return lobbyParticipant;
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
+    public List<String> setLobbyParticipant(List<String> lobbyParticipant) {
+        List<String> newParticipant = new ArrayList<>();
+        lobbyParticipant.stream().filter(participant -> this.lobbyParticipant.contains(participant)).forEach(newParticipant::add);
+        this.lobbyParticipant.addAll(newParticipant);
+        return newParticipant;
     }
 }

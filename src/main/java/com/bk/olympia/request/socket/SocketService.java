@@ -130,7 +130,7 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/invite", message);
     }
 
-    public void ready(String playerID, ResponseHandler success, ErrorHandler error) {
+    public void ready(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
@@ -142,8 +142,16 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/ready", message);
     }
 
-    public void cancelLobby() {
+    public void start(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
 
+        subscribe(authSession, success, error, Destination.CREATE_ROOM);
+
+        Message message = new Message(MessageType.READY);
+        SocketSendingService.send(authSession, "/play/start-game", message);
     }
     public static SocketService getInstance() {
         if (instance == null)

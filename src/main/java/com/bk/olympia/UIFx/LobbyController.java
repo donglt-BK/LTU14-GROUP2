@@ -2,6 +2,7 @@ package com.bk.olympia.UIFx;
 
 import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ContentType;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
@@ -33,7 +34,7 @@ public class LobbyController extends ScreenService {
             your_ready.setText("Not ready");
             readyBtn.setText("Ready!");
         }
-        Thread t = new Thread(() -> SocketService.getInstance().ready(String.valueOf(playerId),
+        Thread t = new Thread(() -> SocketService.getInstance().ready(
                 response -> {
                     boolean isAlpha = UserSession.getInstance().isAlpha();
                     if (hisReady.equals(Color.GREEN) && isAlpha) {
@@ -50,8 +51,15 @@ public class LobbyController extends ScreenService {
     }
 
     public void onPressStart(ActionEvent event) {
-        //TODO: call start api
-        changeScreen(event, GAME_SCREEN);
+        SocketService.getInstance().start(
+                success -> {
+                    UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
+                    changeScreen(event, GAME_SCREEN);
+                },
+                error -> {
+                    showError("Failed!", "Check your connection to server!");
+                }
+        );
     }
 
     public void backToHome(ActionEvent event) {
