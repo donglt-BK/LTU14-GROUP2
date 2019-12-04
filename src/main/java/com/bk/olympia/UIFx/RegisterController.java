@@ -109,4 +109,5 @@ public class RegisterController extends ScreenService {
             message.setText("There's something wrong...");
         }
     }
+
 }

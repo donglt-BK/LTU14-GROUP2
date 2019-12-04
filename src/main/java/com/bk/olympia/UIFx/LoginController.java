@@ -14,8 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
-import static com.bk.olympia.config.Constant.LOBBY_SCREEN;
-import static com.bk.olympia.config.Constant.SIGNUP_SCREEN;
+import static com.bk.olympia.config.Constant.*;
 import static com.bk.olympia.config.Util.*;
 
 public class LoginController extends ScreenService {
@@ -56,6 +55,10 @@ public class LoginController extends ScreenService {
         else {
             errorMessage.setText("Missing username or password");
         }
+    }
+
+    public void toHome(ActionEvent event){
+        changeScreen(event, HOME_SCREEN);
     }
 
     public void textFieldChange(KeyEvent keyEvent) {
