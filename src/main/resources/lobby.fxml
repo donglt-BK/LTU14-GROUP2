@@ -23,7 +23,7 @@
       <Label layoutX="221.0" layoutY="219.0" text="Your opponent" />
       <Hyperlink layoutX="36.0" layoutY="31.0" text="&lt;- Back to Home" />
       <Button layoutX="94.0" layoutY="258.0" mnemonicParsing="false" text="Ready!" />
-      <Label disable="true" layoutX="276.0" layoutY="99.0" style="-fx-background-color: #fff;" text="Ready!" />
-      <Label disable="true" layoutX="134.0" layoutY="99.0" style="-fx-background-color: #fff;" text="Ready!" />
+      <Label fx:id="your_opp_ready" layoutX="276.0" layoutY="99.0" opacity="0.0" style="-fx-background-color: #fff;" text="Ready!" />
+      <Label fx:id="your_ready" layoutX="134.0" layoutY="99.0" opacity="0.0" style="-fx-background-color: #fff;" text="Ready!" />
    </children>
 </AnchorPane>
