@@ -8,7 +8,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.RegisterController">
    <children>
       <TextField fx:id="username" alignment="CENTER" layoutX="263.0" layoutY="94.0" promptText="enter your username" />
-      <TextField fx:id="name" layoutX="263.0" layoutY="134.0" promptText="enter your name" alignment="CENTER"/>
+      <TextField fx:id="name" alignment="CENTER" layoutX="263.0" layoutY="134.0" promptText="enter your name" />
       <PasswordField fx:id="password" alignment="CENTER" layoutX="263.0" layoutY="175.0" promptText="enter your password" />
       <TextField fx:id="email" alignment="CENTER" layoutX="263.0" layoutY="211.0" promptText="enter your email" />
 
@@ -21,7 +21,7 @@
       <Button layoutX="322.0" layoutY="326.0" mnemonicParsing="false" onAction="#onPressRegister" text="Register" />
       <Button layoutX="220.0" layoutY="326.0" mnemonicParsing="false" onAction="#onPressCancel" text="Cancel" />
       <Label fx:id="message" layoutX="247.0" layoutY="293.0" prefHeight="21.0" prefWidth="Infinity" />
-      <ComboBox fx:id="gender" layoutX="263.0" layoutY="247.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="31.0" prefWidth="187.0" promptText="gender">
+      <ComboBox fx:id="gender" layoutX="263.0" layoutY="247.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="31.0" prefWidth="167.0" promptText="gender">
          
       </ComboBox>
 
