@@ -38,6 +38,15 @@
             <column name="ended_at" type="timestamp"/>
         </createTable>
 
+        <createTable tableName="room_topic">
+            <column name="id" type="int(11)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="room_id" type="int(11)"/>
+            <column name="topic_id" type="int(11)"/>
+            <column name="can_be_chosen" type="bit"/>
+        </createTable>
+
         <createTable tableName="room_player">
             <column name="room_id" type="int(11)"/>
             <column name="player_id" type="int(11)"/>

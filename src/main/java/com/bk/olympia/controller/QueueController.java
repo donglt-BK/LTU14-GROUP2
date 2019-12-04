@@ -232,7 +232,7 @@ public class QueueController extends BaseController implements ApplicationListen
                 save(p);
             });
 
-            Room room = new Room(lobby.getId(), lobby.getBetValue(), players);
+            Room room = new Room(lobby.getBetValue(), players);
             UserList.addRoom(room.getId(), lobby.getUsers());
             roomRepository.save(room);
 

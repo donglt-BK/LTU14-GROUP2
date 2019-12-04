@@ -1,10 +1,5 @@
 package com.bk.olympia.model.entity;
 
-import com.bk.olympia.constant.ContentType;
-import com.bk.olympia.constant.MessageType;
-import com.bk.olympia.model.Lobby;
-import com.bk.olympia.model.message.Message;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -35,7 +30,7 @@ public class User {
     @NotNull
     private int gender;
 
-    private int balance;
+    private int balance = 50000;
 
     @OneToMany(targetEntity = Player.class, mappedBy = "user", fetch = FetchType.EAGER)
     @OrderBy("id DESC")
@@ -132,7 +127,7 @@ public class User {
     }
 
     public void addPlayer(Player player) {
-        this.playerList.add(player);
+        this.playerList.add(0, player);
 
         //Truncate list to maximum size
         playerList = playerList
@@ -145,14 +140,14 @@ public class User {
         return playerList.get(0);
     }
 
-    public void join(Lobby lobby) {
-        Message m = new Message(MessageType.JOIN_LOBBY, this.getId());
-        m.addContent(ContentType.LOBBY_ID, lobby.getId())
-                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getHost().getName());
-        lobby.addUser(this);
-
-//        broadcast(lobby.getUsers(), "/queue/play/join", m);
-    }
+//    public void join(Lobby lobby) {
+////        Message m = new Message(MessageType.JOIN_LOBBY, this.getId());
+////        m.addContent(ContentType.LOBBY_ID, lobby.getId())
+////                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getHost().getName());
+////        lobby.addUser(this);
+////
+//////        broadcast(lobby.getUsers(), "/queue/play/join", m);
+////    }
 
     @Override
     public boolean equals(Object obj) {

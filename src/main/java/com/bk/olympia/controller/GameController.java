@@ -19,10 +19,12 @@ import org.springframework.stereotype.Controller;
 import service.RandomService;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -75,9 +77,13 @@ public class GameController extends BaseController implements ApplicationListene
             if (room.getTopics().size() == 0) {
                 int totalTopic = topicRepository.findTopByOrderByIdDesc();
                 int[] topicIds = RandomService.getRandomArray(totalTopic, room.getMaxQuestions());
-                for (int i : topicIds) {
-                    room.addTopic(topicRepository.findById(i));
-                }
+//                for (int i : topicIds) {
+//                    room.addTopic(topicRepository.findById(i));
+//                }
+
+                room.setTopics(Arrays.stream(topicIds)
+                        .mapToObj(i -> new RoomTopic(room, topicRepository.findById(i), true))
+                        .collect(Collectors.toList()));
                 save(room);
             }
 
