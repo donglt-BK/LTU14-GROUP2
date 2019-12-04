@@ -1,7 +1,11 @@
 package com.bk.olympia.UIFx;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 
 import java.util.Optional;
 
@@ -40,6 +44,11 @@ public class GameController extends ScreenService {
     }
 
     public void onPressDepositBtn(ActionEvent event) {
+        String eventInvokerId = ((Button) event.getSource()).getId();
+
+        if (eventInvokerId.equals(minus_A_10.getId())) {
+
+        }
         //add more to deposit input if possible
     }
 
@@ -51,11 +60,10 @@ public class GameController extends ScreenService {
 
         int depositA, depositB, depositC, depositD;
 
-        if (!isNullOrEmpty(answerAInput) && !isNullOrEmpty(answerBInput)&&!isNullOrEmpty(answerCInput)&&!isNullOrEmpty(answerDInput)){
+        if (isNullOrEmpty(answerAInput) && isNullOrEmpty(answerBInput) && isNullOrEmpty(answerCInput) && isNullOrEmpty(answerDInput)) {
             showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
             cancelBtn.setVisible(false);
-        }
-        else {
+        } else {
             depositA = Integer.parseInt(answerAInput.length() > 0 ? answerAInput : "0");
             depositB = Integer.parseInt(answerBInput.length() > 0 ? answerBInput : "0");
             depositC = Integer.parseInt(answerCInput.length() > 0 ? answerCInput : "0");
@@ -77,7 +85,13 @@ public class GameController extends ScreenService {
         confirmBtn.setVisible(true);
     }
 
-    public void onDepositInputChange(ActionEvent event){
+    public void onDepositInputChange(KeyEvent event) {
+        String invokerId = ((Node) event.getSource()).getId();
+        if (invokerId.equals(answer_A_input.getId())) {
+            answer_A_input.focusedProperty().addListener(
+                    (observable, oldValue, newValue) -> System.out.println("Text changed from " + oldValue + " to " + newValue)
+            );
+        }
         System.out.println("in");
     }
 }
