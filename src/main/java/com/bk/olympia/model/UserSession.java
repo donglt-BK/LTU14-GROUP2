@@ -15,7 +15,7 @@ public class UserSession {
     private boolean isAlpha = false;
     private String currentLobbyId;
     private String lobbyName;
-    private List<String> lobbyParticipant;
+    private String lobbyParticipant;
 
     private String roomId;
 
@@ -73,10 +73,11 @@ public class UserSession {
                 '}';
     }
 
-    public void setLobby(String currentLobbyId, String lobbyName, List<String> lobbyParticipant) {
+    public void setLobby(boolean isAlpha, String currentLobbyId, String lobbyName, String lobbyParticipant) {
         this.currentLobbyId = currentLobbyId;
         this.lobbyName = lobbyName;
         this.lobbyParticipant = lobbyParticipant;
+        this.isAlpha = isAlpha;
     }
 
     public String getCurrentLobbyId() {
@@ -87,7 +88,7 @@ public class UserSession {
         return lobbyName;
     }
 
-    public List<String> getLobbyParticipant() {
+    public String getLobbyParticipant() {
         return lobbyParticipant;
     }
 
@@ -99,10 +100,9 @@ public class UserSession {
         this.roomId = roomId;
     }
 
-    public List<String> setLobbyParticipant(List<String> lobbyParticipant) {
-        List<String> newParticipant = new ArrayList<>();
-        lobbyParticipant.stream().filter(participant -> this.lobbyParticipant.contains(participant)).forEach(newParticipant::add);
-        this.lobbyParticipant.addAll(newParticipant);
-        return newParticipant;
+    public void resetLobby() {
+        this.currentLobbyId = null;
+        this.lobbyName = null;
+        this.lobbyParticipant = null;
     }
 }

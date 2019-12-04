@@ -2,9 +2,11 @@ package com.bk.olympia.request.socket;
 
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
+import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.handler.ErrorHandler;
 import com.bk.olympia.request.handler.ResponseHandler;
 import com.bk.olympia.request.handler.StompHandler;
+import com.bk.olympia.type.ContentType;
 import com.bk.olympia.type.Destination;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -23,12 +25,14 @@ public class SocketService {
 
     private StompSession authSession;
     private StompSession userSession;
+    private StompSession playSession;
     private boolean ready;
 
     private SocketService() {
         try {
             authSession = SocketSendingService.connect("localhost", 8109, "/auth");
             userSession = SocketSendingService.connect("localhost", 8109, "/user");
+            playSession = SocketSendingService.connect("localhost", 8109, "/play");
             ready = true;
         } catch (ExecutionException | InterruptedException e) {
             System.out.println("Error connect to auth socket");
@@ -140,6 +144,20 @@ public class SocketService {
 
         Message message = new Message(MessageType.READY);
         SocketSendingService.send(authSession, "/play/ready", message);
+    }
+
+    public void leave(String currentLobbyId, ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        subscribe(playSession, success, error, Destination.LEAVE_LOBBY);
+
+        Message message = new Message(MessageType.LEAVE_LOBBY);
+        message.addContent(LOBBY_ID, Integer.valueOf(currentLobbyId));
+
+        SocketSendingService.send(playSession, "/play/leave", message);
     }
 
     public void start(ResponseHandler success, ErrorHandler error) {

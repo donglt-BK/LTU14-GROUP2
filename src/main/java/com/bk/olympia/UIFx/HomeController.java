@@ -31,51 +31,7 @@ public class HomeController extends ScreenService {
     Text errorMessage;
 
     public void findPlayer(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.NONE);
-        SocketService.getInstance().findGame(
-                success -> Platform.runLater(() -> {
-                    if (success.getContent().containsKey(ContentType.STATUS)) {
-                        //join queue success
-                        System.out.println("Finding another player...");
-                        alert.setTitle("Find random player");
-                        alert.setHeaderText("Finding another player, please wait...");
-                        alert.getButtonTypes().clear();
-
-                        ButtonType cancel = new ButtonType("Cancel search");
-                        alert.getButtonTypes().setAll(cancel);
-                        alert.show();
-                    } else {
-                        if (alert.isShowing()) {
-                            alert.hide();
-                            //joined lobby
-                            String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
-                            String lobbyName = success.getContent(ContentType.LOBBY_NAME);
-                            List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
-
-                            if (UserSession.getInstance().getCurrentLobbyId() != null) {
-                                //new
-                                UserSession.getInstance().setLobby(lobbyId, lobbyName, lobbyParticipant);
-
-                                if (!lobbyParticipant.isEmpty()) {
-                                    if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
-                                        UserSession.getInstance().setAlpha(true);
-                                    } else {
-                                        UserSession.getInstance().setAlpha(false);
-                                    }
-                                    changeScreen(event, LOBBY_SCREEN);
-                                } else {
-                                    showError("No lobby participant!", "Ask your admin about this feature~!");
-                                }
-                            } else {
-                                //joinning
-                                List<String> newParticipant = UserSession.getInstance().setLobbyParticipant(lobbyParticipant);
-                            }
-                        }
-                    }
-                }),
-                errorMessage -> Platform.runLater(() -> System.out.println("Login error: " + errorMessage.getErrorType())
-                )
-        );
+        changeScreen(event, LOBBY_SCREEN);
     }
 
     public void invitePlayer(ActionEvent event) {
