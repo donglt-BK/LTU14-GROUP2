@@ -2,7 +2,10 @@ package com.bk.olympia.request.socket;
 
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
+import com.bk.olympia.request.handler.ErrorHandler;
+import com.bk.olympia.request.handler.ResponseHandler;
 import com.bk.olympia.request.handler.StompHandler;
+import com.bk.olympia.type.Destination;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSession.Subscription;
@@ -54,7 +57,7 @@ public class SocketService {
             return;
         }
 
-        subscribe(authSession, success, error, "/queue/auth/login");
+        subscribe(authSession, success, error, Destination.LOGIN);
 
         Message message = new Message(MessageType.LOGIN);
         message.addContent(USERNAME, username).addContent(PASSWORD, password);
@@ -67,7 +70,7 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        subscribe(authSession, success, error, "/queue/auth/sign_up");
+        subscribe(authSession, success, error, Destination.SIGN_UP);
 
         Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)
@@ -84,7 +87,7 @@ public class SocketService {
             return;
         }
 
-        subscribe(userSession, success, error, "/queue/user/get-info");
+        subscribe(userSession, success, error, Destination.GET_USER_INFO);
 
         Message message = new Message(MessageType.GET_INFO);
         SocketSendingService.send(userSession, "/user/get-info", message);
@@ -95,7 +98,7 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        subscribe(userSession, success, error, "/queue/user/add-question");
+        subscribe(userSession, success, error, Destination.GET_RECENT_HISTORY);
 
         Message message = new Message(MessageType.GET_RECENT_HISTORY);
         SocketSendingService.send(userSession, "/user/get-recent-history", message);
@@ -107,11 +110,11 @@ public class SocketService {
             return;
         }
 
-        subscribe(userSession, success, error, "/queue/play/join");
+        subscribe(authSession, success, error, Destination.FIND_LOBBY);
 
         Message message = new Message(MessageType.JOIN_LOBBY);
         message.addContent(BET_VALUE, 2000);
-        SocketSendingService.send(userSession, "/play/join", message);
+        SocketSendingService.send(authSession, "/play/join", message);
     }
 
     //TODO check session
@@ -135,11 +138,9 @@ public class SocketService {
             return;
         }
 
-        subscribe(authSession, success, error, "/queue/play/ready");
+        subscribe(authSession, success, error, Destination.READY);
 
-        Message message = new Message(MessageType.JOIN_LOBBY);
-        message.addContent(BET_VALUE, 2000)
-                .addContent(NAME, playerID);
+        Message message = new Message(MessageType.READY);
         SocketSendingService.send(authSession, "/play/ready", message);
     }
 
