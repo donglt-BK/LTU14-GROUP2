@@ -18,7 +18,8 @@
       <Label layoutX="184.0" layoutY="216.0" text="Email" />
       <Label layoutX="177.0" layoutY="252.0" text="Gender" />
 
-      <Button layoutX="322.0" layoutY="326.0" mnemonicParsing="false" onAction="#onPressRegister" text="Register" />
+      <!--Tạm thời chuyển nút này sang onPressCancel để test UI trước. Sẽ sửa sau khi áp API vào.-->
+      <Button layoutX="322.0" layoutY="326.0" mnemonicParsing="false" onAction="#onPressCancel" text="Register" />
       <Button layoutX="220.0" layoutY="326.0" mnemonicParsing="false" onAction="#onPressCancel" text="Cancel" />
       <Label fx:id="message" layoutX="247.0" layoutY="293.0" prefHeight="21.0" prefWidth="Infinity" />
       <ComboBox fx:id="gender" layoutX="263.0" layoutY="247.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="31.0" prefWidth="187.0" promptText="gender">
