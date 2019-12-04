@@ -7,69 +7,110 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="803.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.GameController">
-   <children>
-      <Hyperlink fx:id="leave_game" layoutX="27.0" layoutY="24.0" text="Leave game" />
-      <Label fx:id="question" layoutX="31.0" layoutY="96.0" maxWidth="480.0" prefHeight="65.0" prefWidth="480.0" text="Question" />
-      <Label fx:id="answerA" layoutX="31.0" layoutY="178.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer A" />
-      <Label fx:id="answerB" layoutX="31.0" layoutY="238.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer B" />
-      <Label fx:id="answerC" layoutX="31.0" layoutY="293.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer C" />
-      <Label fx:id="answerD" layoutX="31.0" layoutY="354.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer D" />
-      <TextField fx:id="answer_A_input" layoutX="31.0" layoutY="201.0" prefHeight="31.0" prefWidth="146.0" promptText="Answer 1 deposit" />
-      <TextField fx:id="answer_C_input" layoutX="31.0" layoutY="318.0" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
-      <TextField fx:id="answer_D_input" layoutX="31.0" layoutY="377.0" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
-      <TextField fx:id="answer_B_input" layoutX="31.0" layoutY="259.0" prefHeight="31.0" prefWidth="146.0" promptText="Answer 2 deposit" />
-      <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="30.0" text="Your money:">
-         <font>
-            <Font size="19.0" />
-         </font></Label>
-      <Button fx:id="confirm" layoutX="195.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="146.0" text="Confirm answer" />
-      <Button fx:id="cancel" layoutX="365.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="146.0" text="Cancel" />
-      <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="64.0" prefHeight="30.0" prefWidth="106.0" text="Time left:">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Label fx:id="time_left" layoutX="390.0" layoutY="63.0" prefHeight="32.0" prefWidth="44.0" text="0" textFill="RED">
-         <font>
-            <Font size="22.0" />
-         </font>
-      </Label>
-      <Label fx:id="money" layoutX="392.0" layoutY="29.0" text="3000" textFill="GREEN">
-         <font>
-            <Font size="20.0" />
-         </font>
-      </Label>
-      <Button fx:id="minus_A_10" layoutX="183.0" layoutY="201.0" mnemonicParsing="false" text="-10" textFill="RED" />
-      <Button fx:id="plus_A_10" layoutX="233.0" layoutY="201.0" mnemonicParsing="false" text="+10" textFill="GREEN" />
-      <Button fx:id="minus_A_100" layoutX="283.0" layoutY="201.0" mnemonicParsing="false" text="-100" textFill="RED" />
-      <Button fx:id="plus_A_100" layoutX="337.0" layoutY="201.0" mnemonicParsing="false" text="+100" textFill="GREEN" />
-      <Button fx:id="plus_B_100" layoutX="337.0" layoutY="257.0" mnemonicParsing="false" text="+100" textFill="GREEN" />
-      <Button fx:id="minus_B_100" layoutX="283.0" layoutY="257.0" mnemonicParsing="false" text="-100" textFill="RED" />
-      <Button fx:id="plus_B_10" layoutX="233.0" layoutY="257.0" mnemonicParsing="false" text="+10" textFill="GREEN" />
-      <Button fx:id="minus_B_10" layoutX="183.0" layoutY="257.0" mnemonicParsing="false" text="-10" textFill="RED" />
-      <Button fx:id="plus_C_100" layoutX="337.0" layoutY="318.0" mnemonicParsing="false" text="+100" textFill="GREEN" />
-      <Button fx:id="minus_C_100" layoutX="283.0" layoutY="318.0" mnemonicParsing="false" text="-100" textFill="RED" />
-      <Button fx:id="plus_C_10" layoutX="233.0" layoutY="318.0" mnemonicParsing="false" text="+10" textFill="GREEN" />
-      <Button fx:id="minus_C_10" layoutX="183.0" layoutY="318.0" mnemonicParsing="false" text="-10" textFill="RED" />
-      <Button fx:id="plus_D_100" layoutX="337.0" layoutY="377.0" mnemonicParsing="false" text="+100" textFill="GREEN" />
-      <Button fx:id="minus_D_100" layoutX="283.0" layoutY="377.0" mnemonicParsing="false" text="-100" textFill="RED" />
-      <Button fx:id="plus_D_10" layoutX="233.0" layoutY="377.0" mnemonicParsing="false" text="+10" textFill="GREEN" />
-      <Button fx:id="minus_D_10" layoutX="183.0" layoutY="377.0" mnemonicParsing="false" text="-10" textFill="RED" />
-      <Button fx:id="clear_A" layoutX="398.0" layoutY="201.0" mnemonicParsing="false" text="Clear" />
-      <Button fx:id="all_in_A" layoutX="458.0" layoutY="201.0" mnemonicParsing="false" text="All in" />
-      <Button fx:id="all_in_B" layoutX="458.0" layoutY="257.0" mnemonicParsing="false" text="All in" />
-      <Button fx:id="clear_B" layoutX="398.0" layoutY="257.0" mnemonicParsing="false" text="Clear" />
-      <Button fx:id="clear_D" layoutX="396.0" layoutY="377.0" mnemonicParsing="false" text="Clear" />
-      <Button fx:id="all_in_D" layoutX="456.0" layoutY="377.0" mnemonicParsing="false" text="All in" />
-      <Button fx:id="all_in_C" layoutX="457.0" layoutY="318.0" mnemonicParsing="false" text="All in" />
-      <Button fx:id="clear_C" layoutX="397.0" layoutY="318.0" mnemonicParsing="false" text="Clear" />
-      <ScrollPane fx:id="chatbox_scroll" layoutX="528.0" layoutY="14.0" prefHeight="289.0" prefWidth="261.0">
-        <content>
-          <AnchorPane fx:id="chatbox" minHeight="0.0" minWidth="0.0" prefHeight="292.0" prefWidth="262.0" />
-        </content>
-      </ScrollPane>
-      <TextArea fx:id="chatbox_input" layoutX="528.0" layoutY="318.0" prefHeight="92.0" prefWidth="261.0" />
-      <Button fx:id="send_message" layoutX="528.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="261.0" text="Send message" />
-   </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0"
+            prefWidth="803.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.bk.olympia.UIFx.GameController">
+    <children>
+        <Hyperlink fx:id="leave_game" layoutX="27.0" layoutY="24.0" onAction="#onPressLeave" text="Leave game"/>
+        <Label fx:id="question" layoutX="31.0" layoutY="96.0" maxWidth="480.0" prefHeight="65.0" prefWidth="480.0"
+               text="Question"/>
+        <Label fx:id="answerA" layoutX="31.0" layoutY="178.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0"
+               text="Answer A"/>
+        <Label fx:id="answerB" layoutX="31.0" layoutY="238.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0"
+               text="Answer B"/>
+        <Label fx:id="answerC" layoutX="31.0" layoutY="293.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0"
+               text="Answer C"/>
+        <Label fx:id="answerD" layoutX="31.0" layoutY="354.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0"
+               text="Answer D"/>
+        <TextField fx:id="answer_A_input" layoutX="31.0" layoutY="201.0" prefHeight="31.0" prefWidth="146.0"
+                   promptText="Answer 1 deposit" onInputMethodTextChanged="#onDepositInputChange"/>
+        <TextField fx:id="answer_C_input" layoutX="31.0" layoutY="318.0" prefHeight="31.0" prefWidth="146.0"
+                   promptText="Answer 3 deposit" onInputMethodTextChanged="#onDepositInputChange"/>
+        <TextField fx:id="answer_D_input" layoutX="31.0" layoutY="377.0" prefHeight="31.0" prefWidth="146.0"
+                   promptText="Answer 3 deposit" onInputMethodTextChanged="#onDepositInputChange"/>
+        <TextField fx:id="answer_B_input" layoutX="31.0" layoutY="259.0" prefHeight="31.0" prefWidth="146.0"
+                   promptText="Answer 2 deposit" onInputMethodTextChanged="#onDepositInputChange"/>
+        <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="30.0" text="Your money:">
+            <font>
+                <Font size="19.0"/>
+            </font>
+        </Label>
+        <Button fx:id="confirmBtn" layoutX="195.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0"
+                prefWidth="146.0" text="Confirm answer" onAction="#onPressConfirm"/>
+        <Button fx:id="cancelBtn" layoutX="365.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0"
+                prefWidth="146.0" text="Cancel" visible="false" onAction="#onPressCancel"/>
+        <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="64.0" prefHeight="30.0" prefWidth="106.0"
+               text="Time left:">
+            <font>
+                <Font size="20.0"/>
+            </font>
+        </Label>
+        <Label fx:id="time_left" layoutX="390.0" layoutY="63.0" prefHeight="32.0" prefWidth="44.0" text="0"
+               textFill="RED">
+            <font>
+                <Font size="22.0"/>
+            </font>
+        </Label>
+        <Label fx:id="money" layoutX="392.0" layoutY="29.0" text="3000" textFill="GREEN">
+            <font>
+                <Font size="20.0"/>
+            </font>
+        </Label>
+        <Button fx:id="minus_A_10" layoutX="183.0" layoutY="201.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="-10" textFill="RED"/>
+        <Button fx:id="plus_A_10" layoutX="233.0" layoutY="201.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+10" textFill="GREEN"/>
+        <Button fx:id="minus_A_100" layoutX="283.0" layoutY="201.0" mnemonicParsing="false"
+                onAction="#onPressDepositBtn" text="-100" textFill="RED"/>
+        <Button fx:id="plus_A_100" layoutX="337.0" layoutY="201.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+100" textFill="GREEN"/>
+        <Button fx:id="plus_B_100" layoutX="337.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+100" textFill="GREEN"/>
+        <Button fx:id="minus_B_100" layoutX="283.0" layoutY="257.0" mnemonicParsing="false"
+                onAction="#onPressDepositBtn" text="-100" textFill="RED"/>
+        <Button fx:id="plus_B_10" layoutX="233.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+10" textFill="GREEN"/>
+        <Button fx:id="minus_B_10" layoutX="183.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="-10" textFill="RED"/>
+        <Button fx:id="plus_C_100" layoutX="337.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+100" textFill="GREEN"/>
+        <Button fx:id="minus_C_100" layoutX="283.0" layoutY="318.0" mnemonicParsing="false"
+                onAction="#onPressDepositBtn" text="-100" textFill="RED"/>
+        <Button fx:id="plus_C_10" layoutX="233.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+10" textFill="GREEN"/>
+        <Button fx:id="minus_C_10" layoutX="183.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="-10" textFill="RED"/>
+        <Button fx:id="plus_D_100" layoutX="337.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+100" textFill="GREEN"/>
+        <Button fx:id="minus_D_100" layoutX="283.0" layoutY="377.0" mnemonicParsing="false"
+                onAction="#onPressDepositBtn" text="-100" textFill="RED"/>
+        <Button fx:id="plus_D_10" layoutX="233.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="+10" textFill="GREEN"/>
+        <Button fx:id="minus_D_10" layoutX="183.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="-10" textFill="RED"/>
+        <Button fx:id="clear_A" layoutX="398.0" layoutY="201.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="Clear"/>
+        <Button fx:id="all_in_A" layoutX="458.0" layoutY="201.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="All in"/>
+        <Button fx:id="all_in_B" layoutX="458.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="All in"/>
+        <Button fx:id="clear_B" layoutX="398.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="Clear"/>
+        <Button fx:id="clear_D" layoutX="396.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="Clear"/>
+        <Button fx:id="all_in_D" layoutX="456.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="All in"/>
+        <Button fx:id="all_in_C" layoutX="457.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="All in"/>
+        <Button fx:id="clear_C" layoutX="397.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn"
+                text="Clear"/>
+        <ScrollPane fx:id="chatbox_scroll" layoutX="528.0" layoutY="14.0" prefHeight="289.0" prefWidth="261.0">
+            <content>
+                <AnchorPane fx:id="chatbox" minHeight="0.0" minWidth="0.0" prefHeight="292.0" prefWidth="262.0"/>
+            </content>
+        </ScrollPane>
+        <TextArea fx:id="chatbox_input" layoutX="528.0" layoutY="318.0" prefHeight="92.0" prefWidth="261.0"/>
+        <Button fx:id="send_message" layoutX="528.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0"
+                prefWidth="261.0" text="Send message"/>
+    </children>
 </AnchorPane>
