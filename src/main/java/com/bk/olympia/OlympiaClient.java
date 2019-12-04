@@ -19,9 +19,12 @@ public class OlympiaClient extends Application {
 //		}
 //	}
 
+
+    private Scene loginScene;
+    private Scene mainMenuScene;
+    private Scene lobbyScene;
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-
 		try{
 			Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
 			primaryStage.setTitle("Hello World");
