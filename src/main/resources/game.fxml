@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.LoginController">
+   <children>
+      <Hyperlink layoutX="31.0" layoutY="26.0" text="&lt;- Save quit is gud" />
+      <Label fx:id="questionLbl" layoutX="31.0" layoutY="76.0" maxWidth="200.0" text="Label" />
+      <Label fx:id="answerA" layoutX="31.0" layoutY="112.0" maxWidth="200.0" text="Label" />
+      <Label fx:id="answerB" layoutX="31.0" layoutY="166.0" maxWidth="200.0" text="Label" />
+      <Label fx:id="answerC" layoutX="31.0" layoutY="224.0" maxWidth="200.0" text="Label" />
+      <Label fx:id="answerD" layoutX="31.0" layoutY="286.0" maxWidth="200.0" text="Label" />
+      <TextField fx:id="answer_A_input" layoutX="31.0" layoutY="129.0" text="deposit here" />
+      <TextField fx:id="answer_C_input" layoutX="31.0" layoutY="246.0" text="deposit here" />
+      <TextField fx:id="answer_D_input" layoutX="31.0" layoutY="310.0" text="deposit here" />
+      <TextField fx:id="answer_B_input" layoutX="31.0" layoutY="187.0" text="deposit here" />
+      <Label layoutX="250.0" layoutY="30.0" text="Your money" />
+   </children>
+</AnchorPane>
