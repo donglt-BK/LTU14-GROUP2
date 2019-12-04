@@ -58,8 +58,8 @@ public class LoginController extends BaseController {
     }
 
     private Message handleSignUp(Principal principal, String username, String password, String name, int gender) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            if (userRepository.findByName(name).isPresent()) {
+        if (!userRepository.findByUsername(username).isPresent()) {
+            if (!userRepository.findByName(name).isPresent()) {
                 if (password != null && !password.trim().isEmpty()) {
                     if (name != null && !name.trim().isEmpty()) {
                         User user = new User(username, password, name, gender);
