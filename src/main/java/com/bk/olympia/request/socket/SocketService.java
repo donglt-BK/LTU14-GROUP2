@@ -16,11 +16,13 @@ public class SocketService {
 
 
     private StompSession authSession;
+    private StompSession userSession;
     private boolean ready;
 
     private SocketService() {
         try {
             authSession = SocketSendingService.connect("localhost", 8109, "/auth");
+            userSession = SocketSendingService.connect("localhost", 8109, "/user");
             ready = true;
         } catch (ExecutionException | InterruptedException e) {
             System.out.println("Error connect to auth socket");
@@ -64,11 +66,11 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(authSession, "/queue/user/get-info", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        SocketSendingService.subscribe(userSession, "/queue/user/get-info", new StompHandler(success));
+        SocketSendingService.subscribe(userSession, "/queue/error", new StompHandler(error));
 
         Message message = new Message(MessageType.GET_INFO);
-        SocketSendingService.send(authSession, "/user/get-info", message);
+        SocketSendingService.send(userSession, "/user/get-info", message);
     }
 
     public void getHistory(ResponseHandler success, ErrorHandler error) {
@@ -76,11 +78,11 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(authSession, "/queue/user/add-question", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        SocketSendingService.subscribe(userSession, "/queue/user/add-question", new StompHandler(success));
+        SocketSendingService.subscribe(userSession, "/queue/error", new StompHandler(error));
 
         Message message = new Message(MessageType.GET_RECENT_HISTORY);
-        SocketSendingService.send(authSession, "/user/get-recent-history", message);
+        SocketSendingService.send(userSession, "/user/get-recent-history", message);
     }
 
     public void findGame(ResponseHandler success, ErrorHandler error) {

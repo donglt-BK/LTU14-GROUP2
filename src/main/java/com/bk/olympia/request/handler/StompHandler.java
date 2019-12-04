@@ -32,6 +32,7 @@ public class StompHandler implements StompFrameHandler {
     }
 
     public void handleFrame(StompHeaders stompHeaders, Object o) {
+        System.out.println("handle");
         if (isErrorHandler) {
             errorHandler.handle(gson.fromJson(new String((byte[]) o), ErrorMessage.class));
         } else {

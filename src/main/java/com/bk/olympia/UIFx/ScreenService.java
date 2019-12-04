@@ -19,6 +19,7 @@ public class ScreenService {
         Parent screenToChange = null;
         try {
             screenToChange = FXMLLoader.load(getClass().getClassLoader().getResource(screenName + ".fxml"));
+            System.out.println("load: " + getClass().getClassLoader().getResource(screenName + ".fxml"));
         } catch (IOException e) {
             System.out.println("ERRROR: " + e.getMessage());
         }

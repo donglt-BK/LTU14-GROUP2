@@ -33,6 +33,7 @@ public class UserSession {
         balance = (int) content.get(ContentType.BALANCE);
         name = (String) content.get(ContentType.NAME);
         username = (String) content.get(ContentType.USERNAME);
+        System.out.println(toString());
     }
 
     public String getName() {
@@ -53,5 +54,15 @@ public class UserSession {
 
     public void setAlpha(boolean alpha) {
         isAlpha = alpha;
+    }
+
+    @Override
+    public String toString() {
+        return "UserSession{" +
+                "userId=" + userId +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", balance=" + balance +
+                '}';
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.web.socket.sockjs.client.Transport;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 import org.springframework.web.socket.sockjs.frame.Jackson2SockJsMessageCodec;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,6 +44,7 @@ public class SocketSendingService {
 
     public static void send(StompSession stompSession, String url, Object object) {
         Gson gson = new Gson();
+        System.out.println(gson.toJson(object));
         stompSession.send("/app" + url, gson.toJson(object).getBytes());
     }
 

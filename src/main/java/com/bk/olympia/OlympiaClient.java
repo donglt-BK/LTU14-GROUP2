@@ -2,11 +2,15 @@ package com.bk.olympia;
 
 import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ContentType;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class OlympiaClient extends Application {
     @Override

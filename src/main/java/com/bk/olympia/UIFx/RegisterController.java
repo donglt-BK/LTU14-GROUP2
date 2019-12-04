@@ -13,6 +13,7 @@ import javafx.util.StringConverter;
 
 import java.io.IOException;
 
+import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Constant.LOGIN_SCREEN;
 import static com.bk.olympia.config.Util.*;
 
@@ -83,7 +84,6 @@ public class RegisterController extends ScreenService {
                     passwordInput = password.getText();
             int genderInput = gender.getValue().getValue();
             if (!isNullOrEmpty(usernameInput) && !isNullOrEmpty(nameInput) && !isNullOrEmpty(emailInput) && !isNullOrEmpty(passwordInput)) {
-                System.out.println("Calling API...");
                 SocketService.getInstance().signUp(usernameInput, passwordInput, nameInput, genderInput,
                         success -> Platform.runLater(() -> {
                             try {

@@ -8,7 +8,7 @@ public class Constant {
     public static final String HOME_SCREEN = "home",
             LOGIN_SCREEN = "login",
             LOBBY_SCREEN = "lobby",
-            SIGNUP_SCREEN = "register",
+            SIGN_UP_SCREEN = "register",
             GAME_SCREEN = "game";
 
     public static final String EMPTY_STRING = "";
