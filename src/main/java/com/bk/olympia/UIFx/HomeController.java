@@ -53,17 +53,15 @@ public class HomeController extends ScreenService {
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
                         //TODO to lobby screen
-                        if (!lobbyParticipant.isEmpty()){
+                        if (!lobbyParticipant.isEmpty()) {
                             String currentUserId = String.valueOf(UserSession.getInstance().getUserId());
-                            if (lobbyParticipant.get(0).equals(currentUserId) ) {
+                            if (lobbyParticipant.get(0).equals(currentUserId)) {
                                 UserSession.getInstance().setAlpha(true);
-                            }
-                            else {
+                            } else {
                                 UserSession.getInstance().setAlpha(false);
                             }
                             changeScreen(event, LOBBY_SCREEN);
-                        }
-                        else {
+                        } else {
                             showError("No lobby participant!", "Ask your admin about this feature~!");
                         }
                     }
@@ -123,7 +121,7 @@ public class HomeController extends ScreenService {
         errorMessage.setText("");
     }
 
-    public void goNext(ActionEvent event){
+    public void nextScene(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
     }
 }
