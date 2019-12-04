@@ -65,6 +65,7 @@ public class LoginController extends BaseController {
                         User user = new User(username, password, name, gender);
                         user.setUid(principal.getName());
                         save(user);
+                        logger.info("Player " + name + " signed up successfully!");
                         return new MessageAccept(MessageType.SIGN_UP, user.getId());
                     } else throw new NameCannotBeNullException();
                 } else throw new PasswordCannotBeNullException();
