@@ -24,8 +24,8 @@
                 <Font size="19.0" />
             </font>
         </Label>
-        <Button fx:id="confirmBtn" layoutX="195.0" layoutY="427.0" mnemonicParsing="false" onAction="#onPressConfirm" prefHeight="31.0" prefWidth="146.0" text="Confirm answer" />
-        <Button fx:id="cancelBtn" layoutX="365.0" layoutY="427.0" mnemonicParsing="false" onAction="#onPressCancel" prefHeight="31.0" prefWidth="146.0" text="Cancel" visible="false" />
+        <Button fx:id="confirmBtn" layoutX="195.0" layoutY="427.0" mnemonicParsing="false" onAction="#onPressConfirm" prefHeight="31.0" prefWidth="146.0" text="Confirm answer" disable="false" />
+        <Button fx:id="cancelBtn" layoutX="365.0" layoutY="427.0" mnemonicParsing="false" onAction="#onPressCancel" prefHeight="31.0" prefWidth="146.0" text="Cancel" disable="true" />
         <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="64.0" prefHeight="30.0" prefWidth="106.0" text="Time left:">
             <font>
                 <Font size="20.0" />
@@ -65,12 +65,11 @@
         <Button fx:id="all_in_D" layoutX="456.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositBtn" text="All in" />
         <Button fx:id="all_in_C" layoutX="457.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn" text="All in" />
         <Button fx:id="clear_C" layoutX="397.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositBtn" text="Clear" />
-        <ScrollPane fx:id="chatbox_scroll" layoutX="528.0" layoutY="14.0" prefHeight="289.0" prefWidth="261.0">
+        <ScrollPane fx:id="chatbox_scroll" layoutX="528.0" layoutY="14.0" prefHeight="349.0" prefWidth="261.0">
             <content>
-                <AnchorPane fx:id="chatbox" minHeight="0.0" minWidth="0.0" prefHeight="292.0" prefWidth="262.0" />
             </content>
         </ScrollPane>
-        <TextArea fx:id="chatbox_input" layoutX="528.0" layoutY="318.0" prefHeight="92.0" prefWidth="261.0" />
+        <TextField fx:id="chatbox_input" layoutX="528.0" layoutY="378.0" onAction="#sendMessage" prefHeight="32.0" prefWidth="261.0" />
         <Button fx:id="send_message" layoutX="528.0" layoutY="427.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="261.0" text="Send message" />
     </children>
 </AnchorPane>
