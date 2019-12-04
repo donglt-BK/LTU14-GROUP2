@@ -32,6 +32,7 @@ public class Room implements IReadiable {
     private int lobbyId;
 
     @NotNull
+    @Column(name = "max_users")
     private int maxPlayers = DEFAULT_MAX_PLAYERS;
 
     @NotNull

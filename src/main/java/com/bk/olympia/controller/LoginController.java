@@ -58,13 +58,14 @@ public class LoginController extends BaseController {
     }
 
     private Message handleSignUp(Principal principal, String username, String password, String name, int gender) {
-        if (userRepository.findByUsername(username).isPresent()) {
-            if (userRepository.findByName(name).isPresent()) {
+        if (!userRepository.findByUsername(username).isPresent()) {
+            if (!userRepository.findByName(name).isPresent()) {
                 if (password != null && !password.trim().isEmpty()) {
                     if (name != null && !name.trim().isEmpty()) {
                         User user = new User(username, password, name, gender);
                         user.setUid(principal.getName());
                         save(user);
+                        logger.info("Player " + name + " signed up successfully!");
                         return new MessageAccept(MessageType.SIGN_UP, user.getId());
                     } else throw new NameCannotBeNullException();
                 } else throw new PasswordCannotBeNullException();
