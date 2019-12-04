@@ -41,7 +41,7 @@ public class HomeController extends ScreenService {
             Timeline idleStage = new Timeline(new KeyFrame(Duration.seconds(3.0), new EventHandler<ActionEvent>() {
 
                 @Override
-                public void handle(ActionEvent eventt) {
+                public void handle(ActionEvent event1) {
                     alert.hide();
                     changeScreen(event, LOBBY_SCREEN);
                 }
@@ -53,7 +53,25 @@ public class HomeController extends ScreenService {
         });
     }
 
-    public void invitePlayer() {
+    public void invitePlayer(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Invite player");
+        alert.setHeaderText("Waiting for response, please wait...");
+        alert.getButtonTypes().clear();
+        alert.getButtonTypes().setAll(new ButtonType("Cancel invite"));
+
+        //Delay để fake việc tìm player
+        Timeline idleStage = new Timeline(new KeyFrame(Duration.seconds(3.0), new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event1) {
+                alert.hide();
+                changeScreen(event, LOBBY_SCREEN);
+            }
+        }));
+        idleStage.setCycleCount(1);
+        idleStage.play();
+        Optional<ButtonType> option = alert.showAndWait();
 
         System.out.println("Waiting for response...");
     }
