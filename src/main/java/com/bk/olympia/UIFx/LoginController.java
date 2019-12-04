@@ -84,5 +84,8 @@ public class LoginController extends ScreenService {
         ;
     }
 
+    public void nextScene(ActionEvent event) {
+        changeScreen(event, HOME_SCREEN);
+    }
 }
 

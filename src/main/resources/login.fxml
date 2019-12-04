@@ -15,5 +15,6 @@
         <!--Tạm thời chuyển nút này sang toHome để test UI trước. Sẽ sửa sau khi áp API vào.-->
       <Button fx:id="login" layoutX="319.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressLogin" text="Log In" />
         <Button layoutX="235.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressRegister" text="Register" />
+      <Hyperlink fx:id="next_scene" layoutX="444.0" layoutY="327.0" onAction="#nextScene" text="Next scene" />
     </children>
 </AnchorPane>
