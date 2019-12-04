@@ -1,21 +1,24 @@
 package com.bk.olympia.UIFx;
 
-import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ErrorType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
 import static com.bk.olympia.config.Constant.LOBBY_SCREEN;
 import static com.bk.olympia.config.Constant.SIGNUP_SCREEN;
-import static com.bk.olympia.config.MultiUseFunc.*;
+import static com.bk.olympia.config.Util.*;
 
 public class LoginController extends ScreenService {
     @FXML
     TextField username;
     @FXML
     PasswordField password;
+    @FXML
+    Label errorMessage;
 
     @FXML
     public void onPressRegister(ActionEvent event) {
@@ -28,7 +31,14 @@ public class LoginController extends ScreenService {
         if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
             SocketService.getInstance().login(userInput, passwordInput,
                     response -> changeScreen(event, LOBBY_SCREEN),
-                    errorMessage -> System.out.println("Error login: " + errorMessage.getErrorType())
+                    error -> {
+                        if (error.getErrorType() == ErrorType.AUTHENTICATION) {
+                            errorMessage.setText("Wrong password");
+                        } else {
+                            errorMessage.setText("Something went wrong! :(");
+                            System.out.println("Login error: " + error.getErrorType());
+                        }
+                    }
             );
         }
     }

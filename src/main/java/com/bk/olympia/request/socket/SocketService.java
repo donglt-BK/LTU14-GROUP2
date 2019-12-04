@@ -43,21 +43,6 @@ public class SocketService {
         SocketSendingService.send(authSession, "/auth/login", message);
     }
 
-    @Deprecated
-    public void login(String username, String password, OldResponseHandler handler) {
-        if (!ready) {
-            handler.error(new ErrorMessage(CONNECTION_ERROR, -1));
-            return;
-        }
-
-        SocketSendingService.subscribe(authSession, "/queue/auth/login", new CustomStompFrameHandler(handler, false));
-        SocketSendingService.subscribe(authSession, "/queue/error", new CustomStompFrameHandler(handler, true));
-
-        Message message = new Message(MessageType.LOGIN);
-        message.addContent(USERNAME, username).addContent(PASSWORD, password);
-        SocketSendingService.send(authSession, "/auth/login", message);
-    }
-
     public void signUp(String username, String password, String name, int gender, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
@@ -65,23 +50,6 @@ public class SocketService {
         }
         SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new StompHandler(success));
         SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
-
-        Message message = new Message(MessageType.SIGN_UP);
-        message.addContent(USERNAME, username)
-                .addContent(PASSWORD, password)
-                .addContent(GENDER, gender);
-
-        SocketSendingService.send(authSession, "/auth/sign_up", message);
-    }
-
-    @Deprecated
-    public void signUp(String username, String password, String name, int gender, OldResponseHandler handler) {
-        if (!ready) {
-            handler.error(new ErrorMessage(CONNECTION_ERROR, -1));
-            return;
-        }
-        SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new CustomStompFrameHandler(handler, false));
-        SocketSendingService.subscribe(authSession, "/queue/error", new CustomStompFrameHandler(handler, true));
 
         Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)

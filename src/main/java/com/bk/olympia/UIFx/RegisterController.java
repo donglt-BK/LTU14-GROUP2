@@ -1,10 +1,6 @@
 package com.bk.olympia.UIFx;
 
-import com.bk.olympia.message.ErrorMessage;
-import com.bk.olympia.message.Message;
-import com.bk.olympia.request.socket.ResponseHandler;
 import com.bk.olympia.request.socket.SocketService;
-import com.bk.olympia.type.ContentType;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,12 +10,10 @@ import javafx.scene.paint.Color;
 import javafx.util.StringConverter;
 
 
-import java.awt.*;
 import java.io.IOException;
-import java.net.Socket;
 
 import static com.bk.olympia.config.Constant.LOGIN_SCREEN;
-import static com.bk.olympia.config.MultiUseFunc.*;
+import static com.bk.olympia.config.Util.*;
 
 
 public class RegisterController extends ScreenService {

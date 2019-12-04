@@ -19,26 +19,22 @@ public class OlympiaClient extends Application {
 //		}
 //	}
 
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        try {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
+            primaryStage.setTitle("Hello World");
+            primaryStage.setScene(new Scene(root, 600, 400));
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-    private Scene loginScene;
-    private Scene mainMenuScene;
-    private Scene lobbyScene;
-	@Override
-	public void start(Stage primaryStage) throws Exception{
-		try{
-			Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
-			primaryStage.setTitle("Hello World");
-			primaryStage.setScene(new Scene(root, 600, 400));
-			primaryStage.show();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-
-	}
+    }
 
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    public static void main(String[] args) {
+
+        launch(args);
+    }
 }
