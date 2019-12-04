@@ -3,8 +3,7 @@ package com.bk.olympia.request.socket;
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
 import com.bk.olympia.request.handler.CustomStompFrameHandler;
-import com.bk.olympia.request.handler.StompErrorHandler;
-import com.bk.olympia.request.handler.StompSuccessHandler;
+import com.bk.olympia.request.handler.StompHandler;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -30,14 +29,14 @@ public class SocketService {
         }
     }
 
-    public void login(String username, String password, ResponseHandler success, ResponseHandler error) {
+    public void login(String username, String password, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
 
-        SocketSendingService.subscribe(authSession, "/queue/auth/login", new StompSuccessHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompErrorHandler(error));
+        SocketSendingService.subscribe(authSession, "/queue/auth/login", new StompHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
 
         Message message = new Message(MessageType.LOGIN);
         message.addContent(USERNAME, username).addContent(PASSWORD, password);
@@ -59,13 +58,13 @@ public class SocketService {
         SocketSendingService.send(authSession, "/auth/login", message);
     }
 
-    public void signUp(String username, String password, String name, int gender, ResponseHandler success, ResponseHandler error) {
+    public void signUp(String username, String password, String name, int gender, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new StompSuccessHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompErrorHandler(error));
+        SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new StompHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
 
         Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)

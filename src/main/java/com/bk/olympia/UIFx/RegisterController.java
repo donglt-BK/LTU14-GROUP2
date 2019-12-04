@@ -81,20 +81,17 @@ public class RegisterController extends ScreenService {
     }
 
     public void onPressRegister(ActionEvent event) {
-        //TODO: call api to register
-        changeScreen(event, LOGIN_SCREEN);
-        public void onPressRegister (ActionEvent event){
-            try {
-                //TODO: call api to register
-                String usernameInput = username.getText(),
-                        nameInput = name.getText(),
-                        emailInput = email.getText(),
-                        passwordInput = password.getText();
-                int genderInput = gender.getValue().getValue();
-                if (!isNullOrEmpty(usernameInput) && !isNullOrEmpty(nameInput) && !isNullOrEmpty(emailInput) && !isNullOrEmpty(passwordInput)) {
-                    System.out.println("Calling API...");
-                    SocketService.getInstance().signUp(usernameInput, passwordInput, nameInput, genderInput,
-                            success -> {
+        try {
+            //TODO: call api to register
+            String usernameInput = username.getText(),
+                    nameInput = name.getText(),
+                    emailInput = email.getText(),
+                    passwordInput = password.getText();
+            int genderInput = gender.getValue().getValue();
+            if (!isNullOrEmpty(usernameInput) && !isNullOrEmpty(nameInput) && !isNullOrEmpty(emailInput) && !isNullOrEmpty(passwordInput)) {
+                System.out.println("Calling API...");
+                SocketService.getInstance().signUp(usernameInput, passwordInput, nameInput, genderInput,
+                        success -> {
                             try {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Registration complete");
@@ -105,16 +102,16 @@ public class RegisterController extends ScreenService {
                                 ex.printStackTrace();
                             }
                         },
-                            error -> System.out.println(((ErrorMessage) error).getErrorType()));
-                } else {
-                    message.setText("You must fill in all the fields!");
-                    return;
-                }
-                changeScreen(event, LOGIN_SCREEN);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                message.setText("There's something wrong...");
+                        error -> System.out.println(error.getErrorType())
+                );
+            } else {
+                message.setText("You must fill in all the fields!");
                 return;
             }
+            changeScreen(event, LOGIN_SCREEN);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            message.setText("There's something wrong...");
         }
     }
+}

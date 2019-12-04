@@ -28,7 +28,7 @@ public class LoginController extends ScreenService {
         if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
             SocketService.getInstance().login(userInput, passwordInput,
                     response -> changeScreen(event, LOBBY_SCREEN),
-                    errorMessage -> System.out.println("Error login: " + ((ErrorMessage) errorMessage).getErrorType())
+                    errorMessage -> System.out.println("Error login: " + errorMessage.getErrorType())
             );
         }
     }
