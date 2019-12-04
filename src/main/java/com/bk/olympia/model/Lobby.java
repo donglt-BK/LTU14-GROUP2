@@ -16,7 +16,6 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
     private String name = "Let's play!!";
     private ArrayList<User> users;
     private final int betValue;
-    private ArrayList<Boolean> readyList = new ArrayList<>();
 
     public Lobby(int betValue) {
         this.id = generateNewId();
@@ -97,7 +96,7 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
         this.readyList.add(position, false);
     }
 
-    public ArrayList<Boolean> getReadyList() {
+    public List<Boolean> getReadyList() {
         return readyList;
     }
 }

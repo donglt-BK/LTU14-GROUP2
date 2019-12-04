@@ -10,13 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ScheduledFuture;
 
 @Controller
 public abstract class BaseController {
@@ -44,12 +41,6 @@ public abstract class BaseController {
     @Autowired
     protected QuestionRepository questionRepository;
 
-    @Autowired
-    private AnswerRepository answerRepository;
-
-    protected ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-    protected HashMap<Integer, ScheduledFuture> taskQueue = new HashMap<>();
-
     @PostConstruct
     protected abstract void init();
 
@@ -71,6 +62,7 @@ public abstract class BaseController {
 
     protected void save(Room room) {
         roomRepository.save(room);
+        //TODO: Check if this is truly needed
         room.update();
     }
 
