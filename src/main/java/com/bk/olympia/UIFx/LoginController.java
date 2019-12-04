@@ -49,6 +49,12 @@ public class LoginController extends ScreenService {
                         response -> Platform.runLater(() -> {
                             blockUI = false;
                             UserSession.getInstance().setUserId(response.getContent(ContentType.USER_ID));
+                            SocketService.getInstance().getUserInfo(
+                                    success -> {
+                                        UserSession.getInstance().setData(success.getContent());
+                                    },
+                                    errorMessage -> System.out.println(errorMessage.getErrorType())
+                            );
                             changeScreen(event, LOBBY_SCREEN);
                         }),
                         error -> Platform.runLater(() -> {

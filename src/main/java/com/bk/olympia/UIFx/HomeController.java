@@ -30,7 +30,7 @@ public class HomeController extends ScreenService {
     Text errorMessage;
 
     public void findPlayer(ActionEvent event) {
-        SocketService.getInstance().invite(playerId.getText(),
+        SocketService.getInstance().findGame(
                 success -> Platform.runLater(() -> {
                     if (success.getContent().containsKey(ContentType.STATUS)) {
                         //join queue success
