@@ -8,18 +8,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class OlympiaClient extends Application {
-
-//	public static void main(String[] args) {
-//		JFrameUI ui = JFrameUI.getInstance().config(APP_NAME, WINDOW_WIDTH, WINDOW_HEIGHT);
-//		ui.addScreen(ScreenService.getScreens());
-//
-//		try {
-//			ui.showScreen(LOGIN_SCREEN);
-//		} catch (ScreenNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
     @Override
     public void start(Stage primaryStage) throws Exception {
 		SocketService.getInstance();
@@ -34,9 +22,7 @@ public class OlympiaClient extends Application {
 
     }
 
-
     public static void main(String[] args) {
-
         launch(args);
     }
 }
