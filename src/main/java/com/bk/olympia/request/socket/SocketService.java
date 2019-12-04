@@ -50,7 +50,6 @@ public class SocketService {
         subscriptionMap.put(url, new Subscription[]{successSub, errorSub});
     }
 
-
     public void login(String username, String password, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
@@ -63,7 +62,6 @@ public class SocketService {
         message.addContent(USERNAME, username).addContent(PASSWORD, password);
         SocketSendingService.send(authSession, "/auth/login", message);
     }
-
 
     public void signUp(String username, String password, String name, int gender, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
@@ -144,6 +142,9 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/ready", message);
     }
 
+    public void cancelLobby() {
+
+    }
     public static SocketService getInstance() {
         if (instance == null)
             instance = new SocketService();

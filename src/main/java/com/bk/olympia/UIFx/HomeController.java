@@ -6,12 +6,10 @@ import com.bk.olympia.type.ContentType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.DialogPane;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
@@ -20,6 +18,7 @@ import javafx.util.Duration;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.bk.olympia.config.Constant.LOBBY_SCREEN;
 import static com.bk.olympia.config.Constant.LOGIN_SCREEN;
@@ -32,44 +31,43 @@ public class HomeController extends ScreenService {
     Text errorMessage;
 
     public void findPlayer(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.NONE);
         SocketService.getInstance().findGame(
                 success -> Platform.runLater(() -> {
                     if (success.getContent().containsKey(ContentType.STATUS)) {
                         //join queue success
                         System.out.println("Finding another player...");
-                        Alert alert = new Alert(Alert.AlertType.NONE);
                         alert.setTitle("Find random player");
                         alert.setHeaderText("Finding another player, please wait...");
                         alert.getButtonTypes().clear();
 
                         ButtonType cancel = new ButtonType("Cancel search");
                         alert.getButtonTypes().setAll(cancel);
-
-                        Optional<ButtonType> option = alert.showAndWait();
-
+                        alert.show();
                     } else {
-                        //joined lobby
-                        String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
-                        String lobbyName = success.getContent(ContentType.LOBBY_NAME);
-                        List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
-                        //TODO to lobby screen
-                        if (!lobbyParticipant.isEmpty()){
-                            String currentUserId = String.valueOf(UserSession.getInstance().getUserId());
-                            if (lobbyParticipant.get(0).equals(currentUserId) ) {
-                                UserSession.getInstance().setAlpha(true);
+                        if (alert.isShowing()) {
+                            alert.hide();
+                            //joined lobby
+                            String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
+                            String lobbyName = success.getContent(ContentType.LOBBY_NAME);
+                            List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
+
+                            UserSession.getInstance().setLobby(lobbyId, lobbyName, lobbyParticipant);
+
+                            if (!lobbyParticipant.isEmpty()) {
+                                if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
+                                    UserSession.getInstance().setAlpha(true);
+                                } else {
+                                    UserSession.getInstance().setAlpha(false);
+                                }
+                                changeScreen(event, LOBBY_SCREEN);
+                            } else {
+                                showError("No lobby participant!", "Ask your admin about this feature~!");
                             }
-                            else {
-                                UserSession.getInstance().setAlpha(false);
-                            }
-                            changeScreen(event, LOBBY_SCREEN);
-                        }
-                        else {
-                            showError("No lobby participant!", "Ask your admin about this feature~!");
                         }
                     }
                 }),
-                errorMessage -> Platform.runLater(() ->
-                        System.out.println("Login error: " + errorMessage.getErrorType())
+                errorMessage -> Platform.runLater(() -> System.out.println("Login error: " + errorMessage.getErrorType())
                 )
         );
     }
@@ -123,7 +121,7 @@ public class HomeController extends ScreenService {
         errorMessage.setText("");
     }
 
-    public void goNext(ActionEvent event){
+    public void goNext(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
     }
 }

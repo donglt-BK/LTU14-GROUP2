@@ -2,6 +2,7 @@ package com.bk.olympia.model;
 
 import com.bk.olympia.type.ContentType;
 
+import java.util.List;
 import java.util.Map;
 
 public class UserSession {
@@ -11,6 +12,9 @@ public class UserSession {
     private String username;
     private int balance;
     private boolean isAlpha = false;
+    private String currentLobbyId;
+    private String lobbyName;
+    private List<String> lobbyParticipant;
 
     private static UserSession instance;
     public static UserSession getInstance(){
@@ -64,5 +68,23 @@ public class UserSession {
                 ", username='" + username + '\'' +
                 ", balance=" + balance +
                 '}';
+    }
+
+    public void setLobby(String currentLobbyId, String lobbyName, List<String> lobbyParticipant) {
+        this.currentLobbyId = currentLobbyId;
+        this.lobbyName = lobbyName;
+        this.lobbyParticipant = lobbyParticipant;
+    }
+
+    public String getCurrentLobbyId() {
+        return currentLobbyId;
+    }
+
+    public String getLobbyName() {
+        return lobbyName;
+    }
+
+    public List<String> getLobbyParticipant() {
+        return lobbyParticipant;
     }
 }
