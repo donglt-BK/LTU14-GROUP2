@@ -1,13 +1,11 @@
 package com.bk.olympia.UIFx;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -16,6 +14,7 @@ import java.util.Optional;
 
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Util.isNullOrEmpty;
+import static com.bk.olympia.config.Util.parseIntOrZero;
 
 public class GameController extends ScreenService {
 
@@ -27,6 +26,9 @@ public class GameController extends ScreenService {
     public Button minus_D_10, plus_D_10, minus_D_100, plus_D_100, clear_D, all_in_D;
     public Label money;
     public TextField chatbox_input;
+    public HBox row_A, row_B, row_C, row_D;
+
+    private int totalMoney = parseIntOrZero("3000");
 
     static List<Label> messages = new ArrayList<>();
     public ScrollPane chatbox_scroll;
@@ -35,7 +37,7 @@ public class GameController extends ScreenService {
 
     private final VBox chatBox = new VBox(5);
 
-    public void initialize(){
+    public void initialize() {
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
     }
@@ -60,9 +62,100 @@ public class GameController extends ScreenService {
     }
 
     public void onPressDepositBtn(ActionEvent event) {
-        String eventInvokerId = ((Button) event.getSource()).getId();
+        String invokerId = ((Button) event.getSource()).getId();
 
-        if (eventInvokerId.equals(minus_A_10.getId())) {
+        String[] invokerIdSplit = invokerId.split("_");
+        int invokerIdLength = invokerIdSplit.length;
+        if (invokerIdLength > 2) {
+            String firstSplit = invokerIdSplit[0],
+                    secondSplit = invokerIdSplit[1],
+                    lastSplit = invokerIdSplit[2];
+            if (firstSplit.equals("all")) {
+                switch (lastSplit) {
+                    case "A":
+                        answer_A_input.setText(String.valueOf(totalMoney));
+                        answer_A_input.setDisable(true);
+                        clear_A.setDisable(false);
+                        answer_B_input.setText("");
+                        answer_C_input.setText("");
+                        answer_D_input.setText("");
+                        answer_B_input.setDisable(true);
+                        answer_C_input.setDisable(true);
+                        answer_D_input.setDisable(true);
+                        break;
+                    case "B":
+                        answer_B_input.setText(String.valueOf(totalMoney));
+                        clear_B.setDisable(false);
+                        answer_B_input.setDisable(true);
+                        answer_A_input.setText("");
+                        answer_C_input.setText("");
+                        answer_D_input.setText("");
+                        answer_A_input.setDisable(true);
+                        answer_C_input.setDisable(true);
+                        answer_D_input.setDisable(true);
+                        break;
+                    case "C":
+                        answer_C_input.setText(String.valueOf(totalMoney));
+                        answer_C_input.setDisable(true);
+                        clear_C.setDisable(false);
+                        answer_A_input.setText("");
+                        answer_B_input.setText("");
+                        answer_D_input.setText("");
+                        answer_A_input.setDisable(true);
+                        answer_B_input.setDisable(true);
+                        answer_D_input.setDisable(true);
+                        break;
+                    case "D":
+                        answer_D_input.setDisable(true);
+                        clear_D.setDisable(false);
+                        answer_D_input.setText(String.valueOf(totalMoney));
+                        answer_A_input.setText("");
+                        answer_B_input.setText("");
+                        answer_C_input.setText("");
+                        answer_A_input.setDisable(true);
+                        answer_B_input.setDisable(true);
+                        answer_C_input.setDisable(true);
+                        break;
+                }
+            } else {
+                int depositA = parseIntOrZero(answer_A_input.getText()),
+                        depositB = parseIntOrZero(answer_B_input.getText()),
+                        depositC = parseIntOrZero(answer_C_input.getText()),
+                        depositD = parseIntOrZero(answer_D_input.getText()),
+                        curMoney = totalMoney - (depositA + depositB + depositC + depositD);
+                if (curMoney > 0) {
+                    switch (firstSplit) {
+                        case "plus":
+                            switch (secondSplit) {
+
+                            }
+                            break;
+                        case "minus":
+                            break;
+                    }
+                }
+            }
+        } else if (invokerIdLength > 1) {
+            String targetToClear = invokerIdSplit[invokerIdLength - 1];
+            switch (targetToClear) {
+                case "A":
+                    answer_A_input.clear();
+                    clear_A.setDisable(false);
+                    break;
+                case "B":
+                    answer_B_input.clear();
+                    clear_B.setDisable(false);
+                    break;
+                case "C":
+                    answer_C_input.clear();
+                    clear_C.setDisable(false);
+                    break;
+                case "D":
+                    answer_D_input.clear();
+                    clear_D.setDisable(false);
+                    break;
+            }
+        } else {
 
         }
         //add more to deposit input if possible
@@ -79,12 +172,11 @@ public class GameController extends ScreenService {
         if (isNullOrEmpty(answerAInput) && isNullOrEmpty(answerBInput) && isNullOrEmpty(answerCInput) && isNullOrEmpty(answerDInput)) {
             showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
             cancelBtn.setDisable(true);
-        }
-        else {
-            depositA = Integer.parseInt(answerAInput.length() > 0 ? answerAInput : "0");
-            depositB = Integer.parseInt(answerBInput.length() > 0 ? answerBInput : "0");
-            depositC = Integer.parseInt(answerCInput.length() > 0 ? answerCInput : "0");
-            depositD = Integer.parseInt(answerDInput.length() > 0 ? answerDInput : "0");
+        } else {
+            depositA = parseIntOrZero(answerAInput);
+            depositB = parseIntOrZero(answerBInput);
+            depositC = parseIntOrZero(answerCInput);
+            depositD = parseIntOrZero(answerDInput);
 
             cancelBtn.setDisable(false);
             confirmBtn.setDisable(true);
@@ -103,24 +195,29 @@ public class GameController extends ScreenService {
     }
 
     public void onDepositInputChange(KeyEvent event) {
-        String invokerId = ((Node) event.getSource()).getId();
-        if (invokerId.equals(answer_A_input.getId())) {
-            answer_A_input.focusedProperty().addListener(
-                    (observable, oldValue, newValue) -> System.out.println("Text changed from " + oldValue + " to " + newValue)
-            );
-        }
-        System.out.println("in");
+//        String invokerId = ((Node) event.getSource()).getId();
+//        int depositA = parseIntOrZero(answer_A_input.getText()),
+//                depositB = parseIntOrZero(answer_B_input.getText()),
+//                depositC = parseIntOrZero(answer_C_input.getText()),
+//                depositD = parseIntOrZero(answer_D_input.getText()),
+//                curMoney = totalMoney - (depositA + depositB + depositC + depositD);
+//        if (curMoney>0){
+//            if (invokerId.equals(answer_A_input.getId())) {
+//
+//            }
+//        }
+//
+//        System.out.println("in");
     }
 
     public void sendMessage(ActionEvent event) {
         String message = chatbox_input.getText();
-        if(!isNullOrEmpty(message)){
-            messages.add(new Label("Khoa: "+message));
-            if(index%2==0){
+        if (!isNullOrEmpty(message)) {
+            messages.add(new Label("Khoa: " + message));
+            if (index % 2 == 0) {
                 messages.get(index).setAlignment(Pos.TOP_LEFT);
                 System.out.println("1");
-            }
-            else{
+            } else {
                 messages.get(index).setAlignment(Pos.TOP_RIGHT);
                 System.out.println("2");
             }
