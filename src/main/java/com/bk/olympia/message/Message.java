@@ -1,5 +1,6 @@
 package com.bk.olympia.message;
 
+import com.bk.olympia.model.UserSession;
 import com.bk.olympia.type.ContentType;
 import com.bk.olympia.type.MessageType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -18,7 +19,7 @@ public class Message {
 
     public Message(MessageType type) {
         this.type = type;
-        this.sender = -1;
+        this.sender = UserSession.getInstance().getUserId();
         content = new HashMap<>();
     }
 

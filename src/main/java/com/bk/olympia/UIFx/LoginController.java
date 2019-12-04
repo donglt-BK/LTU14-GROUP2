@@ -1,6 +1,8 @@
 package com.bk.olympia.UIFx;
 
+import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ContentType;
 import com.bk.olympia.type.ErrorType;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -35,36 +37,47 @@ public class LoginController extends ScreenService {
         errorMessage.setText("");
     }
 
+    private boolean blockUI = false;
+
     public void onPressLogin(Event event) {
-        String userInput = username.getText(),
-                passwordInput = password.getText();
-        if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
-            SocketService.getInstance().login(userInput, passwordInput,
-                    response -> Platform.runLater(() -> changeScreen(event, LOBBY_SCREEN)),
-                    error -> Platform.runLater(() -> {
-                        if (error.getErrorType() == ErrorType.AUTHENTICATION) {
-                            errorMessage.setText("Wrong username or password");
-                        } else {
-                            //showError("Something went wrong! :(","Login error: " + error.getErrorType() );
-                            errorMessage.setText("Something went wrong! :(");
-                            System.out.println("Login error: " + error.getErrorType());
-                        }
-                    })
-            );
-        }
-        else {
-            errorMessage.setText("Missing username or password");
+        if (!blockUI) {
+            blockUI = true;
+            String userInput = username.getText(),
+                    passwordInput = password.getText();
+            if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
+                SocketService.getInstance().login(userInput, passwordInput,
+                        response -> Platform.runLater(() -> {
+                            blockUI = false;
+                            UserSession.getInstance().setUserId(response.getContent(ContentType.USER_ID));
+                            changeScreen(event, LOBBY_SCREEN);
+                        }),
+                        error -> Platform.runLater(() -> {
+                            blockUI = false;
+                            if (error.getErrorType() == ErrorType.AUTHENTICATION) {
+                                errorMessage.setText("Wrong username or password");
+                            } else {
+                                //showError("Something went wrong! :(","Login error: " + error.getErrorType() );
+                                errorMessage.setText("Something went wrong! :(");
+                                System.out.println("Login error: " + error.getErrorType());
+                            }
+                        })
+                );
+            } else {
+                blockUI = false;
+                errorMessage.setText("Missing username or password");
+            }
         }
     }
 
-    public void toHome(ActionEvent event){
+    public void toHome(ActionEvent event) {
         changeScreen(event, HOME_SCREEN);
     }
 
     public void textFieldChange(KeyEvent keyEvent) {
         if (keyEvent.getCharacter().equals("\r")) {
             onPressLogin(keyEvent);
-        };
+        }
+        ;
     }
 }
 

@@ -1,12 +1,16 @@
 package com.bk.olympia.message;
 
 
+import com.bk.olympia.model.UserSession;
 import com.bk.olympia.type.ErrorType;
 
 public class ErrorMessage extends Message {
     private ErrorType errorType;
 
-
+    public ErrorMessage(ErrorType errorType) {
+        this.errorType = errorType;
+        this.setSender(UserSession.getInstance().getUserId());
+    }
 
     public ErrorMessage(ErrorType errorType, int sender) {
         this.errorType = errorType;
