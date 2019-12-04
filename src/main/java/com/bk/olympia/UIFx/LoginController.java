@@ -37,11 +37,15 @@ public class LoginController extends ScreenService {
                         if (error.getErrorType() == ErrorType.AUTHENTICATION) {
                             errorMessage.setText("Wrong password");
                         } else {
+                            showError("Something went wrong! :(","Login error: " + error.getErrorType() );
                             errorMessage.setText("Something went wrong! :(");
                             System.out.println("Login error: " + error.getErrorType());
                         }
                     })
             );
+        }
+        else {
+            showWarning("Input is not valid", "Please fill up all these fucking input");
         }
     }
 }
