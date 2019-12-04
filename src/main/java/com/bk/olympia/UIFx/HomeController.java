@@ -17,10 +17,16 @@ public class HomeController extends ScreenService{
     TextField playerId;
 
     public void findPlayer(){
-
+        System.out.println("Finding another player...");
+        Platform.runLater(()->{
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Find random player");
+            alert.setTitle("Finding another player, please wait...");
+                                
+        });
     }
     public void invitePlayer(){
-
+        System.out.println("Waiting for response...");
     }
     public void signOut(ActionEvent event){
         Platform.runLater(()->{
