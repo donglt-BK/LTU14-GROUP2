@@ -1,5 +1,6 @@
 package com.bk.olympia.UIFx;
 
+import com.bk.olympia.request.socket.SocketService;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -35,9 +36,20 @@ public class GameController extends ScreenService {
 
     private final VBox chatBox = new VBox(5);
 
-    public void initialize(){
+    public void initialize() {
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
+        Thread t = new Thread(() ->
+                SocketService.getInstance().chatSubscribe(
+                        message -> {
+                            //TODO: show the receive message
+                        },
+                        error -> {
+                        }
+                )
+        );
+        t.start();
+
     }
 
     public void onPressLeave(ActionEvent event) {
@@ -79,8 +91,7 @@ public class GameController extends ScreenService {
         if (isNullOrEmpty(answerAInput) && isNullOrEmpty(answerBInput) && isNullOrEmpty(answerCInput) && isNullOrEmpty(answerDInput)) {
             showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
             cancelBtn.setDisable(true);
-        }
-        else {
+        } else {
             depositA = Integer.parseInt(answerAInput.length() > 0 ? answerAInput : "0");
             depositB = Integer.parseInt(answerBInput.length() > 0 ? answerBInput : "0");
             depositC = Integer.parseInt(answerCInput.length() > 0 ? answerCInput : "0");
@@ -114,19 +125,22 @@ public class GameController extends ScreenService {
 
     public void sendMessage(ActionEvent event) {
         String message = chatbox_input.getText();
-        if(!isNullOrEmpty(message)){
-            messages.add(new Label("Khoa: "+message));
-            if(index%2==0){
+        //TODO show sending message
+        SocketService.getInstance().chat(message, error -> {
+            //TODO handle unsend
+        });
+        /*if (!isNullOrEmpty(message)) {
+            messages.add(new Label("Khoa: " + message));
+            if (index % 2 == 0) {
                 messages.get(index).setAlignment(Pos.TOP_LEFT);
                 System.out.println("1");
-            }
-            else{
+            } else {
                 messages.get(index).setAlignment(Pos.TOP_RIGHT);
                 System.out.println("2");
             }
             chatBox.getChildren().add(messages.get(index));
             chatbox_input.setText("");
             index++;
-        }
+        }*/
     }
 }

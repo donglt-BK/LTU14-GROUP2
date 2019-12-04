@@ -146,13 +146,10 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/ready", message);
     }
 
-    public void leave(String currentLobbyId, ResponseHandler success, ErrorHandler error) {
+    public void leaveLobby(String currentLobbyId) {
         if (!ready) {
-            error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
-
-        subscribe(playSession, success, error, Destination.LEAVE_LOBBY);
 
         Message message = new Message(MessageType.LEAVE_LOBBY);
         message.addContent(LOBBY_ID, Integer.valueOf(currentLobbyId));
@@ -171,6 +168,38 @@ public class SocketService {
         Message message = new Message(MessageType.READY);
         SocketSendingService.send(authSession, "/play/start-game", message);
     }
+
+    public void getQuestion(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        subscribe(authSession, success, error, Destination.GET_QUESTION);
+
+        Message message = new Message(MessageType.READY);
+        SocketSendingService.send(authSession, "/play/get-question", message);
+    }
+
+    public void chatSubscribe(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        subscribe(authSession, success, error, Destination.ROOM_CHAT);
+    }
+    public void chat(String text, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        Message message = new Message(MessageType.LOGIN);
+        message.addContent(ContentType.CHAT, text);
+        SocketSendingService.send(authSession, "/topic/private/room/" + UserSession.getInstance().getRoomId(), message);
+    }
+
     public static SocketService getInstance() {
         if (instance == null)
             instance = new SocketService();

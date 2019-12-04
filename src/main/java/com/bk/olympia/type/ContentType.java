@@ -1,6 +1,7 @@
 package com.bk.olympia.type;
 
 public enum ContentType {
+    CHAT,
     STATUS,
 
     USER_ID,

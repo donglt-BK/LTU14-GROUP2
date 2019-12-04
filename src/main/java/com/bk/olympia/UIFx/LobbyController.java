@@ -8,17 +8,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
+import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.bk.olympia.config.Constant.*;
@@ -70,6 +68,7 @@ public class LobbyController extends ScreenService {
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
 
                         if (!lobbyParticipant.isEmpty()) {
+                            System.out.println(lobbyParticipant.get(0).equals(UserSession.getInstance().getName()));
                             if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
                                 if (lobbyParticipant.size() == 2) {
                                     UserSession.getInstance().setLobby(true, lobbyId, lobbyName, lobbyParticipant.get(1));
@@ -83,7 +82,9 @@ public class LobbyController extends ScreenService {
                             }
                             if (lobbyParticipant.size() == 2) {
                                 opponentImg.setVisible(true);
-                                opponentLabel.setText(lobbyParticipant.get(1));
+                                if (UserSession.getInstance().isAlpha())
+                                    opponentLabel.setText(lobbyParticipant.get(1));
+                                else opponentLabel.setText(lobbyParticipant.get(0));
                                 opponentLabel.setVisible(true);
                             } else {
                                 opponentImg.setVisible(false);
@@ -141,10 +142,7 @@ public class LobbyController extends ScreenService {
     }
 
     public void backToHome(ActionEvent event) {
-        SocketService.getInstance().leave(UserSession.getInstance().getCurrentLobbyId(),
-                success -> {},
-                error -> showError("Failed!", "Check your connection to server!")
-        );
+        SocketService.getInstance().leaveLobby(UserSession.getInstance().getCurrentLobbyId());
         UserSession.getInstance().resetLobby();
         changeScreen(event, HOME_SCREEN);
     }
