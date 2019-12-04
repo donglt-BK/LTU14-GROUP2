@@ -19,7 +19,7 @@ public class OlympiaClient extends Application {
         UserSession.getInstance();
         try {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
-            primaryStage.setTitle("Hello World");
+            primaryStage.setTitle("Đừng để tiền rơi!");
             primaryStage.setScene(new Scene(root, 600, 400));
             primaryStage.show();
         } catch (Exception e) {

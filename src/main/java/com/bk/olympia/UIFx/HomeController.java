@@ -6,6 +6,7 @@ import com.bk.olympia.type.ContentType;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -43,7 +44,9 @@ public class HomeController extends ScreenService {
 
                         ButtonType cancel = new ButtonType("Cancel search");
                         alert.getButtonTypes().setAll(cancel);
-                        alert.showAndWait();
+
+                        Optional<ButtonType> option = alert.showAndWait();
+
                     } else {
                         //joined lobby
                         String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
@@ -118,5 +121,9 @@ public class HomeController extends ScreenService {
 
     public void hideError() {
         errorMessage.setText("");
+    }
+
+    public void goNext(ActionEvent event){
+        changeScreen(event, LOBBY_SCREEN);
     }
 }
