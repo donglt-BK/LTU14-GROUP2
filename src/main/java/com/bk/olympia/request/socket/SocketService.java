@@ -3,13 +3,11 @@ package com.bk.olympia.request.socket;
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
 import com.bk.olympia.request.handler.CustomStompFrameHandler;
+import com.bk.olympia.request.handler.StompErrorHandler;
+import com.bk.olympia.request.handler.StompSuccessHandler;
 import com.bk.olympia.type.MessageType;
-import com.google.gson.Gson;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.lang.reflect.Type;
 import java.util.concurrent.ExecutionException;
 
 import static com.bk.olympia.type.ContentType.*;
@@ -32,7 +30,22 @@ public class SocketService {
         }
     }
 
-    public void login(String username, String password, ResponseHandler handler) {
+    public void login(String username, String password, ResponseHandler success, ResponseHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+
+        SocketSendingService.subscribe(authSession, "/queue/auth/login", new StompSuccessHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompErrorHandler(error));
+
+        Message message = new Message(MessageType.LOGIN);
+        message.addContent(USERNAME, username).addContent(PASSWORD, password);
+        SocketSendingService.send(authSession, "/auth/login", message);
+    }
+
+    @Deprecated
+    public void login(String username, String password, OldResponseHandler handler) {
         if (!ready) {
             handler.error(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
@@ -46,7 +59,24 @@ public class SocketService {
         SocketSendingService.send(authSession, "/auth/login", message);
     }
 
-    public void signUp(String username, String password, String name, int gender, ResponseHandler handler) {
+    public void signUp(String username, String password, String name, int gender, ResponseHandler success, ResponseHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+        SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new StompSuccessHandler(success));
+        SocketSendingService.subscribe(authSession, "/queue/error", new StompErrorHandler(error));
+
+        Message message = new Message(MessageType.SIGN_UP);
+        message.addContent(USERNAME, username)
+                .addContent(PASSWORD, password)
+                .addContent(GENDER, gender);
+
+        SocketSendingService.send(authSession, "/auth/sign_up", message);
+    }
+
+    @Deprecated
+    public void signUp(String username, String password, String name, int gender, OldResponseHandler handler) {
         if (!ready) {
             handler.error(new ErrorMessage(CONNECTION_ERROR, -1));
             return;

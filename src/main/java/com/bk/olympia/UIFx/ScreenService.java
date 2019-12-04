@@ -12,9 +12,14 @@ import java.io.IOException;
 
 public class ScreenService {
     @FXML
-    public void onChangeScreen(ActionEvent event, String screenName) throws IOException {
+    public void changeScreen(ActionEvent event, String screenName) {
         Stage currentScreen = (Stage)((Node) event.getSource()).getScene().getWindow();
-        Parent screenToChange = FXMLLoader.load(getClass().getClassLoader().getResource(screenName + ".fxml"));
+        Parent screenToChange = null;
+        try {
+            screenToChange = FXMLLoader.load(getClass().getClassLoader().getResource(screenName + ".fxml"));
+        } catch (IOException e) {
+            System.out.println("ERRROR: " + e.getMessage());
+        }
         changeScreen(currentScreen, screenToChange);
     }
 

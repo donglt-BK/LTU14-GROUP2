@@ -2,6 +2,7 @@ package com.bk.olympia.request.handler;
 
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
+import com.bk.olympia.request.socket.OldResponseHandler;
 import com.bk.olympia.request.socket.ResponseHandler;
 import com.google.gson.Gson;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -11,8 +12,15 @@ import java.lang.reflect.Type;
 
 public class CustomStompFrameHandler implements StompFrameHandler {
     private Gson gson;
+    private OldResponseHandler oldHandler;
     private ResponseHandler handler;
     private boolean isErrorHandler;
+
+    public CustomStompFrameHandler(OldResponseHandler oldHandler, boolean isErrorHandler) {
+        this.oldHandler = oldHandler;
+        this.isErrorHandler = isErrorHandler;
+        gson = new Gson();
+    }
 
     public CustomStompFrameHandler(ResponseHandler handler, boolean isErrorHandler) {
         this.handler = handler;
@@ -25,12 +33,22 @@ public class CustomStompFrameHandler implements StompFrameHandler {
     }
 
     public void handleFrame(StompHeaders stompHeaders, Object o) {
-        if (isErrorHandler) {
-            ErrorMessage message = gson.fromJson(new String((byte[]) o), ErrorMessage.class);
-            handler.error(message);
+        if (oldHandler != null) {
+            if (isErrorHandler) {
+                ErrorMessage message = gson.fromJson(new String((byte[]) o), ErrorMessage.class);
+                oldHandler.error(message);
+            } else {
+                Message message = gson.fromJson(new String((byte[]) o), Message.class);
+                oldHandler.success(message);
+            }
         } else {
-            Message message = gson.fromJson(new String((byte[]) o), Message.class);
-            handler.success(message);
+            if (isErrorHandler) {
+                ErrorMessage message = gson.fromJson(new String((byte[]) o), ErrorMessage.class);
+                handler.handle(message);
+            } else {
+                Message message = gson.fromJson(new String((byte[]) o), Message.class);
+                handler.handle(message);
+            }
         }
     }
 }
