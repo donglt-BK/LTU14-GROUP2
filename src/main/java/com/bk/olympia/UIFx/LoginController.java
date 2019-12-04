@@ -36,7 +36,7 @@ public class LoginController extends ScreenService {
         if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
             SocketService.getInstance().login(userInput, passwordInput, new ResponseHandler() {
                 @Override
-                public void success(Message responseMesage) {
+                public void success(Message responseMessage) {
                     try {
                         onChangeScreen(event, LOBBY_SCREEN);
                     } catch (IOException e) {

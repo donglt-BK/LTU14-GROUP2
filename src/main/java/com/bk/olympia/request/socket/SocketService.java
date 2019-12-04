@@ -56,6 +56,7 @@ public class SocketService {
 
         Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)
+                .addContent(NAME, name)
                 .addContent(PASSWORD, password)
                 .addContent(GENDER, gender);
 
