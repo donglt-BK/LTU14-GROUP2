@@ -42,20 +42,19 @@ public class LoginController extends ScreenService {
         if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
             Thread t = new Thread(() -> {
                 SocketService.getInstance().login(userInput, passwordInput,
-                        response -> Platform.runLater(() -> {
+                        response -> {
                             UserSession.getInstance().setUserId(response.getContent(ContentType.USER_ID));
                             SocketService.getInstance().getUserInfo(
-                                    success -> {
-                                        System.out.println("success");
+                                    success -> Platform.runLater(() -> {
                                         UserSession.getInstance().setData(success.getContent());
-                                    },
+                                        changeScreen(event, HOME_SCREEN);
+                                    }),
                                     errorMessage -> {
                                         login.setDisable(false);
                                         System.out.println(errorMessage.getErrorType());
                                     }
                             );
-                            changeScreen(event, HOME_SCREEN);
-                        }),
+                        },
                         error -> Platform.runLater(() -> {
                             login.setDisable(false);
                             if (error.getErrorType() == ErrorType.AUTHENTICATION) {

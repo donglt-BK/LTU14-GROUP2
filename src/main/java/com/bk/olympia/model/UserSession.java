@@ -30,7 +30,7 @@ public class UserSession {
     }
 
     public void setData(Map content) {
-        balance = (int) content.get(ContentType.BALANCE);
+        balance = ((Double) content.get(ContentType.BALANCE)).intValue();
         name = (String) content.get(ContentType.NAME);
         username = (String) content.get(ContentType.USERNAME);
         System.out.println(toString());

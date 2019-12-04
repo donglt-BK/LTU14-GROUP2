@@ -5,7 +5,10 @@ import com.bk.olympia.message.Message;
 import com.bk.olympia.request.handler.StompHandler;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSession.Subscription;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static com.bk.olympia.type.ContentType.*;
@@ -13,7 +16,7 @@ import static com.bk.olympia.type.ErrorType.*;
 
 public class SocketService {
     private static SocketService instance;
-
+    private static final String ERROR_URL = "/queue/error";
 
     private StompSession authSession;
     private StompSession userSession;
@@ -30,27 +33,41 @@ public class SocketService {
         }
     }
 
+    private static Map<String, Subscription[]> subscriptionMap = new HashMap<>();
+
+    private void subscribe(StompSession session, ResponseHandler success, ErrorHandler error, String url) {
+        if (subscriptionMap.containsKey(url)) {
+            for (Subscription subscription : subscriptionMap.get(url)) {
+                subscription.unsubscribe();
+            }
+        }
+
+        Subscription successSub = SocketSendingService.subscribe(session, url, new StompHandler(success));
+        Subscription errorSub = SocketSendingService.subscribe(session, ERROR_URL, new StompHandler(error));
+        subscriptionMap.put(url, new Subscription[]{successSub, errorSub});
+    }
+
+
     public void login(String username, String password, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
 
-        SocketSendingService.subscribe(authSession, "/queue/auth/login", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        subscribe(authSession, success, error, "/queue/auth/login");
 
         Message message = new Message(MessageType.LOGIN);
         message.addContent(USERNAME, username).addContent(PASSWORD, password);
         SocketSendingService.send(authSession, "/auth/login", message);
     }
 
+
     public void signUp(String username, String password, String name, int gender, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(authSession, "/queue/auth/sign_up", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        subscribe(authSession, success, error, "/queue/auth/sign_up");
 
         Message message = new Message(MessageType.SIGN_UP);
         message.addContent(USERNAME, username)
@@ -66,8 +83,8 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(userSession, "/queue/user/get-info", new StompHandler(success));
-        SocketSendingService.subscribe(userSession, "/queue/error", new StompHandler(error));
+
+        subscribe(userSession, success, error, "/queue/user/get-info");
 
         Message message = new Message(MessageType.GET_INFO);
         SocketSendingService.send(userSession, "/user/get-info", message);
@@ -78,8 +95,7 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
             return;
         }
-        SocketSendingService.subscribe(userSession, "/queue/user/add-question", new StompHandler(success));
-        SocketSendingService.subscribe(userSession, "/queue/error", new StompHandler(error));
+        subscribe(userSession, success, error, "/queue/user/add-question");
 
         Message message = new Message(MessageType.GET_RECENT_HISTORY);
         SocketSendingService.send(userSession, "/user/get-recent-history", message);
@@ -91,27 +107,25 @@ public class SocketService {
             return;
         }
 
-        SocketSendingService.subscribe(authSession, "/queue/play/join", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        subscribe(userSession, success, error, "/queue/play/join");
 
         Message message = new Message(MessageType.JOIN_LOBBY);
         message.addContent(BET_VALUE, 2000);
-        SocketSendingService.send(authSession, "/play/join", message);
+        SocketSendingService.send(userSession, "/play/join", message);
     }
 
-    //TODO check url
+    //TODO check session
     public void invite(String playerID, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
 
-        SocketSendingService.subscribe(authSession, "/queue/play/invite", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        subscribe(userSession, success, error, "/queue/play/invite");
 
         Message message = new Message(MessageType.JOIN_LOBBY);
         message.addContent(BET_VALUE, 2000)
-        .addContent(NAME, playerID);
+                .addContent(NAME, playerID);
         SocketSendingService.send(authSession, "/play/invite", message);
     }
 
@@ -121,13 +135,12 @@ public class SocketService {
             return;
         }
 
-        SocketSendingService.subscribe(authSession, "/queue/play/invite", new StompHandler(success));
-        SocketSendingService.subscribe(authSession, "/queue/error", new StompHandler(error));
+        subscribe(authSession, success, error, "/queue/play/ready");
 
         Message message = new Message(MessageType.JOIN_LOBBY);
         message.addContent(BET_VALUE, 2000)
                 .addContent(NAME, playerID);
-        SocketSendingService.send(authSession, "/play/invite", message);
+        SocketSendingService.send(authSession, "/play/ready", message);
     }
 
     public static SocketService getInstance() {
