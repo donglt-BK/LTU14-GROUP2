@@ -1,6 +1,7 @@
 package com.bk.olympia.UIFx;
 
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,7 +14,7 @@ import java.io.IOException;
 
 public class ScreenService {
     @FXML
-    public void changeScreen(ActionEvent event, String screenName) {
+    public void changeScreen(Event event, String screenName) {
         Stage currentScreen = (Stage)((Node) event.getSource()).getScene().getWindow();
         Parent screenToChange = null;
         try {

@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
+
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.LoginController">
-   <children>
-      <Label layoutX="142.0" layoutY="169.0" text="Username" />
-      <TextField fx:id="username" alignment="CENTER" layoutX="235.0" layoutY="164.0" promptText="enter your username" />
-      <Label layoutX="144.0" layoutY="205.0" text="Password" />
-      <PasswordField fx:id="password" alignment="CENTER" layoutX="235.0" layoutY="200.0" promptText="enter your password" />
-      <Label fx:id="errorMessage" alignment="CENTER" layoutX="235.0" layoutY="164.0"/>
-      <Button layoutX="319.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressLogin" text="Log In" />
-      <Button layoutX="235.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressRegister" text="Register" />
-   </children>
+    <children>
+        <Label layoutX="142.0" layoutY="169.0" text="Username" />
+        <TextField fx:id="username" alignment="CENTER" layoutX="235.0" layoutY="164.0" onKeyPressed="#clearErrorMessage" onKeyTyped="#textFieldChange" promptText="enter your username" />
+        <Label layoutX="144.0" layoutY="205.0" text="Password" />
+        <PasswordField fx:id="password" alignment="CENTER" layoutX="235.0" layoutY="200.0" onKeyPressed="#clearErrorMessage" onKeyTyped="#textFieldChange" promptText="enter your password" />
+        <Label fx:id="errorMessage" alignment="CENTER" layoutX="235.0" layoutY="234.0" textFill="RED" />
+        <Button fx:id="login" layoutX="319.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressLogin" text="Log In" />
+        <Button layoutX="235.0" layoutY="259.0" mnemonicParsing="false" onAction="#onPressRegister" text="Register" />
+    </children>
 </AnchorPane>

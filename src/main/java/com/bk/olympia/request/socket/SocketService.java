@@ -2,7 +2,6 @@ package com.bk.olympia.request.socket;
 
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
-import com.bk.olympia.request.handler.CustomStompFrameHandler;
 import com.bk.olympia.request.handler.StompHandler;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
