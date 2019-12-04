@@ -35,49 +35,6 @@ public class QueueController extends BaseController implements ApplicationListen
     private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
     private Map<Lobby, Integer> lobbyList = new TreeMap<>();
 
-//    @MessageMapping("/play/get-lobby-list")
-//    public void getLobbyList(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//        Message m = new Message(MessageType.GET_LOBBY_LIST, message.getSender());
-//        lobbyList.forEach((lobby, betValue) -> m.addContent(ContentType.LOBBY_ID, lobby.getId())
-//                .addContent(ContentType.LOBBY_NAME, lobby.getName())
-//                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers().size())
-//                .addContent(ContentType.BET_VALUE, betValue));
-//        MessagingService.sendTo(user, "/queue/play/get-lobby-list", m);
-//    }
-//
-//    @MessageMapping("/play/create-lobby")
-//    public void createLobby(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//        Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
-//        user.join(lobby);
-//        lobbyList.put(lobby, lobby.getBetValue());
-//    }
-//
-//    @MessageMapping("/play/quick-join")
-//    public void quickJoin(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//
-//        Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
-//        if (lobby != null)
-//            user.join(lobby);
-//        else {
-//
-//        }
-//    }
-//
-//    @MessageMapping("play/join")
-//    public void joinLobby(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//
-//        Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
-//        if (lobby != null)
-//            user.join(lobby);
-//        else {
-//
-//        }
-//    }
-
     @Override
     protected void init() {
         this.logger = LoggerFactory.getLogger(QueueController.class);
@@ -105,7 +62,7 @@ public class QueueController extends BaseController implements ApplicationListen
         sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
-
+        lobbyList.put(lobby, lobby.getId());
         broadcastLobbyInfo(user.getId(), lobby);
     }
 
