@@ -22,11 +22,8 @@ import org.springframework.web.client.RestTemplate;
 import service.RandomService;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class DatabaseImport implements CommandLineRunner {
@@ -76,7 +73,7 @@ public class DatabaseImport implements CommandLineRunner {
             JsonArray jsonArray = new JsonParser().parse(response).getAsJsonObject().getAsJsonArray("results");
             Type type = new TypeToken<TreeSet<Trivia>>() {
             }.getType();
-            trivias = Stream.of(trivias, gson.fromJson(jsonArray, type)).flatMap(Collection::stream).collect(Collectors.toSet());
+            trivias.addAll(gson.fromJson(jsonArray, type));
         }
 
         for (Trivia trivia : trivias) {
