@@ -25,6 +25,14 @@
       <Button fx:id="readyBtn" layoutX="49.0" layoutY="294.0" mnemonicParsing="false" onAction="#onPressReady" prefHeight="31.0" prefWidth="157.0" text="I'm ready!" />
       <Label fx:id="your_opp_ready" layoutX="233.0" layoutY="255.0" style="-fx-background-color: #fff;" text="Not ready" textFill="red" />
       <Label fx:id="your_ready" layoutX="97.0" layoutY="255.0" style="-fx-background-color: #fff;" text="Not ready" textFill="red" />
-      <Button fx:id="startBtn" layoutX="267.0" layoutY="325.0" mnemonicParsing="false" onAction="#onPressStart" text="Start game" visible="false" />
+      <Button fx:id="startBtn" disable="true" layoutX="223.0" layoutY="294.0" mnemonicParsing="false" onAction="#onPressStart" prefHeight="72.0" prefWidth="137.0" text="Start game" />
+      <ScrollPane fx:id="chatbox_scroll" layoutX="379.0" layoutY="25.0" prefHeight="259.0" prefWidth="200.0">
+         <content>
+
+         </content>
+      </ScrollPane>
+      <TextField fx:id="chatbox_input" layoutX="379.0" layoutY="294.0" onAction="#sendMessage" prefHeight="31.0" prefWidth="200.0" />
+      <Button fx:id="chat_send" layoutX="379.0" layoutY="334.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="200.0" text="Send message" />
+      <Hyperlink fx:id="next_scene" layoutX="47.0" layoutY="342.0" onAction="#nextScene" text="Next scene" />
    </children>
 </AnchorPane>

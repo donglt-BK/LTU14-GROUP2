@@ -127,7 +127,7 @@ public class HomeController extends ScreenService {
         errorMessage.setText("");
     }
 
-    public void goNext(ActionEvent event) {
+    public void nextScene(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
     }
 }
