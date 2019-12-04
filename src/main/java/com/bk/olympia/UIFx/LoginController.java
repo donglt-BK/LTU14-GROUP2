@@ -55,7 +55,7 @@ public class LoginController extends ScreenService {
                                     },
                                     errorMessage -> System.out.println(errorMessage.getErrorType())
                             );
-                            changeScreen(event, LOBBY_SCREEN);
+                            changeScreen(event, HOME_SCREEN);
                         }),
                         error -> Platform.runLater(() -> {
                             blockUI = false;

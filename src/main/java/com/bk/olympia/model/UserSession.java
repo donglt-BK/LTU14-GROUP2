@@ -23,9 +23,9 @@ public class UserSession {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Double userId) {
         System.out.println("Update user id: " + userId);
-        this.userId = userId;
+        this.userId = userId.intValue();
     }
 
     public void setData(Map content) {

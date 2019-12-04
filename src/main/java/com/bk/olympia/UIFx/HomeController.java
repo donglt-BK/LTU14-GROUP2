@@ -35,16 +35,17 @@ public class HomeController extends ScreenService {
                     if (success.getContent().containsKey(ContentType.STATUS)) {
                         //join queue success
                         System.out.println("Finding another player...");
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        Alert alert = new Alert(Alert.AlertType.NONE);
                         alert.setTitle("Find random player");
                         alert.setHeaderText("Finding another player, please wait...");
                         alert.getButtonTypes().clear();
 
                         ButtonType cancel = new ButtonType("Cancel search");
                         alert.getButtonTypes().setAll(cancel);
+                        alert.showAndWait();
                     } else {
                         //joined lobby
-                        String lobbyId = success.getContent(ContentType.LOBBY_ID);
+                        String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
                         //TODO to lobby screen

@@ -77,7 +77,6 @@ public class RegisterController extends ScreenService {
 
     public void onPressRegister(ActionEvent event) {
         try {
-            //TODO: call api to register
             String usernameInput = username.getText(),
                     nameInput = name.getText(),
                     emailInput = email.getText(),
