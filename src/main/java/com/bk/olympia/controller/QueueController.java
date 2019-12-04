@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.stream.Collectors;
 
 @Controller
 public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
@@ -268,7 +269,7 @@ public class QueueController extends BaseController implements ApplicationListen
         Message m = new Message(MessageType.JOIN_LOBBY, userId);
         m.addContent(ContentType.LOBBY_ID, lobby.getId())
                 .addContent(ContentType.LOBBY_NAME, lobby.getName())
-                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers());
+                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers().stream().map(User::getName).collect(Collectors.toList()));
         broadcast(lobby.getUsers(), Destination.FIND_LOBBY, m);
     }
 
