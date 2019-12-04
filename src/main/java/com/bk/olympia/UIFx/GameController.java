@@ -1,6 +1,11 @@
 package com.bk.olympia.UIFx;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -55,6 +60,11 @@ public class GameController extends ScreenService {
     }
 
     public void onPressDepositBtn(ActionEvent event) {
+        String eventInvokerId = ((Button) event.getSource()).getId();
+
+        if (eventInvokerId.equals(minus_A_10.getId())) {
+
+        }
         //add more to deposit input if possible
     }
 
@@ -66,7 +76,7 @@ public class GameController extends ScreenService {
 
         int depositA, depositB, depositC, depositD;
 
-        if (!isNullOrEmpty(answerAInput) && !isNullOrEmpty(answerBInput)&&!isNullOrEmpty(answerCInput)&&!isNullOrEmpty(answerDInput)){
+        if (isNullOrEmpty(answerAInput) && isNullOrEmpty(answerBInput) && isNullOrEmpty(answerCInput) && isNullOrEmpty(answerDInput)) {
             showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
             cancelBtn.setDisable(true);
         }
@@ -92,7 +102,13 @@ public class GameController extends ScreenService {
         confirmBtn.setDisable(false);
     }
 
-    public void onDepositInputChange(ActionEvent event){
+    public void onDepositInputChange(KeyEvent event) {
+        String invokerId = ((Node) event.getSource()).getId();
+        if (invokerId.equals(answer_A_input.getId())) {
+            answer_A_input.focusedProperty().addListener(
+                    (observable, oldValue, newValue) -> System.out.println("Text changed from " + oldValue + " to " + newValue)
+            );
+        }
         System.out.println("in");
     }
 

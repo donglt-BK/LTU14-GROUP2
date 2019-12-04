@@ -15,10 +15,10 @@
         <Label fx:id="answerB" layoutX="31.0" layoutY="238.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer B" />
         <Label fx:id="answerC" layoutX="31.0" layoutY="293.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer C" />
         <Label fx:id="answerD" layoutX="31.0" layoutY="354.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer D" />
-        <TextField fx:id="answer_A_input" layoutX="31.0" layoutY="201.0" onInputMethodTextChanged="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 1 deposit" />
-        <TextField fx:id="answer_C_input" layoutX="31.0" layoutY="318.0" onInputMethodTextChanged="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
-        <TextField fx:id="answer_D_input" layoutX="31.0" layoutY="377.0" onInputMethodTextChanged="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
-        <TextField fx:id="answer_B_input" layoutX="31.0" layoutY="259.0" onInputMethodTextChanged="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 2 deposit" />
+        <TextField fx:id="answer_A_input" layoutX="31.0" layoutY="201.0" onKeyPressed="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 1 deposit" />
+        <TextField fx:id="answer_C_input" layoutX="31.0" layoutY="318.0" onKeyPressed="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
+        <TextField fx:id="answer_D_input" layoutX="31.0" layoutY="377.0" onKeyPressed="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 3 deposit" />
+        <TextField fx:id="answer_B_input" layoutX="31.0" layoutY="259.0" onKeyPressed="#onDepositInputChange" prefHeight="31.0" prefWidth="146.0" promptText="Answer 2 deposit" />
         <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="30.0" text="Your money:">
             <font>
                 <Font size="19.0" />
