@@ -19,11 +19,11 @@ public class Question {
     @NotNull
     private int difficulty;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "topic_id")
     private Topic topic;
 
-    @OneToMany(targetEntity = Answer.class, mappedBy = "question")
+    @OneToMany(targetEntity = Answer.class, mappedBy = "question", fetch = FetchType.EAGER)
     @Size(max = 4)
     private List<Answer> answers;
 

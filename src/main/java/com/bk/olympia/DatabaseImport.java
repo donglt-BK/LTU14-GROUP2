@@ -22,7 +22,11 @@ import org.springframework.web.client.RestTemplate;
 import service.RandomService;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class DatabaseImport implements CommandLineRunner {
@@ -58,19 +62,22 @@ public class DatabaseImport implements CommandLineRunner {
     }
 
     public void init() {
-        final String url = "https://opentdb.com/api.php?amount=100&type=multiple";
+        final String url = "https://opentdb.com/api.php?amount=50&type=multiple";
         Gson gson = new Gson();
         Question question;
         Topic topic;
         Answer answer;
 
+        Set<Trivia> trivias = new TreeSet<>();
         RestTemplate restTemplate = new RestTemplate();
-        String response = restTemplate.getForObject(url, String.class);
-        assert response != null;
-        JsonArray jsonArray = new JsonParser().parse(response).getAsJsonObject().getAsJsonArray("results");
-        Type type = new TypeToken<ArrayList<Trivia>>() {
-        }.getType();
-        ArrayList<Trivia> trivias = gson.fromJson(jsonArray, type);
+        for (int i = 0; i <= 1; i++) {
+            String response = restTemplate.getForObject(url, String.class);
+            assert response != null;
+            JsonArray jsonArray = new JsonParser().parse(response).getAsJsonObject().getAsJsonArray("results");
+            Type type = new TypeToken<TreeSet<Trivia>>() {
+            }.getType();
+            trivias = Stream.of(trivias, gson.fromJson(jsonArray, type)).flatMap(Collection::stream).collect(Collectors.toSet());
+        }
 
         for (Trivia trivia : trivias) {
             /**
@@ -92,12 +99,13 @@ public class DatabaseImport implements CommandLineRunner {
              * Init Answer table
              */
             question = questionRepository.findByQuestionDetail(trivia.getQuestion());
-            answer = new Answer(trivia.getCorrectAnswer(), true);
-            answer.setQuestion(question);
-            answerRepository.save(answer);
+//            answer = new Answer(trivia.getCorrectAnswer(), true);
+//            answer.setQuestion(question);
+//            answerRepository.save(answer);
+            String correctAnswer = trivia.getCorrectAnswer();
 
-            for (String s : trivia.getIncorrectAnswers()) {
-                answer = new Answer(s, false);
+            for (String s : trivia.getAllAnswers()) {
+                answer = new Answer(s, correctAnswer.equals(s));
                 answer.setQuestion(question);
                 answerRepository.save(answer);
             }

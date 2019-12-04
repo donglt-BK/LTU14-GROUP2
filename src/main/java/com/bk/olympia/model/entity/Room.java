@@ -1,9 +1,11 @@
 package com.bk.olympia.model.entity;
 
 import com.bk.olympia.base.IReadiable;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -44,11 +46,9 @@ public class Room implements IReadiable {
     @NotNull
     private int winner = -1;
 
-    @NotNull
-    private Date createdAt;
-
-    @NotNull
-    private Date endedAt;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    private LocalDateTime endedAt;
 
     @ManyToMany
     @JoinTable(
@@ -121,15 +121,19 @@ public class Room implements IReadiable {
         this.winner = winner;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public Date getEndedAt() {
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getEndedAt() {
         return endedAt;
     }
 
-    public void setEndedAt(Date endedAt) {
+    public void setEndedAt(LocalDateTime endedAt) {
         this.endedAt = endedAt;
     }
 

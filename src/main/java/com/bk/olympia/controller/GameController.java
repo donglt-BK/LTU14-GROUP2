@@ -18,6 +18,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 import service.RandomService;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -205,6 +206,7 @@ public class GameController extends BaseController implements ApplicationListene
                     ReadWriteLock lock = lockStriped.get(room.getId());
                     lock.readLock().lock();
                     try {
+                        room.setEndedAt(LocalDateTime.now());
                         m.addContent(ContentType.WINNER, new int[]{player.getId(), otherPlayer.getId()});
                         broadcast(room, Destination.GAME_OVER, m);
                     } finally {
