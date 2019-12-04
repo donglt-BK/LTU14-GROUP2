@@ -2,6 +2,7 @@ package com.bk.olympia.UIFx;
 
 import com.bk.olympia.request.socket.SocketService;
 import com.bk.olympia.type.ErrorType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -29,16 +30,17 @@ public class LoginController extends ScreenService {
         String userInput = username.getText(),
                 passwordInput = password.getText();
         if (!isNullOrEmpty(userInput) && !isNullOrEmpty(passwordInput)) {
+            Platform.setImplicitExit(false);
             SocketService.getInstance().login(userInput, passwordInput,
-                    response -> changeScreen(event, LOBBY_SCREEN),
-                    error -> {
+                    response -> Platform.runLater(() -> changeScreen(event, LOBBY_SCREEN)),
+                    error -> Platform.runLater(() ->{
                         if (error.getErrorType() == ErrorType.AUTHENTICATION) {
                             errorMessage.setText("Wrong password");
                         } else {
                             errorMessage.setText("Something went wrong! :(");
                             System.out.println("Login error: " + error.getErrorType());
                         }
-                    }
+                    })
             );
         }
     }

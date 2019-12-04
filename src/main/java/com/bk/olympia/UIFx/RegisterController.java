@@ -1,6 +1,7 @@
 package com.bk.olympia.UIFx;
 
 import com.bk.olympia.request.socket.SocketService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -85,7 +86,7 @@ public class RegisterController extends ScreenService {
             if (!isNullOrEmpty(usernameInput) && !isNullOrEmpty(nameInput) && !isNullOrEmpty(emailInput) && !isNullOrEmpty(passwordInput)) {
                 System.out.println("Calling API...");
                 SocketService.getInstance().signUp(usernameInput, passwordInput, nameInput, genderInput,
-                        success -> {
+                        success -> Platform.runLater(() -> {
                             try {
                                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                                 alert.setTitle("Registration complete");
@@ -95,8 +96,8 @@ public class RegisterController extends ScreenService {
                                 message.setText("Something went wrong with the registration...");
                                 ex.printStackTrace();
                             }
-                        },
-                        error -> System.out.println(error.getErrorType())
+                        }),
+                        error -> Platform.runLater(() -> System.out.println(error.getErrorType()))
                 );
             } else {
                 message.setText("You must fill in all the fields!");
