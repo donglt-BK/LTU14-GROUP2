@@ -166,19 +166,14 @@ public class LobbyController extends ScreenService {
         String message = chatbox_input.getText();
 
         if (!isNullOrEmpty(message)) {
-            messages.add(new Label(UserSession.getInstance().getName() + ": " + message));
+            Label m = new Label(UserSession.getInstance().getName() + ": " + message);
+            messages.add(m);
             SocketService.getInstance().lobbyChat(message, error -> {
                 //TODO handle error
             });
-            if (index % 2 == 0) {
-                messages.get(index).setAlignment(Pos.TOP_LEFT);
-                System.out.println("1");
-            } else {
-                messages.get(index).setAlignment(Pos.TOP_RIGHT);
-                System.out.println("2");
-            }
-            chatBox.getChildren().add(messages.get(index));
+            chatBox.getChildren().add(m);
             chatbox_input.setText("");
+
             index++;
         }
     }

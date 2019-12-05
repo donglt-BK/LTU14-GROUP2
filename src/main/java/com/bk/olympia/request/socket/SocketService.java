@@ -143,7 +143,7 @@ public class SocketService {
         subscribe(authSession, success, error, Destination.READY);
 
         Message message = new Message(MessageType.READY);
-        SocketSendingService.send(authSession, "/play/ready", message);
+        SocketSendingService.send(authSession, "/play/lobby-ready", message);
     }
 
     public void leaveLobby(String currentLobbyId) {
