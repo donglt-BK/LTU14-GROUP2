@@ -1,5 +1,6 @@
 package com.bk.olympia.UIFx;
 
+import com.bk.olympia.model.UserSession;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -28,7 +29,7 @@ public class GameController extends ScreenService {
     public TextField chatbox_input;
     public HBox row_A, row_B, row_C, row_D;
 
-    private int totalMoney = parseIntOrZero("3000");
+    private int totalMoney, curMoney;
 
     static List<Label> messages = new ArrayList<>();
     public ScrollPane chatbox_scroll;
@@ -38,6 +39,10 @@ public class GameController extends ScreenService {
     private final VBox chatBox = new VBox(5);
 
     public void initialize() {
+        totalMoney = UserSession.getInstance().getBalance();
+        curMoney = totalMoney;
+        money.setText(String.valueOf(totalMoney));
+
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
     }
@@ -74,7 +79,7 @@ public class GameController extends ScreenService {
                 switch (lastSplit) {
                     case "A":
                         answer_A_input.setText(String.valueOf(totalMoney));
-                        answer_A_input.setDisable(true);
+                        answer_A_input.setDisable(false);
                         clear_A.setDisable(false);
                         answer_B_input.setText("");
                         answer_C_input.setText("");
@@ -85,8 +90,8 @@ public class GameController extends ScreenService {
                         break;
                     case "B":
                         answer_B_input.setText(String.valueOf(totalMoney));
-                        clear_B.setDisable(false);
                         answer_B_input.setDisable(true);
+                        clear_B.setDisable(false);
                         answer_A_input.setText("");
                         answer_C_input.setText("");
                         answer_D_input.setText("");
@@ -126,33 +131,112 @@ public class GameController extends ScreenService {
                 if (curMoney > 0) {
                     switch (firstSplit) {
                         case "plus":
-                            switch (secondSplit) {
-
+                            int tmpDeposit = parseIntOrZero(lastSplit);
+                            if ((lastSplit.equals("100") && curMoney - tmpDeposit > 0) || (lastSplit.equals("10") && curMoney - tmpDeposit > 0)) {
+                                switch (secondSplit) {
+                                    case "A":
+                                        depositA += tmpDeposit;
+                                        answer_A_input.setText(String.valueOf(depositA));
+                                        clear_A.setDisable(false);
+                                        if (depositA >= 100) {
+                                            minus_A_10.setDisable(false);
+                                            minus_A_100.setDisable(false);
+                                        } else {
+                                            minus_A_10.setDisable(false);
+                                            minus_A_100.setDisable(true);
+                                        }
+                                        break;
+                                    case "B":
+                                        depositB += tmpDeposit;
+                                        answer_B_input.setText(String.valueOf(depositB));
+                                        clear_B.setDisable(false);
+                                        if (depositB >= 100) {
+                                            minus_B_10.setDisable(false);
+                                            minus_B_100.setDisable(false);
+                                        } else {
+                                            minus_B_10.setDisable(false);
+                                            minus_B_100.setDisable(true);
+                                        }
+                                        break;
+                                    case "C":
+                                        depositC += tmpDeposit;
+                                        answer_C_input.setText(String.valueOf(depositC));
+                                        clear_C.setDisable(false);
+                                        if (depositC >= 100) {
+                                            minus_C_10.setDisable(false);
+                                            minus_C_100.setDisable(false);
+                                        } else {
+                                            minus_C_10.setDisable(false);
+                                            minus_C_100.setDisable(true);
+                                        }
+                                        break;
+                                    case "D":
+                                        depositD += tmpDeposit;
+                                        answer_D_input.setText(String.valueOf(depositD));
+                                        clear_D.setDisable(false);
+                                        if (depositD >= 100) {
+                                            minus_D_10.setDisable(false);
+                                            minus_D_100.setDisable(false);
+                                        } else {
+                                            minus_D_10.setDisable(false);
+                                            minus_D_100.setDisable(true);
+                                        }
+                                        break;
+                                }
                             }
+
                             break;
                         case "minus":
+                            switch (secondSplit) {
+                                case "A":
+                                    break;
+                                case "B":
+                                    break;
+                                case "C":
+                                    break;
+                                case "D":
+                                    break;
+                            }
                             break;
                     }
                 }
             }
         } else if (invokerIdLength > 1) {
             String targetToClear = invokerIdSplit[invokerIdLength - 1];
+            int depositA = parseIntOrZero(answer_A_input.getText()),
+                    depositB = parseIntOrZero(answer_B_input.getText()),
+                    depositC = parseIntOrZero(answer_C_input.getText()),
+                    depositD = parseIntOrZero(answer_D_input.getText()),
+                    curMoney = totalMoney - (depositA + depositB + depositC + depositD);
+
             switch (targetToClear) {
                 case "A":
                     answer_A_input.clear();
-                    clear_A.setDisable(false);
+                    answer_A_input.setDisable(false);
+                    minus_A_100.setDisable(true);
+                    minus_A_10.setDisable(true);
+                    clear_A.setDisable(true);
                     break;
                 case "B":
                     answer_B_input.clear();
-                    clear_B.setDisable(false);
+                    answer_B_input.setDisable(false);
+                    minus_B_100.setDisable(true);
+                    minus_B_10.setDisable(true);
+                    clear_B.setDisable(true);
                     break;
                 case "C":
                     answer_C_input.clear();
-                    clear_C.setDisable(false);
+                    answer_C_input.setDisable(false);
+                    minus_C_100.setDisable(true);
+                    minus_C_10.setDisable(true);
+                    clear_C.setDisable(true);
                     break;
                 case "D":
                     answer_D_input.clear();
-                    clear_D.setDisable(false);
+                    answer_D_input.setDisable(false);
+                    minus_D_100.setDisable(true);
+                    minus_D_10.setDisable(true);
+                    clear_D.setDisable(true);
                     break;
             }
         } else {
@@ -195,18 +279,18 @@ public class GameController extends ScreenService {
     }
 
     public void onDepositInputChange(KeyEvent event) {
-//        String invokerId = ((Node) event.getSource()).getId();
-//        int depositA = parseIntOrZero(answer_A_input.getText()),
-//                depositB = parseIntOrZero(answer_B_input.getText()),
-//                depositC = parseIntOrZero(answer_C_input.getText()),
-//                depositD = parseIntOrZero(answer_D_input.getText()),
-//                curMoney = totalMoney - (depositA + depositB + depositC + depositD);
-//        if (curMoney>0){
-//            if (invokerId.equals(answer_A_input.getId())) {
-//
-//            }
-//        }
-//
+        String invokerId = ((Node) event.getSource()).getId();
+        int depositA = parseIntOrZero(answer_A_input.getText()),
+                depositB = parseIntOrZero(answer_B_input.getText()),
+                depositC = parseIntOrZero(answer_C_input.getText()),
+                depositD = parseIntOrZero(answer_D_input.getText()),
+                curMoney = totalMoney - (depositA + depositB + depositC + depositD);
+        if (curMoney > 0) {
+            if (invokerId.equals(answer_A_input.getId())) {
+
+            }
+        }
+
 //        System.out.println("in");
     }
 
