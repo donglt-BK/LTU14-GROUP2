@@ -1,7 +1,7 @@
 package com.bk.olympia.constant;
 
 public enum ContentType {
-
+    CHAT,
     STATUS,
 
     USER_ID,

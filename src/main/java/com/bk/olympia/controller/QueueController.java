@@ -18,6 +18,7 @@ import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.repository.UserList;
 import com.google.common.util.concurrent.Striped;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -34,6 +35,9 @@ import java.util.stream.Collectors;
 public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
     private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
     private Map<Lobby, Integer> lobbyList = new TreeMap<>();
+
+    @Autowired
+    private ChatController chatController;
 
     @Override
     protected void init() {
@@ -62,6 +66,9 @@ public class QueueController extends BaseController implements ApplicationListen
         sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
+
+        chatController.lobbyUserMap.put(user.getId(), lobby.getId());
+
         lobbyList.put(lobby, lobby.getId());
         broadcastLobbyInfo(user.getId(), lobby);
     }
@@ -88,8 +95,7 @@ public class QueueController extends BaseController implements ApplicationListen
             } finally {
                 lock.readLock().unlock();
             }
-        }
-        else throw new TargetInsufficientBalanceException(user.getId());
+        } else throw new TargetInsufficientBalanceException(user.getId());
     }
 
     @MessageMapping("/play/invite-rep")
@@ -148,6 +154,7 @@ public class QueueController extends BaseController implements ApplicationListen
         Message m = new Message(MessageType.LEAVE_LOBBY, user.getId());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
+        chatController.lobbyUserMap.put(user.getId(), -1);
 
         if (lobby.getUsers().size() > 0)
             broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
@@ -205,9 +212,9 @@ public class QueueController extends BaseController implements ApplicationListen
         ReadWriteLock lock = lockStriped.get(betValue);
         lock.readLock().lock();
         try {
-            return lobbyList.entrySet().stream()
-                    .filter(entry -> entry.getValue() == betValue)
-                    .map(Map.Entry::getKey)
+            return lobbyList.keySet().stream()
+                    .filter(lobby -> lobby.getUsers().size() < 2)
+                    .filter(lobby -> lobby.getBetValue() == betValue)
                     .findAny()
                     .orElse(new Lobby(betValue));
         } finally {
@@ -215,7 +222,7 @@ public class QueueController extends BaseController implements ApplicationListen
         }
     }
 
-    private Lobby findLobbyById(int id) {
+    public Lobby findLobbyById(int id) {
         return lobbyList.keySet().stream()
                 .filter(integer -> integer.getId() == id)
                 .findFirst()
