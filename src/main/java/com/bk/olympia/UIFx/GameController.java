@@ -1,6 +1,7 @@
 package com.bk.olympia.UIFx;
 
 import com.bk.olympia.model.UserSession;
+import com.bk.olympia.request.socket.SocketService;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -45,6 +46,17 @@ public class GameController extends ScreenService {
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
+        Thread t = new Thread(() ->
+                SocketService.getInstance().roomChatSubscribe(
+                        message -> {
+                            //TODO: show the receive message
+                        },
+                        error -> {
+                        }
+                )
+        );
+        t.start();
+
     }
 
     public void onPressLeave(ActionEvent event) {
@@ -295,8 +307,13 @@ public class GameController extends ScreenService {
     }
 
     public void sendMessage(ActionEvent event) {
+        System.out.println("send");
         String message = chatbox_input.getText();
-        if (!isNullOrEmpty(message)) {
+        //TODO show sending message
+        SocketService.getInstance().roomChat(message, error -> {
+            //TODO handle unsend
+        });
+        /*if (!isNullOrEmpty(message)) {
             messages.add(new Label("Khoa: " + message));
             if (index % 2 == 0) {
                 messages.get(index).setAlignment(Pos.TOP_LEFT);
@@ -308,6 +325,6 @@ public class GameController extends ScreenService {
             chatBox.getChildren().add(messages.get(index));
             chatbox_input.setText("");
             index++;
-        }
+        }*/
     }
 }

@@ -46,4 +46,8 @@ public class ScreenService {
         alert.setContentText(contentText);
         alert.showAndWait();
     }
+
+    public void addParticipant() {
+
+    };
 }

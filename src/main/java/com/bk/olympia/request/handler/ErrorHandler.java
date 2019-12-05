@@ -1,4 +1,4 @@
-package com.bk.olympia.request.socket;
+package com.bk.olympia.request.handler;
 
 import com.bk.olympia.message.ErrorMessage;
 

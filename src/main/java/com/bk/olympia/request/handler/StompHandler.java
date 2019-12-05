@@ -2,9 +2,6 @@ package com.bk.olympia.request.handler;
 
 import com.bk.olympia.message.ErrorMessage;
 import com.bk.olympia.message.Message;
-import com.bk.olympia.request.socket.ErrorHandler;
-import com.bk.olympia.request.socket.OldResponseHandler;
-import com.bk.olympia.request.socket.ResponseHandler;
 import com.google.gson.Gson;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -32,7 +29,7 @@ public class StompHandler implements StompFrameHandler {
     }
 
     public void handleFrame(StompHeaders stompHeaders, Object o) {
-        System.out.println("handle");
+        System.out.println("handle " + new String((byte[]) o));
         if (isErrorHandler) {
             errorHandler.handle(gson.fromJson(new String((byte[]) o), ErrorMessage.class));
         } else {

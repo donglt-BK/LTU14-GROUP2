@@ -1,6 +1,7 @@
 package com.bk.olympia.UIFx;
 
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ErrorType;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -82,7 +83,7 @@ public class RegisterController extends ScreenService {
                     nameInput = name.getText(),
                     emailInput = email.getText(),
                     passwordInput = password.getText();
-            int genderInput = gender.getValue().getValue();
+            int genderInput = gender.getValue() != null ? gender.getValue().getValue() : 3;
             if (!isNullOrEmpty(usernameInput) && !isNullOrEmpty(nameInput) && !isNullOrEmpty(emailInput) && !isNullOrEmpty(passwordInput)) {
                 SocketService.getInstance().signUp(usernameInput, passwordInput, nameInput, genderInput,
                         success -> Platform.runLater(() -> {
@@ -96,13 +97,22 @@ public class RegisterController extends ScreenService {
                                 ex.printStackTrace();
                             }
                         }),
-                        error -> Platform.runLater(() -> System.out.println(error.getErrorType()))
+                        error -> Platform.runLater(() -> {
+                            if (error.getErrorType() == ErrorType.DUPLICATE_USERNAME) {
+                                message.setText("Username existed");
+                            } else if (error.getErrorType() == ErrorType.DUPLICATE_NAME) {
+                                message.setText("Name existed");
+                            } else {
+                                message.setText("Something went wrong! :(");
+                                System.out.println("Login error: " + error.getErrorType());
+                            }
+                        })
                 );
             } else {
                 message.setText("You must fill in all the fields!");
                 return;
             }
-            changeScreen(event, LOGIN_SCREEN);
+            //changeScreen(event, LOGIN_SCREEN);
         } catch (Exception ex) {
             ex.printStackTrace();
             message.setText("There's something wrong...");
