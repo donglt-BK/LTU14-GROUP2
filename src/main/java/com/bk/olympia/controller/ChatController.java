@@ -56,8 +56,8 @@ public class ChatController extends BaseController {
         //if (user.getLobbyId() == lobbyId) {
         int userId = message.getSender();
         if (lobbyUserMap.get(userId) == lobbyId) {
-            System.out.println("message forward to lobby " + lobbyId);
-            System.out.println(queueController.findLobbyById(lobbyId).getUsers().toString());
+            System.out.println("message forward to lobby " + lobbyId + " by " + Destination.LOBBY_CHAT + lobbyId);
+            queueController.findLobbyById(lobbyId).getUsers().forEach(user -> System.out.println(userId));
             broadcast(queueController.findLobbyById(lobbyId).getUsers(), Destination.LOBBY_CHAT + lobbyId, message);
         } else throw new UnauthorizedActionException(userId);
     }
