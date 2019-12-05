@@ -15,7 +15,7 @@ import java.util.List;
 public class OlympiaClient extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-		SocketService.getInstance();
+        SocketService.getInstance();
         UserSession.getInstance();
         try {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
@@ -25,7 +25,13 @@ public class OlympiaClient extends Application {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    @Override
+    public void stop() {
+        if (UserSession.getInstance().getCurrentLobbyId() != null) {
+            SocketService.getInstance().leaveLobby(UserSession.getInstance().getCurrentLobbyId());
+        }
     }
 
     public static void main(String[] args) {

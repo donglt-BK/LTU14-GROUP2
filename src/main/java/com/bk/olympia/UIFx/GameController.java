@@ -1,14 +1,10 @@
 package com.bk.olympia.UIFx;
 
 import com.bk.olympia.request.socket.SocketService;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
-import javafx.geometry.Pos;
-import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.util.ArrayList;
@@ -40,7 +36,7 @@ public class GameController extends ScreenService {
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
         Thread t = new Thread(() ->
-                SocketService.getInstance().chatSubscribe(
+                SocketService.getInstance().roomChatSubscribe(
                         message -> {
                             //TODO: show the receive message
                         },
@@ -124,9 +120,10 @@ public class GameController extends ScreenService {
     }
 
     public void sendMessage(ActionEvent event) {
+        System.out.println("send");
         String message = chatbox_input.getText();
         //TODO show sending message
-        SocketService.getInstance().chat(message, error -> {
+        SocketService.getInstance().roomChat(message, error -> {
             //TODO handle unsend
         });
         /*if (!isNullOrEmpty(message)) {

@@ -3,6 +3,10 @@ package com.bk.olympia.config;
 import java.awt.*;
 
 public class Constant {
+    //public static final String HOST = "86cbc151.ngrok.io";
+    //public static final int PORT = 80;
+    public static final String HOST = "localhost";
+    public static final int PORT = 8109;
     public static final int WINDOW_WIDTH = 600, WINDOW_HEIGHT = 650;
     public static final String APP_NAME = "Olympia";
     public static final String HOME_SCREEN = "home",

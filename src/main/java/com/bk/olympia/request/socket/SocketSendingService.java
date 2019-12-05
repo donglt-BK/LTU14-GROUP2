@@ -1,5 +1,6 @@
 package com.bk.olympia.request.socket;
 
+import com.bk.olympia.config.Constant;
 import com.bk.olympia.request.handler.CustomStompSessionHandler;
 import com.google.gson.Gson;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
@@ -21,8 +22,9 @@ import java.util.concurrent.ExecutionException;
 public class SocketSendingService {
     private static final String templateUrl = "ws://{host}:{port}";
 
-    public static StompSession connect(String host, int port, String path) throws ExecutionException, InterruptedException {
-
+    public static StompSession connect(String path) throws ExecutionException, InterruptedException {
+        String host = Constant.HOST;
+        int port = Constant.PORT;
         Transport webSocketTransport = new WebSocketTransport(new StandardWebSocketClient());
         List<Transport> transports = Collections.singletonList(webSocketTransport);
 

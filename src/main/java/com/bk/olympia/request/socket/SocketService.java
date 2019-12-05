@@ -30,9 +30,9 @@ public class SocketService {
 
     private SocketService() {
         try {
-            authSession = SocketSendingService.connect("localhost", 8109, "/auth");
-            userSession = SocketSendingService.connect("localhost", 8109, "/user");
-            playSession = SocketSendingService.connect("localhost", 8109, "/play");
+            authSession = SocketSendingService.connect( "/auth");
+            userSession = SocketSendingService.connect("/user");
+            playSession = SocketSendingService.connect("/play");
             ready = true;
         } catch (ExecutionException | InterruptedException e) {
             System.out.println("Error connect to auth socket");
@@ -181,15 +181,16 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/get-question", message);
     }
 
-    public void chatSubscribe(ResponseHandler success, ErrorHandler error) {
+    public void lobbyChatSubscribe(String lobbyId, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
 
-        subscribe(authSession, success, error, Destination.ROOM_CHAT);
+        System.out.println(Destination.LOBBY_CHAT + lobbyId);
+        subscribe(authSession, success, error, Destination.LOBBY_CHAT + lobbyId);
     }
-    public void chat(String text, ErrorHandler error) {
+    public void lobbyChat(String text, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
@@ -197,7 +198,26 @@ public class SocketService {
 
         Message message = new Message(MessageType.LOGIN);
         message.addContent(ContentType.CHAT, text);
-        SocketSendingService.send(authSession, "/topic/private/room/" + UserSession.getInstance().getRoomId(), message);
+        SocketSendingService.send(authSession, "/topic/private/lobby/" + UserSession.getInstance().getCurrentLobbyId(), message);
+    }
+    
+    public void roomChatSubscribe(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        subscribe(playSession, success, error, Destination.ROOM_CHAT);
+    }
+    public void roomChat(String text, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        Message message = new Message(MessageType.LOGIN);
+        message.addContent(ContentType.CHAT, text);
+        SocketSendingService.send(playSession, "/topic/private/room/" + UserSession.getInstance().getRoomId(), message);
     }
 
     public static SocketService getInstance() {

@@ -67,6 +67,21 @@ public class LobbyController extends ScreenService {
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
 
+                        if (UserSession.getInstance().getCurrentLobbyId() == null) {
+                            SocketService.getInstance().lobbyChatSubscribe(lobbyId,
+                                    message -> Platform.runLater(() -> {
+                                        System.out.println("receive");
+                                        if (message.getSender() != UserSession.getInstance().getUserId()) {
+                                            String m = message.getContent(ContentType.CHAT);
+                                            messages.add(new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m));
+                                            chatBox.getChildren().add(messages.get(index));
+                                        }
+                                    }),
+                                    error -> {
+                                    }
+                            );
+                        }
+
                         if (!lobbyParticipant.isEmpty()) {
                             System.out.println(lobbyParticipant.get(0).equals(UserSession.getInstance().getName()));
                             if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
@@ -149,8 +164,12 @@ public class LobbyController extends ScreenService {
 
     public void sendMessage(ActionEvent event) {
         String message = chatbox_input.getText();
+
         if (!isNullOrEmpty(message)) {
-            messages.add(new Label("Khoa: " + message));
+            messages.add(new Label(UserSession.getInstance().getName() + ": " + message));
+            SocketService.getInstance().lobbyChat(message, error -> {
+                //TODO handle error
+            });
             if (index % 2 == 0) {
                 messages.get(index).setAlignment(Pos.TOP_LEFT);
                 System.out.println("1");
