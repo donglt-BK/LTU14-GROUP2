@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @Controller
 public class QueueController extends BaseController implements ApplicationListener<ApplicationEvent> {
     private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
-    private Map<Lobby, Integer> lobbyList = new TreeMap<>();
+    private static Map<Lobby, Integer> lobbyList = new TreeMap<>();
 
 //    @MessageMapping("/play/get-lobby-list")
 //    public void getLobbyList(@Payload Message message) {
@@ -101,11 +101,14 @@ public class QueueController extends BaseController implements ApplicationListen
     private void handleFindLobby(User user, int betValue) {
         if (betValue > user.getBalance())
             throw new InsufficientBalanceException(user.getId());
+        if (user.getLobbyId() > 0)
+            throw new UnauthorizedActionException(user.getId());
 
         sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
-
+        lobbyList.put(lobby, betValue);
+        save(user);
         broadcastLobbyInfo(user.getId(), lobby);
     }
 
@@ -229,6 +232,7 @@ public class QueueController extends BaseController implements ApplicationListen
         if (user.equals(lobby.getHost())) {
             lobby.getUsers().forEach(u -> {
                 Player p = new Player(u, lobby.getUsers().indexOf(u), lobby.getBetValue());
+                u.addPlayer(p);
                 players.add(p);
                 save(p);
             });

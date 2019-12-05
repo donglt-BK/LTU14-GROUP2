@@ -14,6 +14,7 @@
             <column name="name" type="varchar(50)"/>
             <column name="gender" type="int(11)"/>
             <column name="balance" type="int(11)" defaultValue="50000"/>
+            <column name="lobby_id" type="int(11)"/>
         </createTable>
 
         <createTable tableName="topic">
