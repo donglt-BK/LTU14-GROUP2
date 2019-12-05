@@ -37,7 +37,6 @@ public class User {
     @Size(max = DEFAULT_HISTORY_SIZE)
     private List<Player> playerList = new ArrayList<>();
 
-    @Transient
     private int lobbyId = -1;
 
     public User() {

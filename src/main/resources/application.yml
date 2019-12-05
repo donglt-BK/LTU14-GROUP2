@@ -9,3 +9,8 @@ spring:
     drop-first: true
 server:
   port: 8109
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: debug
