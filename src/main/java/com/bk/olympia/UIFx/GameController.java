@@ -2,11 +2,18 @@ package com.bk.olympia.UIFx;
 
 import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ObservableIntegerValue;
+import javafx.beans.value.ObservableObjectValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.geometry.Pos;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -21,7 +28,7 @@ import static com.bk.olympia.config.Util.parseIntOrZero;
 public class GameController extends ScreenService {
 
     public Button cancelBtn, confirmBtn;
-    public TextField answer_A_input, answer_B_input, answer_C_input, answer_D_input;
+    //public TextField answer_A_input, answer_B_input, answer_C_input, answer_D_input;
     public Button minus_A_10, plus_A_10, minus_A_100, plus_A_100, clear_A, all_in_A;
     public Button minus_B_10, plus_B_10, minus_B_100, plus_B_100, clear_B, all_in_B;
     public Button minus_C_10, plus_C_10, minus_C_100, plus_C_100, clear_C, all_in_C;
@@ -29,6 +36,16 @@ public class GameController extends ScreenService {
     public Label money;
     public TextField chatbox_input;
     public HBox row_A, row_B, row_C, row_D;
+
+    public Spinner<Integer> answer_A_input = new Spinner<Integer>();
+    public Spinner<Integer> answer_B_input = new Spinner<Integer>();
+    public Spinner<Integer> answer_C_input = new Spinner<Integer>();
+    public Spinner<Integer> answer_D_input = new Spinner<Integer>();
+
+    private SpinnerValueFactory valueFactoryA;
+    private SpinnerValueFactory valueFactoryB;
+    private SpinnerValueFactory valueFactoryC;
+    private SpinnerValueFactory valueFactoryD;
 
     private int totalMoney, curMoney;
 
@@ -42,7 +59,22 @@ public class GameController extends ScreenService {
     public void initialize() {
         totalMoney = UserSession.getInstance().getBalance();
         curMoney = totalMoney;
-        money.setText(String.valueOf(totalMoney));
+        money.setText(String.valueOf(curMoney));
+
+        valueFactoryA = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
+        valueFactoryB = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
+        valueFactoryC = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
+        valueFactoryD = new SpinnerValueFactory.IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
+
+        answer_A_input.setValueFactory(valueFactoryA);
+        answer_A_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
+        answer_B_input.setValueFactory(valueFactoryB);
+        answer_B_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
+        answer_C_input.setValueFactory(valueFactoryC);
+        answer_C_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
+        answer_D_input.setValueFactory(valueFactoryD);
+        answer_D_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
+
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
@@ -78,6 +110,7 @@ public class GameController extends ScreenService {
         }
     }
 
+    /*
     public void onPressDepositBtn(ActionEvent event) {
         String invokerId = ((Button) event.getSource()).getId();
 
@@ -256,24 +289,31 @@ public class GameController extends ScreenService {
         }
         //add more to deposit input if possible
     }
+    */
 
     public void onPressConfirm(ActionEvent event) {
-        String answerAInput = answer_A_input.getText(),
-                answerBInput = answer_B_input.getText(),
-                answerCInput = answer_C_input.getText(),
-                answerDInput = answer_D_input.getText();
-
+        String answerAInput = answer_A_input.getEditor().getText(),
+                answerBInput = answer_B_input.getEditor().getText(),
+                answerCInput = answer_C_input.getEditor().getText(),
+                answerDInput = answer_D_input.getEditor().getText();
         int depositA, depositB, depositC, depositD;
+        System.out.println("A: " + answerAInput);
+        System.out.println("B: " + answerBInput);
+        System.out.println("C: " + answerCInput);
+        System.out.println("D: " + answerDInput);
 
-        if (isNullOrEmpty(answerAInput) && isNullOrEmpty(answerBInput) && isNullOrEmpty(answerCInput) && isNullOrEmpty(answerDInput)) {
-            showWarning("No answer!", "Please deposit at least one or you may lose all your current credit.");
+        depositA = parseIntOrZero(answerAInput);
+        depositB = parseIntOrZero(answerBInput);
+        depositC = parseIntOrZero(answerCInput);
+        depositD = parseIntOrZero(answerDInput);
+
+        if (depositA + depositB + depositC + depositD == 0) {
+            showWarning("No answer!", "Please deposit into at least one answer or you may lose all your current credit.");
+            cancelBtn.setDisable(true);
+        } else if (depositA + depositB + depositC + depositD > curMoney) {
+            showWarning("Not enough money!", "You currently don't have enough money to deposit this amount of money.");
             cancelBtn.setDisable(true);
         } else {
-            depositA = parseIntOrZero(answerAInput);
-            depositB = parseIntOrZero(answerBInput);
-            depositC = parseIntOrZero(answerCInput);
-            depositD = parseIntOrZero(answerDInput);
-
             cancelBtn.setDisable(false);
             confirmBtn.setDisable(true);
             //TODO: call api confirm answer
@@ -282,15 +322,19 @@ public class GameController extends ScreenService {
     }
 
     public void onPressCancel(ActionEvent event) {
-        answer_A_input.setText("");
-        answer_B_input.setText("");
-        answer_C_input.setText("");
-        answer_D_input.setText("");
+        answer_A_input.getValueFactory().setValue(0);
+        answer_A_input.getEditor().setText("0");
+        answer_B_input.getValueFactory().setValue(0);
+        answer_B_input.getEditor().setText("0");
+        answer_C_input.getValueFactory().setValue(0);
+        answer_C_input.getEditor().setText("0");
+        answer_D_input.getValueFactory().setValue(0);
+        answer_D_input.getEditor().setText("0");
         cancelBtn.setDisable(true);
         confirmBtn.setDisable(false);
     }
 
-    public void onDepositInputChange(KeyEvent event) {
+    /*public void onDepositInputChange(KeyEvent event) {
         String invokerId = ((Node) event.getSource()).getId();
         int depositA = parseIntOrZero(answer_A_input.getText()),
                 depositB = parseIntOrZero(answer_B_input.getText()),
@@ -303,15 +347,15 @@ public class GameController extends ScreenService {
             }
         }
 
-//        System.out.println("in");
-    }
+        System.out.println("in");
+    }*/
 
     public void sendMessage(ActionEvent event) {
-        System.out.println("send");
+        System.out.println("sending message...");
         String message = chatbox_input.getText();
         //TODO show sending message
         SocketService.getInstance().roomChat(message, error -> {
-            //TODO handle unsend
+            //TODO handle unsent
         });
         /*if (!isNullOrEmpty(message)) {
             messages.add(new Label("Khoa: " + message));
@@ -326,5 +370,51 @@ public class GameController extends ScreenService {
             chatbox_input.setText("");
             index++;
         }*/
+    }
+
+    public void onPressClear(ActionEvent event) {
+        Button button = (Button) event.getSource();
+        if (button.equals(clear_A)) {
+            answer_A_input.getValueFactory().setValue(0);
+            answer_A_input.getEditor().setText("0");
+        } else if (button.equals(clear_B)) {
+            answer_B_input.getValueFactory().setValue(0);
+            answer_B_input.getEditor().setText("0");
+        } else if (button.equals(clear_C)) {
+            answer_C_input.getValueFactory().setValue(0);
+            answer_C_input.getEditor().setText("0");
+        } else if (button.equals(clear_D)) {
+            answer_D_input.getValueFactory().setValue(0);
+            answer_D_input.getEditor().setText("0");
+        }
+    }
+
+
+    public void onPressDepositAll(ActionEvent event) {
+        Button button = (Button) event.getSource();
+        int A_input = parseIntOrZero(answer_A_input.getEditor().getText());
+        int B_input = parseIntOrZero(answer_B_input.getEditor().getText());
+        int C_input = parseIntOrZero(answer_C_input.getEditor().getText());
+        int D_input = parseIntOrZero(answer_D_input.getEditor().getText());
+
+        int value;
+
+        if (button.equals(all_in_A)) {
+            value = curMoney - B_input - C_input - D_input;
+            answer_A_input.getValueFactory().setValue(value);
+            answer_A_input.getEditor().setText(Integer.toString(value));
+        } else if (button.equals(all_in_B)) {
+            value = curMoney - A_input - C_input - D_input;
+            answer_B_input.getValueFactory().setValue(value);
+            answer_B_input.getEditor().setText(Integer.toString(value));
+        } else if (button.equals(all_in_C)) {
+            value = curMoney - A_input - B_input - D_input;
+            answer_C_input.getValueFactory().setValue(value);
+            answer_C_input.getEditor().setText(Integer.toString(value));
+        } else if (button.equals(all_in_D)) {
+            value = curMoney - A_input - B_input - C_input;
+            answer_D_input.getValueFactory().setValue(value);
+            answer_D_input.getEditor().setText(Integer.toString(value));
+        }
     }
 }
