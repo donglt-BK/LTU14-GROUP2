@@ -11,10 +11,8 @@
 * Màn hình đăng nhập: có thể dùng để đăng nhập và đăng ký tài khoản.
 * Màn hình chính: sau khi đăng nhập, màn hình này sẽ hiện lên. Người chơi có thể chọn một trong các hành động sau:
     * Tìm người chơi: hệ thống sẽ tự tìm kiếm những người riêng lẻ.
-    ~~* Tạo phòng: người chơi tự tạo phòng đợi để đợi các người chơi khác vào cùng.~~
-    ~~* Tìm phòng theo id: người chơi có thể vào một phòng xác định dựa theo id của phòng đó (trong trường hợp phòng đó còn chỗ).~~
     * Mời người chơi: người chơi có thể mời một người chơi khác chơi cùng bằng cách tìm theo tiêu chí (id hoặc tên) của họ.
-* Màn hình phòng đợi (lobby): sau khi ~~vào hoặc tạo phòng~~ tìm được người chơi khác, người chơi sẽ được chuyển đến màn hình này. Ở đây có các chức năng sau:
+* Màn hình phòng đợi (lobby): sau khi tìm được người chơi khác, người chơi sẽ được chuyển đến màn hình này. Ở đây có các chức năng sau:
     * Đặt cược: người chơi sẽ đặt cược một khoản tiền theo hạn mức mà trò chơi đưa ra (100, 500, 1000) và hạn mức lớn nhất sẽ tuỳ thuộc vào số tiền mà cả hai bên có.
     * Thoát khỏi phòng: khi một trong hai hoặc cả hai người rời phòng, phòng sẽ bị xoá; số tiền cược sẽ không bị trừ nếu người chơi thoát khỏi phòng trước khi trò chơi bắt đầu.
     * Bắt đầu trò chơi: trò chơi sẽ bắt đầu khi cả hai người cùng bấm nút _Sẵn sàng_.
