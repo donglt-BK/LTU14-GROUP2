@@ -2,6 +2,8 @@ package com.bk.olympia.UIFx;
 
 import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
+import com.bk.olympia.type.ContentType;
+import javafx.application.Platform;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import javafx.beans.value.ObservableIntegerValue;
@@ -16,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,11 +83,26 @@ public class GameController extends ScreenService {
         chatbox_input.setPromptText("Enter your message...");
         Thread t = new Thread(() ->
                 SocketService.getInstance().roomChatSubscribe(
-                        message -> {
-                            //TODO: show the receive message
-                        },
+                        message -> Platform.runLater(() -> {
+                            System.out.println("receiving message...");
+                            if (message.getSender() != UserSession.getInstance().getUserId()) {
+                                String m = message.getContent(ContentType.CHAT);
+                                Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
+                                opponentMessage.setTextFill(Color.BLUE);
+                                messages.add(opponentMessage);
+                                chatBox.getChildren().add(messages.get(index));
+                                index++;
+                            }
+                        }),
                         error -> {
+                            Label m = new Label("Failed to retrieve message from server. Trying again...");
+                            m.setPrefWidth(chatBox.getPrefWidth());
+                            m.setTextFill(Color.RED);
+                            messages.add(m);
+                            chatBox.getChildren().add(messages.get(index));
+                            index++;
                         }
+
                 )
         );
         t.start();
@@ -351,25 +369,24 @@ public class GameController extends ScreenService {
     }*/
 
     public void sendMessage(ActionEvent event) {
-        System.out.println("sending message...");
         String message = chatbox_input.getText();
-        //TODO show sending message
-        SocketService.getInstance().roomChat(message, error -> {
-            //TODO handle unsent
-        });
-        /*if (!isNullOrEmpty(message)) {
-            messages.add(new Label("Khoa: " + message));
-            if (index % 2 == 0) {
-                messages.get(index).setAlignment(Pos.TOP_LEFT);
-                System.out.println("1");
-            } else {
-                messages.get(index).setAlignment(Pos.TOP_RIGHT);
-                System.out.println("2");
-            }
-            chatBox.getChildren().add(messages.get(index));
+
+        if (!isNullOrEmpty(message)) {
+            Label m = new Label(UserSession.getInstance().getName() + ": " + message);
+            m.setTextFill(Color.GREEN);
+            messages.add(m);
+            chatBox.getChildren().add(m);
             chatbox_input.setText("");
             index++;
-        }*/
+            SocketService.getInstance().roomChat(message, error -> {
+                Label err = new Label("Failed to retrieve message from server. Trying again...");
+                err.setTextFill(Color.RED);
+                messages.add(err);
+                chatBox.getChildren().add(messages.get(index));
+                index++;
+            });
+
+        }
     }
 
     public void onPressClear(ActionEvent event) {

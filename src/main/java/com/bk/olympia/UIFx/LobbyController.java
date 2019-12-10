@@ -66,18 +66,26 @@ public class LobbyController extends ScreenService {
                         lobbyId = lobbyId.substring(0, lobbyId.length() - 2);
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
                         List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
-
+                        //receive message from another player
                         if (UserSession.getInstance().getCurrentLobbyId() == null) {
                             SocketService.getInstance().lobbyChatSubscribe(lobbyId,
                                     message -> Platform.runLater(() -> {
                                         System.out.println("receive");
                                         if (message.getSender() != UserSession.getInstance().getUserId()) {
                                             String m = message.getContent(ContentType.CHAT);
-                                            messages.add(new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m));
+                                            Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
+                                            opponentMessage.setTextFill(Color.BLUE);
+                                            messages.add(opponentMessage);
                                             chatBox.getChildren().add(messages.get(index));
+                                            index++;
                                         }
                                     }),
                                     error -> {
+                                        Label m = new Label("Failed to retrieve message from server. Trying again...");
+                                        m.setTextFill(Color.RED);
+                                        messages.add(m);
+                                        chatBox.getChildren().add(messages.get(index));
+                                        index++;
                                     }
                             );
                         }
@@ -116,7 +124,7 @@ public class LobbyController extends ScreenService {
 
     public void onPressReady(ActionEvent event) {
         Paint yourReady = your_ready.getTextFill(),
-                hisReady = your_opp_ready.getTextFill();
+                opponentReady = your_opp_ready.getTextFill();
         if (!isReady) {
             isReady = true;
             your_ready.setTextFill(Color.GREEN);
@@ -131,7 +139,7 @@ public class LobbyController extends ScreenService {
         Thread t = new Thread(() -> SocketService.getInstance().ready(
                 response -> {
                     boolean isAlpha = UserSession.getInstance().isAlpha();
-                    if (hisReady.equals(Color.GREEN) && isAlpha) {
+                    if (opponentReady.equals(Color.GREEN) && isAlpha) {
                         startBtn.setVisible(true);
                     } else {
                         startBtn.setVisible(false);
@@ -167,14 +175,18 @@ public class LobbyController extends ScreenService {
 
         if (!isNullOrEmpty(message)) {
             Label m = new Label(UserSession.getInstance().getName() + ": " + message);
+            m.setTextFill(Color.GREEN);
             messages.add(m);
-            SocketService.getInstance().lobbyChat(message, error -> {
-                //TODO handle error
-            });
-            chatBox.getChildren().add(m);
+            chatBox.getChildren().add(messages.get(index));
             chatbox_input.setText("");
-
             index++;
+            SocketService.getInstance().lobbyChat(message, error -> {
+                Label err = new Label("Failed to send message to server. Trying again...");
+                err.setTextFill(Color.RED);
+                messages.add(err);
+                chatBox.getChildren().add(messages.get(index));
+                index++;
+            });
         }
     }
 
