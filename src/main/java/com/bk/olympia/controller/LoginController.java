@@ -4,7 +4,6 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
 import com.bk.olympia.constant.MessageType;
-import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.exception.*;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
@@ -38,7 +37,7 @@ public class LoginController extends BaseController {
 
     private Message handleLogin(Principal principal, User user) {
         if (!isUsingSecurity && user.getLobbyId() != -1) {
-            publishEvent(new DisconnectUserFromLobbyEvent(this, user));
+            user.setLobbyId(-1);
         }
         user.setUid(principal.getName());
         Message m = new Message(MessageType.LOGIN, user.getId());
