@@ -153,6 +153,7 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     private void handleLeaveLobby(User user, Lobby lobby) {
+        if (lobby == null) return;
         Message m = new Message(MessageType.LEAVE_LOBBY, user.getId());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
@@ -255,6 +256,7 @@ public class QueueController extends BaseController implements ApplicationListen
 
     private void removeLobby(Lobby lobby) {
         Lobby.addDeletedId(lobby.getId());
+        lobby.getUsers().forEach(user -> user.setLobbyId(-1));
         lobbyList.remove(lobby);
     }
 }
