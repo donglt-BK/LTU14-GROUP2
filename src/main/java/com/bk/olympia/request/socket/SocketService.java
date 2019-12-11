@@ -167,8 +167,17 @@ public class SocketService {
 
         subscribe(authSession, success, error, Destination.CREATE_ROOM);
 
-        Message message = new Message(MessageType.READY);
+        Message message = new Message(MessageType.START_GAME);
+        message.addContent(LOBBY_ID, Integer.parseInt(UserSession.getInstance().getCurrentLobbyId()));
         SocketSendingService.send(authSession, "/play/start-game", message);
+    }
+
+    public void subscribesStart(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(authSession, success, error, Destination.CREATE_ROOM);
     }
 
     public void getQuestion(ResponseHandler success, ErrorHandler error) {

@@ -96,8 +96,8 @@ public class UserSession {
         return roomId;
     }
 
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public void setRoomId(Double roomId) {
+        this.roomId = String.valueOf(roomId);
     }
 
     public void resetLobby() {
