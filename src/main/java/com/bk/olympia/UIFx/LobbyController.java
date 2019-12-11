@@ -180,14 +180,14 @@ public class LobbyController extends ScreenService {
         Thread t = new Thread(() -> Platform.runLater(() -> {
             SocketService.getInstance().sendReady();
             SocketService.getInstance().subscribesStart(
-                    success -> {
+                    success -> Platform.runLater(() -> {
                         UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
                         System.out.println("Starting");
                         changeScreen(event, GAME_SCREEN);
-                    },
-                    error -> {
+                    }),
+                    error -> Platform.runLater(() -> {
                         showError("Failed!", "Check your connection to server!");
-                    }
+                    })
             );
         }));
         t.start();
