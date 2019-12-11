@@ -59,13 +59,32 @@ public class LobbyController extends ScreenService {
                         alert.getButtonTypes().setAll(cancel);
                         if (!found.get()) alert.show();
                     } else {
-                        found.set(true);
-                        alert.hide();
+                        List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
+                        if (!found.get()) {
+                            if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
+                                your_ready.setText("Host");
+                                your_ready.setTextFill(Color.GREEN);
+                                readyBtn.setVisible(false);
+                                your_opp_ready.setText("Not ready");
+                                your_opp_ready.setTextFill(Color.RED);
+                                startBtn.setVisible(true);
+                            } else {
+                                your_ready.setText("Not ready");
+                                readyBtn.setText("Ready!");
+                                readyBtn.setVisible(true);
+                                your_opp_ready.setText("Host");
+                                your_opp_ready.setTextFill(Color.GREEN);
+                                your_opp_ready.setVisible(true);
+                                startBtn.setVisible(false);
+                            }
+                            found.set(true);
+                            alert.hide();
+                        }
                         //joined lobby
                         String lobbyId = String.valueOf((Double) success.getContent(ContentType.LOBBY_ID));
                         lobbyId = lobbyId.substring(0, lobbyId.length() - 2);
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
-                        List<String> lobbyParticipant = success.getContent(ContentType.LOBBY_PARTICIPANT);
+
                         //receive message from another player
                         if (UserSession.getInstance().getCurrentLobbyId() == null) {
                             SocketService.getInstance().lobbyChatSubscribe(lobbyId,
@@ -90,8 +109,28 @@ public class LobbyController extends ScreenService {
                             );
                         }
 
+                        //listen ready
+                        SocketService.getInstance().readySubscribe(
+                                response -> {
+                                    boolean isAlpha = UserSession.getInstance().isAlpha();
+                                    if (!isAlpha) return;
+                                    if (response.getContent(ContentType.READY)) {
+                                        your_opp_ready.setText("Ready");
+                                        your_opp_ready.setTextFill(Color.GREEN);
+                                        startBtn.setDisable(false);
+                                    } else {
+                                        your_opp_ready.setText("Not ready");
+                                        your_opp_ready.setTextFill(Color.RED);
+                                        startBtn.setDisable(true);
+                                    }
+                                },
+                                error -> {
+                                    showError("Failed!", "Check your connection to server!");
+                                }
+                        );
+
+
                         if (!lobbyParticipant.isEmpty()) {
-                            System.out.println(lobbyParticipant.get(0).equals(UserSession.getInstance().getName()));
                             if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
                                 if (lobbyParticipant.size() == 2) {
                                     UserSession.getInstance().setLobby(true, lobbyId, lobbyName, lobbyParticipant.get(1));
@@ -105,13 +144,17 @@ public class LobbyController extends ScreenService {
                             }
                             if (lobbyParticipant.size() == 2) {
                                 opponentImg.setVisible(true);
-                                if (UserSession.getInstance().isAlpha())
+                                if (UserSession.getInstance().isAlpha()) {
                                     opponentLabel.setText(lobbyParticipant.get(1));
-                                else opponentLabel.setText(lobbyParticipant.get(0));
+                                } else {
+                                    opponentLabel.setText(lobbyParticipant.get(0));
+                                }
                                 opponentLabel.setVisible(true);
+                                your_opp_ready.setVisible(true);
                             } else {
                                 opponentImg.setVisible(false);
                                 opponentLabel.setVisible(false);
+                                your_opp_ready.setVisible(false);
                             }
                         } else {
                             showError("No lobby participant!", "Ask your admin about this feature~!");
@@ -136,19 +179,7 @@ public class LobbyController extends ScreenService {
             your_ready.setText("Not ready");
             readyBtn.setText("Ready!");
         }
-        Thread t = new Thread(() -> SocketService.getInstance().ready(
-                response -> {
-                    boolean isAlpha = UserSession.getInstance().isAlpha();
-                    if (opponentReady.equals(Color.GREEN) && isAlpha) {
-                        startBtn.setVisible(true);
-                    } else {
-                        startBtn.setVisible(false);
-                    }
-                },
-                error -> {
-                    showError("Failed!", "Check your connection to server!");
-                }
-        ));
+        Thread t = new Thread(() -> SocketService.getInstance().sendReady());
         t.start();
     }
 

@@ -30,7 +30,7 @@ public class SocketService {
 
     private SocketService() {
         try {
-            authSession = SocketSendingService.connect( "/auth");
+            authSession = SocketSendingService.connect("/auth");
             userSession = SocketSendingService.connect("/user");
             playSession = SocketSendingService.connect("/play");
             ready = true;
@@ -134,16 +134,18 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/invite", message);
     }
 
-    public void ready(ResponseHandler success, ErrorHandler error) {
+    public void readySubscribe(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
 
-        subscribe(authSession, success, error, Destination.READY);
+        subscribe(authSession, success, error, Destination.LOBBY_READY);
+    }
 
+    public void sendReady() {
         Message message = new Message(MessageType.READY);
-        SocketSendingService.send(authSession, "/play/lobby-ready", message);
+        SocketSendingService.send(userSession, "/play/lobby-ready", message);
     }
 
     public void leaveLobby(String currentLobbyId) {
@@ -190,6 +192,7 @@ public class SocketService {
         System.out.println(Destination.LOBBY_CHAT + lobbyId);
         subscribe(authSession, success, error, Destination.LOBBY_CHAT + lobbyId);
     }
+
     public void lobbyChat(String text, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
@@ -200,7 +203,7 @@ public class SocketService {
         message.addContent(ContentType.CHAT, text);
         SocketSendingService.send(authSession, "/topic/private/lobby/" + UserSession.getInstance().getCurrentLobbyId(), message);
     }
-    
+
     public void roomChatSubscribe(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
@@ -209,6 +212,7 @@ public class SocketService {
 
         subscribe(playSession, success, error, Destination.ROOM_CHAT);
     }
+
     public void roomChat(String text, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));

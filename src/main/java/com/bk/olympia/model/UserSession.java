@@ -101,8 +101,8 @@ public class UserSession {
     }
 
     public void resetLobby() {
-        this.currentLobbyId = null;
-        this.lobbyName = null;
-        this.lobbyParticipant = null;
+        this.currentLobbyId = "-1";
+        this.lobbyName = "";
+        this.lobbyParticipant = "";
     }
 }

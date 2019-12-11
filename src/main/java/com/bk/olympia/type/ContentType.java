@@ -22,7 +22,7 @@ public enum ContentType {
     LOBBY_NAME,
     LOBBY_PARTICIPANT,
     BET_VALUE,
-    START,
+    READY,
 
     ROOM_ID,
     TOPIC_ID,
