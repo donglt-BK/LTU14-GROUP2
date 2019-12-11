@@ -148,13 +148,13 @@ public class SocketService {
         SocketSendingService.send(userSession, "/play/lobby-ready", message);
     }
 
-    public void leaveLobby(String currentLobbyId) {
+    public void leaveLobby(int currentLobbyId) {
         if (!ready) {
             return;
         }
 
         Message message = new Message(MessageType.LEAVE_LOBBY);
-        message.addContent(LOBBY_ID, Integer.valueOf(currentLobbyId));
+        message.addContent(LOBBY_ID, currentLobbyId);
 
         SocketSendingService.send(playSession, "/play/leave", message);
     }
@@ -167,8 +167,17 @@ public class SocketService {
 
         subscribe(authSession, success, error, Destination.CREATE_ROOM);
 
-        Message message = new Message(MessageType.READY);
+        Message message = new Message(MessageType.START_GAME);
+        message.addContent(LOBBY_ID, UserSession.getInstance().getCurrentLobbyId());
         SocketSendingService.send(authSession, "/play/start-game", message);
+    }
+
+    public void subscribesStart(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(authSession, success, error, Destination.CREATE_ROOM);
     }
 
     public void getQuestion(ResponseHandler success, ErrorHandler error) {

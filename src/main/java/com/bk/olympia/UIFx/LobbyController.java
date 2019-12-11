@@ -86,7 +86,7 @@ public class LobbyController extends ScreenService {
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
 
                         //receive message from another player
-                        if (UserSession.getInstance().getCurrentLobbyId() == null) {
+                        if (UserSession.getInstance().getCurrentLobbyId() != -1) {
                             SocketService.getInstance().lobbyChatSubscribe(lobbyId,
                                     message -> Platform.runLater(() -> {
                                         System.out.println("receive");
@@ -111,7 +111,7 @@ public class LobbyController extends ScreenService {
 
                         //listen ready
                         SocketService.getInstance().readySubscribe(
-                                response -> {
+                                response -> Platform.runLater(() -> {
                                     boolean isAlpha = UserSession.getInstance().isAlpha();
                                     if (!isAlpha) return;
                                     if (response.getContent(ContentType.READY)) {
@@ -123,10 +123,10 @@ public class LobbyController extends ScreenService {
                                         your_opp_ready.setTextFill(Color.RED);
                                         startBtn.setDisable(true);
                                     }
-                                },
-                                error -> {
+                                }),
+                                error -> Platform.runLater(() -> {
                                     showError("Failed!", "Check your connection to server!");
-                                }
+                                })
                         );
 
 
@@ -166,8 +166,6 @@ public class LobbyController extends ScreenService {
     }
 
     public void onPressReady(ActionEvent event) {
-        Paint yourReady = your_ready.getTextFill(),
-                opponentReady = your_opp_ready.getTextFill();
         if (!isReady) {
             isReady = true;
             your_ready.setTextFill(Color.GREEN);
@@ -179,17 +177,30 @@ public class LobbyController extends ScreenService {
             your_ready.setText("Not ready");
             readyBtn.setText("Ready!");
         }
-        Thread t = new Thread(() -> SocketService.getInstance().sendReady());
+        Thread t = new Thread(() -> Platform.runLater(() -> {
+            SocketService.getInstance().sendReady();
+            SocketService.getInstance().subscribesStart(
+                    success -> Platform.runLater(() -> {
+                        UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
+                        System.out.println("Starting");
+                        changeScreen(event, GAME_SCREEN);
+                    }),
+                    error -> Platform.runLater(() -> {
+                        showError("Failed!", "Check your connection to server!");
+                    })
+            );
+        }));
         t.start();
     }
 
     public void onPressStart(ActionEvent event) {
         SocketService.getInstance().start(
-                success -> {
+                success -> Platform.runLater(() -> {
                     UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
 //                    UserSession.getInstance().setCurBet(success.getContent());
+                    System.out.println("Starting");
                     changeScreen(event, GAME_SCREEN);
-                },
+                }),
                 error -> {
                     showError("Failed!", "Check your connection to server!");
                 }

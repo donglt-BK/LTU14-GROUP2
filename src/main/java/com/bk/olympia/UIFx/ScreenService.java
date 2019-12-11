@@ -23,7 +23,11 @@ public class ScreenService {
         } catch (IOException e) {
             System.out.println("ERRROR: " + e.getMessage());
         }
-        changeScreen(currentScreen, screenToChange);
+        try {
+            changeScreen(currentScreen, screenToChange);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static void changeScreen(Stage stage, Parent root) {
