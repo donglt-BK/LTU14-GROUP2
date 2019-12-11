@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public abstract class BaseController {
@@ -94,7 +95,7 @@ public abstract class BaseController {
     }
 
     protected void broadcast(Room room, String destination, Message message) {
-        broadcast(UserList.getUsers(room.getId()), destination, message);
+        broadcast(room.getPlayerList().stream().map(Player::getUser).collect(Collectors.toList()), destination, message);
     }
 
     protected void sendTo(User user, String destination, Message message) {

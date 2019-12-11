@@ -14,12 +14,9 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
-import service.HashService;
 
-import javax.persistence.OneToOne;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Queue;
 import java.util.stream.Collectors;
 
 @Controller
@@ -59,7 +56,7 @@ public class ChatController extends BaseController {
         int userId = message.getSender();
         if (lobbyUserMap.get(userId) == lobbyId) {
             System.out.println("message forward to lobby " + lobbyId + " by " + Destination.LOBBY_CHAT + lobbyId);
-            queueController.findLobbyById(lobbyId).getUsers().forEach(user -> System.out.println(userId));
+            queueController.findLobbyById(lobbyId).getUsers().forEach(user -> System.out.println(user.getId()));
             broadcast(queueController.findLobbyById(lobbyId).getUsers(), Destination.LOBBY_CHAT + lobbyId, message);
         } else throw new UnauthorizedActionException(userId);
     }
