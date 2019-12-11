@@ -4,20 +4,26 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.constant.ContentType;
 import com.bk.olympia.constant.Destination;
 import com.bk.olympia.constant.MessageType;
+import com.bk.olympia.event.DisconnectUserFromLobbyEvent;
 import com.bk.olympia.exception.*;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import com.bk.olympia.model.message.MessageAccept;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
+import service.SpringEventService;
 
 import java.security.Principal;
 
 @Controller
 public class LoginController extends BaseController {
+
+    @Value("${security.enabled}")
+    private boolean isUsingSecurity;
 
     @Override
     protected void init() {
@@ -32,6 +38,9 @@ public class LoginController extends BaseController {
     }
 
     private Message handleLogin(Principal principal, User user) {
+        if (!isUsingSecurity && user.getLobbyId() != -1) {
+            SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));
+        }
         user.setUid(principal.getName());
         Message m = new Message(MessageType.LOGIN, user.getId());
         m.addContent(ContentType.USER_ID, user.getId());
