@@ -6,7 +6,11 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "room")
@@ -14,22 +18,9 @@ public class Room implements IReadiable {
     public static final int DEFAULT_MAX_PLAYERS = 2;
     public static final int DEFAULT_MAX_QUESTIONS = 10;
 
-    @Transient
-    private ArrayList<Boolean> readyList = new ArrayList<>();
-
-    /**
-     * A Map that contains the topics used for this current room.
-     * The boolean value indicates whether the topic can be chosen (true) or not (false).
-     */
-    @Transient
-    private Map<Topic, Boolean> topics = new TreeMap<>();
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @NotNull
-    private int lobbyId;
 
     @NotNull
     @Column(name = "max_users")
@@ -51,6 +42,18 @@ public class Room implements IReadiable {
     private LocalDateTime createdAt;
     private LocalDateTime endedAt;
 
+    @Transient
+    private ArrayList<Boolean> readyList = new ArrayList<>();
+
+    /**
+     * A Map that contains the topics used for this current room.
+     * The boolean value indicates whether the topic can be chosen (true) or not (false).
+     */
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RoomTopic.class, mappedBy = "room")
+    private List<RoomTopic> topics;
+//    @Transient
+//    private Map<Topic, Boolean> topics = new TreeMap<>();
+
     @ManyToMany
     @JoinTable(
             name = "room_player",
@@ -63,8 +66,7 @@ public class Room implements IReadiable {
         this.betValue = betValue;
     }
 
-    public Room(@NotNull int lobbyId, @NotNull int betValue, @NotNull List<Player> playerList) {
-        this.lobbyId = lobbyId;
+    public Room(@NotNull int betValue, @NotNull List<Player> playerList) {
         this.betValue = betValue;
         this.playerList = playerList;
         playerList.forEach(player -> player.setRoom(this));
@@ -76,14 +78,6 @@ public class Room implements IReadiable {
 
     public int getId() {
         return id;
-    }
-
-    public int getLobbyId() {
-        return lobbyId;
-    }
-
-    public void setLobbyId(int lobbyId) {
-        this.lobbyId = lobbyId;
     }
 
     public int getMaxPlayers() {
@@ -138,38 +132,40 @@ public class Room implements IReadiable {
         this.endedAt = endedAt;
     }
 
-    public void addTopic(Topic topic) {
-        this.topics.put(topic, true);
+    public Map<Topic, Boolean> getTopics() {
+        return topics.stream().collect(Collectors.toMap(RoomTopic::getTopic, RoomTopic::isCanBeChosen));
+    }
+
+    public void setTopics(List<RoomTopic> topics) {
+        this.topics = topics;
     }
 
     public void setChosenTopic(Topic topic) {
-        this.topics.put(topic, false);
-    }
-
-    public Map<Topic, Boolean> getTopics() {
-        return topics;
+        this.topics.stream().filter(t -> t.getTopic().equals(topic)).findFirst().get().setCanBeChosen(false);
     }
 
     public Integer[] getTopicIds() {
-        return topics.keySet().stream()
-                .map(Topic::getId)
+        return topics.stream()
+                .map(t -> t.getTopic().getId())
                 .toArray(Integer[]::new);
     }
 
     public String[] getTopicNames() {
-        return topics.keySet().stream()
-                .map(Topic::getTopicName)
+        return topics.stream()
+                .map(t -> t.getTopic().getTopicName())
                 .toArray(String[]::new);
     }
 
     public String[] getTopicDescriptions() {
-        return topics.keySet().stream()
-                .map(Topic::getTopicDescription)
+        return topics.stream()
+                .map(t -> t.getTopic().getTopicDescription())
                 .toArray(String[]::new);
     }
 
     public Boolean[] getTopicChosen() {
-        return topics.values().toArray(new Boolean[maxQuestions]);
+        return topics.stream()
+                .map(RoomTopic::isCanBeChosen)
+                .toArray(Boolean[]::new);
     }
 
     @Override
@@ -189,7 +185,6 @@ public class Room implements IReadiable {
 
     @Override
     public void removePlayerReady(int position) {
-
     }
 
     public boolean isPlayerTurn(Player player) {

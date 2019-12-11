@@ -3,10 +3,10 @@ package com.bk.olympia.model;
 import com.bk.olympia.base.IReadiable;
 import com.bk.olympia.model.entity.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Lobby implements Comparable<Lobby>, IReadiable {
     private static final AtomicInteger autoId = new AtomicInteger(1);
@@ -16,9 +16,13 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
     private String name = "Let's play!!";
     private ArrayList<User> users;
     private final int betValue;
-    private ArrayList<Boolean> readyList = new ArrayList<>();
+    private Map<Integer, Boolean> readyList;
 
     public Lobby(int betValue) {
+        readyList = Stream.of(
+                new AbstractMap.SimpleEntry<>(1, false),
+                new AbstractMap.SimpleEntry<>(2, false)
+        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         this.id = generateNewId();
         this.betValue = betValue;
         this.users = new ArrayList<>();
@@ -79,12 +83,12 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
 
     @Override
     public void addPlayerReady(int position) {
-        this.readyList.add(position, true);
+        this.readyList.put(position, true);
     }
 
     @Override
     public boolean isAllReady() {
-        return this.readyList.stream().skip(1).allMatch(val -> val);
+        return this.readyList.values().stream().allMatch(val -> val);
     }
 
     @Override
@@ -94,10 +98,10 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
 
     @Override
     public void removePlayerReady(int position) {
-        this.readyList.add(position, false);
+        this.readyList.put(position, false);
     }
 
-    public ArrayList<Boolean> getReadyList() {
-        return readyList;
+    public List<Boolean> getReadyList() {
+        return new ArrayList<>(readyList.values());
     }
 }
