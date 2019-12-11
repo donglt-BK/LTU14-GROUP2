@@ -15,7 +15,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import service.SpringEventService;
 
 import java.security.Principal;
 
@@ -39,7 +38,7 @@ public class LoginController extends BaseController {
 
     private Message handleLogin(Principal principal, User user) {
         if (!isUsingSecurity && user.getLobbyId() != -1) {
-            SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));
+            publishEvent(new DisconnectUserFromLobbyEvent(this, user));
         }
         user.setUid(principal.getName());
         Message m = new Message(MessageType.LOGIN, user.getId());

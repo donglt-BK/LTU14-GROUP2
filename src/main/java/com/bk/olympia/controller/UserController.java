@@ -19,7 +19,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
-import service.SpringEventService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,9 +135,9 @@ public class UserController extends BaseController {
 
     private Message handleLogout(User user) {
         if (user.getLobbyId() >= 0)
-            SpringEventService.publishEvent(new DisconnectUserFromLobbyEvent(this, user));
+            publishEvent(new DisconnectUserFromLobbyEvent(this, user));
         else {
-            SpringEventService.publishEvent(new DisconnectUserFromRoomEvent(this, user));
+            publishEvent(new DisconnectUserFromRoomEvent(this, user));
         }
         return null;
     }

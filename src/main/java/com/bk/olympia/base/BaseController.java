@@ -7,6 +7,8 @@ import com.bk.olympia.model.message.Message;
 import com.bk.olympia.repository.*;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -21,6 +23,9 @@ public abstract class BaseController {
 
     @Autowired
     private SimpMessagingTemplate template;
+
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
 //
 //    protected EntityManagerFactory factory = Persistence.createEntityManagerFactory("App");
 //    protected EntityManager entityManager = factory.createEntityManager();
@@ -97,6 +102,10 @@ public abstract class BaseController {
         template.convertAndSendToUser(user.getUid(), destination, message);
     }
 
+    public void publishEvent(ApplicationEvent event) {
+        applicationEventPublisher.publishEvent(event);
+    }
+
     @MessageExceptionHandler
     @SendToUser(Destination.ERROR)
     protected ErrorMessage handleException(BaseRuntimeException e) {
@@ -104,4 +113,5 @@ public abstract class BaseController {
         System.out.println(e.getType());
         return new ErrorMessage(e.getType(), e.getUserId());
     }
+
 }

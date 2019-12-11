@@ -26,7 +26,6 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -175,8 +174,7 @@ public class QueueController extends BaseController implements ApplicationListen
 
     private void handleReady(User user, Lobby lobby) {
         if (lobby.getHost().equals(user)) {
-            //throw new UnauthorizedActionException(user.getId());
-            return;
+            throw new UnauthorizedActionException(user.getId());
         }
         int pos = lobby.getUsers().indexOf(user);
 
