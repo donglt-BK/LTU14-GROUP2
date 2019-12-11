@@ -5,8 +5,6 @@ import com.bk.olympia.model.entity.User;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Lobby implements Comparable<Lobby>, IReadiable {
     private static final AtomicInteger autoId = new AtomicInteger(1);
@@ -19,10 +17,9 @@ public class Lobby implements Comparable<Lobby>, IReadiable {
     private Map<Integer, Boolean> readyList;
 
     public Lobby(int betValue) {
-        readyList = Stream.of(
-                new AbstractMap.SimpleEntry<>(1, false),
-                new AbstractMap.SimpleEntry<>(2, false)
-        ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        readyList = new HashMap<>();
+        readyList.put(0, false);
+        readyList.put(1, false);
         this.id = generateNewId();
         this.betValue = betValue;
         this.users = new ArrayList<>();
