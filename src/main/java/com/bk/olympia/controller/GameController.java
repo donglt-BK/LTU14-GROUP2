@@ -135,7 +135,8 @@ public class GameController extends BaseController implements ApplicationListene
             List<Question> questions = getQuestionList(topic, room.getCurrentLevel());
             Message m = new Message(MessageType.GET_QUESTION, user.getId());
             Question randomQuestion = questions.get(RandomService.getRandomInteger(questions.size()));
-            m.addContent(ContentType.QUESTION, randomQuestion.getQuestionDetail())
+            m.addContent(ContentType.QUESTION_ID, randomQuestion.getId())
+                    .addContent(ContentType.QUESTION, randomQuestion.getQuestionDetail())
                     .addContent(ContentType.ANSWER, randomQuestion.getAnswers())
                     .addContent(ContentType.DIFFICULTY, randomQuestion.getDifficulty());
             broadcast(room, Destination.GET_QUESTION, m);
