@@ -28,6 +28,7 @@ import java.util.Optional;
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Util.isNullOrEmpty;
 import static com.bk.olympia.config.Util.parseIntOrZero;
+import static com.bk.olympia.type.ContentType.ANSWER;
 import static com.bk.olympia.type.ContentType.QUESTION;
 
 public class GameController extends ScreenService {
@@ -524,5 +525,23 @@ public class GameController extends ScreenService {
     }
 
     public void getQuestion(ActionEvent event) {
+        SocketService.getInstance().getQuestion(
+                message -> Platform.runLater(() -> {
+                    Double questionId = message.getContent(ContentType.QUESTION_ID);
+                    String question = message.getContent(QUESTION);
+                    List<String> answer = message.getContent(ANSWER);
+                    System.out.println(questionId);
+                    System.out.println(question);
+                    answer.forEach(System.out::println);
+                }),
+                error -> {
+                    Label m = new Label("Failed to retrieve message from server. Trying again...");
+                    m.setPrefWidth(chatBox.getPrefWidth());
+                    m.setTextFill(Color.RED);
+                    messages.add(m);
+                    chatBox.getChildren().add(messages.get(index));
+                    index++;
+                }
+        );
     }
 }

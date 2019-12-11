@@ -186,10 +186,10 @@ public class SocketService {
             return;
         }
 
-        subscribe(authSession, success, error, Destination.GET_QUESTION);
+        subscribe(playSession, success, error, Destination.GET_QUESTION);
 
         Message message = new Message(MessageType.READY);
-        SocketSendingService.send(authSession, "/play/get-question", message);
+        SocketSendingService.send(playSession, "/play/get-question", message);
     }
 
     public void lobbyChatSubscribe(String lobbyId, ResponseHandler success, ErrorHandler error) {
