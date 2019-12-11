@@ -80,8 +80,9 @@ public class UserSession {
         this.isAlpha = isAlpha;
     }
 
-    public String getCurrentLobbyId() {
-        return currentLobbyId;
+    public int getCurrentLobbyId() {
+        if (currentLobbyId == null) currentLobbyId = "-1";
+        return Integer.parseInt(currentLobbyId);
     }
 
     public String getLobbyName() {
@@ -97,7 +98,7 @@ public class UserSession {
     }
 
     public void setRoomId(Double roomId) {
-        this.roomId = String.valueOf(roomId);
+        this.roomId = String.valueOf(roomId.intValue());
     }
 
     public void resetLobby() {

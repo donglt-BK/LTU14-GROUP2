@@ -86,7 +86,7 @@ public class LobbyController extends ScreenService {
                         String lobbyName = success.getContent(ContentType.LOBBY_NAME);
 
                         //receive message from another player
-                        if (UserSession.getInstance().getCurrentLobbyId() == null) {
+                        if (UserSession.getInstance().getCurrentLobbyId() != -1) {
                             SocketService.getInstance().lobbyChatSubscribe(lobbyId,
                                     message -> Platform.runLater(() -> {
                                         System.out.println("receive");
