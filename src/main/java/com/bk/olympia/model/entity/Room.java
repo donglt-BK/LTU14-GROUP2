@@ -21,6 +21,7 @@ public class Room implements IReadiable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private int lobbyId;
 
     @NotNull
     @Column(name = "max_users")
@@ -54,12 +55,7 @@ public class Room implements IReadiable {
 //    @Transient
 //    private Map<Topic, Boolean> topics = new TreeMap<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "room_player",
-            joinColumns = @JoinColumn(name = "room_id"),
-            inverseJoinColumns = @JoinColumn(name = "player_id")
-    )
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = Player.class, mappedBy = "room")
     private List<Player> playerList;
 
     public Room(@NotNull int betValue) {
@@ -78,6 +74,14 @@ public class Room implements IReadiable {
 
     public int getId() {
         return id;
+    }
+
+    public int getLobbyId() {
+        return lobbyId;
+    }
+
+    public void setLobbyId(int lobbyId) {
+        this.lobbyId = lobbyId;
     }
 
     public int getMaxPlayers() {

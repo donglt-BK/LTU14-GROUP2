@@ -7,6 +7,8 @@ spring:
     enabled: true
     change-log: classpath:/liquibase/db-changelog.xml
     drop-first: false
+  jpa:
+    open-in-view: false
 server:
   port: 8109
 logging:

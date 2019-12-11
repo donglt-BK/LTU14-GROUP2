@@ -210,7 +210,12 @@ public class QueueController extends BaseController implements ApplicationListen
 
             Room room = new Room(lobby.getBetValue(), players);
             UserList.addRoom(room.getId(), lobby.getUsers());
+            room.setLobbyId(lobby.getId());
             roomRepository.save(room);
+            room.getPlayerList().forEach(p -> {
+                p.setRoom(room);
+                save(p);
+            });
 
             Message m = new Message(MessageType.CREATE_ROOM, user.getId());
             m.addContent(ContentType.ROOM_ID, room.getId());
