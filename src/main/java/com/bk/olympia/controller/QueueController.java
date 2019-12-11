@@ -26,6 +26,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -70,7 +71,7 @@ public class QueueController extends BaseController implements ApplicationListen
         lobby.addUser(user);
 
         chatController.lobbyUserMap.put(user.getId(), lobby.getId());
-
+        save(user);
         lobbyList.put(lobby, lobby.getId());
         broadcastLobbyInfo(user.getId(), lobby);
     }
@@ -157,6 +158,8 @@ public class QueueController extends BaseController implements ApplicationListen
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
         chatController.lobbyUserMap.put(user.getId(), -1);
+        user.setLobbyId(-1);
+        userRepository.save(user);
 
         if (lobby.getUsers().size() > 0)
             broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
@@ -171,15 +174,22 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     private void handleReady(User user, Lobby lobby) {
-        if (lobby.getHost().equals(user))
-            throw new UnauthorizedActionException(user.getId());
+        if (lobby.getHost().equals(user)) {
+            //throw new UnauthorizedActionException(user.getId());
+            return;
+        }
         int pos = lobby.getUsers().indexOf(user);
-        if (!lobby.getReadyList().get(pos))
+
+        boolean isReady = false;
+        if (lobby.getReadyList().get(pos)) {
+            lobby.removePlayerReady(pos);
+        } else {
+            isReady = true;
             lobby.addPlayerReady(pos);
-        else lobby.removePlayerReady(pos);
+        }
         Message m = new Message(MessageType.LOBBY_READY, user.getId());
-        m.addContent(ContentType.READY, lobby.getReadyList().get(pos));
-        broadcast(lobby.getUsers(), Destination.LOBBY_READY, m);
+        m.addContent(ContentType.READY, isReady);
+        sendTo(lobby.getHost(), Destination.LOBBY_READY, m);
     }
 
 
