@@ -10,14 +10,18 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.HistoryController">
     <children>
         <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#onPressGoback" text="Go Back" />
-      <ScrollPane fx:id="historyPane" layoutX="20.0" layoutY="65.0" prefHeight="280.0" prefWidth="560.0">
+      <ScrollPane fx:id="historyPane" layoutX="20.0" layoutY="65.0" prefHeight="280.0" prefWidth="560.0" visible="false">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
         </content>
       </ScrollPane>
       <Label layoutX="224.0" layoutY="10.0" text="Your Glorious History">
          <font>
             <Font size="15.0" />
+         </font>
+      </Label>
+      <Label fx:id="noDataMessage" layoutX="169.0" layoutY="159.0" prefHeight="82.0" prefWidth="262.0" text="You haven't compete in any games yet. Go fighting lesor!" textAlignment="CENTER" textFill="#ff2626" wrapText="true">
+         <font>
+            <Font size="14.0" />
          </font>
       </Label>
     </children>

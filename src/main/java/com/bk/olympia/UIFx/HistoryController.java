@@ -17,6 +17,7 @@ import java.util.List;
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 
 public class HistoryController extends ScreenService {
+    public Label noDataMessage;
     private int[] roomId;
     private LocalDateTime[] createdAt;
     private LocalDateTime[] endedAt;
@@ -31,26 +32,33 @@ public class HistoryController extends ScreenService {
     }
 
     public void initialize() {
-
-        Thread t = new Thread(() ->
-                SocketService.getInstance().getHistory(
-                        message -> Platform.runLater(() -> {
-                            roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
-                            createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
-                            endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
-                            resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
-                            balanceChanged = message.getContent(ContentType.HISTORY_BALANCE_CHANGED);
-                        }),
-                        error -> {
-                        }
-
-                )
-        );
-        t.start();
         historyPane.setContent(historyBox);
-        for (int i = 0; i < roomId.length; i++) {
-            historyBox.getChildren().add(new Label(String.valueOf(roomId[i]) + "-" + createdAt[i] + "-" + endedAt[i] + "-" + resultType[i] + "-" + balanceChanged[i]));
-        }
-    }
 
+        SocketService.getInstance().getHistory(
+            message -> {
+                roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
+                createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
+                endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
+                resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
+                balanceChanged = message.getContent(ContentType.HISTORY_BALANCE_CHANGED);
+
+                historyPane.setDisable(false);
+                noDataMessage.setDisable(true);
+                for (int i = 0; i < roomId.length; i++) {
+                    HBox historyRow = new HBox(10);
+                    historyBox.getChildren().add(historyRow);
+                    historyRow.getChildren().add(new Label(String.valueOf(roomId[i])));
+                    historyRow.getChildren().add(new Label(String.valueOf(createdAt[i])));
+                    historyRow.getChildren().add(new Label(String.valueOf(endedAt[i])));
+                    historyRow.getChildren().add(new Label(String.valueOf(resultType[i])));
+                    historyRow.getChildren().add(new Label(String.valueOf(balanceChanged[i])));
+                }
+            },
+            error -> {
+                System.out.print("Error in get history");
+                historyPane.setDisable(true);
+                noDataMessage.setDisable(false);
+            }
+        );
+    }
 }
