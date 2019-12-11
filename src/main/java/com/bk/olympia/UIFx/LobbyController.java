@@ -187,6 +187,7 @@ public class LobbyController extends ScreenService {
         SocketService.getInstance().start(
                 success -> {
                     UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
+//                    UserSession.getInstance().setCurBet(success.getContent());
                     changeScreen(event, GAME_SCREEN);
                 },
                 error -> {

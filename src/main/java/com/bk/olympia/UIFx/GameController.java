@@ -60,7 +60,7 @@ public class GameController extends ScreenService {
     private final VBox chatBox = new VBox(5);
 
     public void initialize() {
-        totalMoney = UserSession.getInstance().getBalance();
+        totalMoney = UserSession.getInstance().getCurBet();
         curMoney = totalMoney;
         money.setText(String.valueOf(curMoney));
 
@@ -78,26 +78,43 @@ public class GameController extends ScreenService {
         answer_D_input.setValueFactory(valueFactoryD);
         answer_D_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
 
-        answer_A_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
-                answer_A_input.getEditor().setText(String.valueOf(oldValue));
-            }
-        });
-        answer_B_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
-                answer_B_input.getEditor().setText(String.valueOf(oldValue));
-            }
-        });
-        answer_C_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
-                answer_C_input.getEditor().setText(String.valueOf(oldValue));
-            }
-        });
-        answer_D_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
-                answer_D_input.getEditor().setText(String.valueOf(oldValue));
-            }
-        });
+//        answer_A_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+//            int moneyChange = curMoney - parseIntOrZero(newValue);
+//            if (moneyChange < 0) {
+//                answer_A_input.getEditor().setText(String.valueOf(oldValue));
+//            } else {
+//                curMoney = curMoney - parseIntOrZero(newValue) + parseIntOrZero(oldValue);
+//                money.setText(String.valueOf(moneyChange));
+//            }
+//        });
+//        answer_B_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+//            int moneyChange = curMoney - parseIntOrZero(newValue);
+//            if (moneyChange < 0) {
+//                answer_B_input.getEditor().setText(String.valueOf(oldValue));
+//            } else {
+//                curMoney = curMoney - parseIntOrZero(newValue) + parseIntOrZero(oldValue);
+//                money.setText(String.valueOf(moneyChange));
+//            }
+//        });
+//        answer_C_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+//            int moneyChange = curMoney - parseIntOrZero(newValue);
+//            if (moneyChange < 0) {
+//                answer_C_input.getEditor().setText(String.valueOf(oldValue));
+//            } else {
+//                curMoney = curMoney - parseIntOrZero(newValue) + parseIntOrZero(oldValue);
+//                money.setText(String.valueOf(moneyChange));
+//            }
+//        });
+//        answer_D_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+//            int moneyChange = curMoney - parseIntOrZero(newValue);
+//            if (moneyChange < 0) {
+//                answer_D_input.getEditor().setText(String.valueOf(oldValue));
+//            }
+//            else {
+//                curMoney = curMoney - parseIntOrZero(newValue) + parseIntOrZero(oldValue);
+//                money.setText(String.valueOf(moneyChange));
+//            }
+//        });
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
