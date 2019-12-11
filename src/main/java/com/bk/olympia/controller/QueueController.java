@@ -250,7 +250,6 @@ public class QueueController extends BaseController implements ApplicationListen
 
     private void removeLobby(Lobby lobby) {
         Lobby.addDeletedId(lobby.getId());
-        lobby.getUsers().forEach(lobby::removeUser);
         lobbyList.remove(lobby);
     }
 }
