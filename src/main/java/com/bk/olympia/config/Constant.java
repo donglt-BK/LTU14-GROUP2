@@ -13,7 +13,8 @@ public class Constant {
             LOGIN_SCREEN = "login",
             LOBBY_SCREEN = "lobby",
             SIGN_UP_SCREEN = "register",
-            GAME_SCREEN = "game";
+            GAME_SCREEN = "game",
+            HISTORY_SCREEN = "history";
 
     public static final String EMPTY_STRING = "";
     public static final Color gray = new Color(210, 210, 210);

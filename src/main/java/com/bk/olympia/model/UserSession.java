@@ -16,6 +16,8 @@ public class UserSession {
     private String currentLobbyId;
     private String lobbyName;
     private String lobbyParticipant;
+    private int curBet = 2000;
+
 
     private String roomId;
 
@@ -106,5 +108,13 @@ public class UserSession {
         this.currentLobbyId = "-1";
         this.lobbyName = "";
         this.lobbyParticipant = "";
+    }
+
+    public int getCurBet() {
+        return curBet;
+    }
+
+    public void setCurBet(int curBet) {
+        this.curBet = curBet;
     }
 }

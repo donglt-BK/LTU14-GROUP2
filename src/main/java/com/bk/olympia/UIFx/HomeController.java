@@ -20,15 +20,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.bk.olympia.config.Constant.LOBBY_SCREEN;
-import static com.bk.olympia.config.Constant.LOGIN_SCREEN;
+import static com.bk.olympia.config.Constant.*;
 
 public class HomeController extends ScreenService {
+    public Text userBalance;
     @FXML
     TextField playerId;
 
     @FXML
     Text errorMessage;
+
+    public void initialize() {
+        int curBalance = UserSession.getInstance().getBalance();
+        userBalance.setText(String.valueOf(curBalance));
+    }
 
     public void findPlayer(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
@@ -85,5 +90,9 @@ public class HomeController extends ScreenService {
 
     public void nextScene(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
+    }
+
+    public void onPressHistory(ActionEvent event) {
+        changeScreen(event, HISTORY_SCREEN);
     }
 }

@@ -197,6 +197,7 @@ public class LobbyController extends ScreenService {
         SocketService.getInstance().start(
                 success -> Platform.runLater(() -> {
                     UserSession.getInstance().setRoomId(success.getContent(ContentType.ROOM_ID));
+//                    UserSession.getInstance().setCurBet(success.getContent());
                     System.out.println("Starting");
                     changeScreen(event, GAME_SCREEN);
                 }),
