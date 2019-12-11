@@ -10,7 +10,7 @@ public class Util {
         try {
             result = Integer.parseInt(str);
         } catch (Exception ex) {
-            System.out.println(ex.getStackTrace());
+            System.out.print(ex.getStackTrace());
         }
         return result;
     }

@@ -38,8 +38,8 @@
         </Label>
         <Button fx:id="confirmBtn" disable="false" layoutX="195.0" layoutY="427.0" mnemonicParsing="false"
                 onAction="#onPressConfirm" prefHeight="31.0" prefWidth="146.0" text="Confirm answer"/>
-        <Button fx:id="cancelBtn" disable="true" layoutX="365.0" layoutY="427.0" mnemonicParsing="false"
-                onAction="#onPressCancel" prefHeight="31.0" prefWidth="146.0" text="Cancel"/>
+<!--        <Button fx:id="cancelBtn" disable="true" layoutX="365.0" layoutY="427.0" mnemonicParsing="false"-->
+<!--                onAction="#onPressCancel" prefHeight="31.0" prefWidth="146.0" text="Cancel"/>-->
         <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="64.0" prefHeight="30.0" prefWidth="106.0"
                text="Time left:">
             <font>
