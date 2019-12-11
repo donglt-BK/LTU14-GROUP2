@@ -78,6 +78,26 @@ public class GameController extends ScreenService {
         answer_D_input.setValueFactory(valueFactoryD);
         answer_D_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
 
+        answer_A_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+            if (curMoney - parseIntOrZero(newValue) < 0){
+                answer_A_input.getEditor().setText(String.valueOf(oldValue));
+            }
+        });
+        answer_B_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+            if (curMoney - parseIntOrZero(newValue) < 0){
+                answer_B_input.getEditor().setText(String.valueOf(oldValue));
+            }
+        });
+        answer_C_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+            if (curMoney - parseIntOrZero(newValue) < 0){
+                answer_C_input.getEditor().setText(String.valueOf(oldValue));
+            }
+        });
+        answer_D_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
+            if (curMoney - parseIntOrZero(newValue) < 0){
+                answer_D_input.getEditor().setText(String.valueOf(oldValue));
+            }
+        });
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
@@ -327,46 +347,30 @@ public class GameController extends ScreenService {
 
         if (depositA + depositB + depositC + depositD == 0) {
             showWarning("No answer!", "Please deposit into at least one answer or you may lose all your current credit.");
-            cancelBtn.setDisable(true);
+//            cancelBtn.setDisable(true);
         } else if (depositA + depositB + depositC + depositD > curMoney) {
             showWarning("Not enough money!", "You currently don't have enough money to deposit this amount of money.");
-            cancelBtn.setDisable(true);
+//            cancelBtn.setDisable(true);
         } else {
-            cancelBtn.setDisable(false);
+//            cancelBtn.setDisable(false);
             confirmBtn.setDisable(true);
             //TODO: call api confirm answer
             //If confirm -> invisible cancelBtn
         }
     }
 
-    public void onPressCancel(ActionEvent event) {
-        answer_A_input.getValueFactory().setValue(0);
-        answer_A_input.getEditor().setText("0");
-        answer_B_input.getValueFactory().setValue(0);
-        answer_B_input.getEditor().setText("0");
-        answer_C_input.getValueFactory().setValue(0);
-        answer_C_input.getEditor().setText("0");
-        answer_D_input.getValueFactory().setValue(0);
-        answer_D_input.getEditor().setText("0");
-        cancelBtn.setDisable(true);
-        confirmBtn.setDisable(false);
-    }
-
-    /*public void onDepositInputChange(KeyEvent event) {
-        String invokerId = ((Node) event.getSource()).getId();
-        int depositA = parseIntOrZero(answer_A_input.getText()),
-                depositB = parseIntOrZero(answer_B_input.getText()),
-                depositC = parseIntOrZero(answer_C_input.getText()),
-                depositD = parseIntOrZero(answer_D_input.getText()),
-                curMoney = totalMoney - (depositA + depositB + depositC + depositD);
-        if (curMoney > 0) {
-            if (invokerId.equals(answer_A_input.getId())) {
-
-            }
-        }
-
-        System.out.println("in");
-    }*/
+//    public void onPressCancel(ActionEvent event) {
+//        answer_A_input.getValueFactory().setValue(0);
+//        answer_A_input.getEditor().setText("0");
+//        answer_B_input.getValueFactory().setValue(0);
+//        answer_B_input.getEditor().setText("0");
+//        answer_C_input.getValueFactory().setValue(0);
+//        answer_C_input.getEditor().setText("0");
+//        answer_D_input.getValueFactory().setValue(0);
+//        answer_D_input.getEditor().setText("0");
+//        cancelBtn.setDisable(true);
+//        confirmBtn.setDisable(false);
+//    }
 
     public void sendMessage(ActionEvent event) {
         String message = chatbox_input.getText();
