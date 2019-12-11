@@ -9,5 +9,8 @@
         <addUniqueConstraint
                 tableName="topic"
                 columnNames="topic_name"/>
+        <addColumn tableName="room">
+            <column name="ready_count" type="int(2)"/>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>

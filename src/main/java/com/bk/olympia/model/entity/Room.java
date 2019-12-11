@@ -6,8 +6,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,9 +40,7 @@ public class Room implements IReadiable {
     @CreationTimestamp
     private LocalDateTime createdAt;
     private LocalDateTime endedAt;
-
-    @Transient
-    private ArrayList<Boolean> readyList = new ArrayList<>();
+    private int readyCount = 0;
 
     /**
      * A Map that contains the topics used for this current room.
@@ -174,21 +170,22 @@ public class Room implements IReadiable {
 
     @Override
     public void addPlayerReady(int position) {
-        this.readyList.add(position, true);
+        readyCount++;
     }
 
     @Override
     public boolean isAllReady() {
-        return this.readyList.stream().allMatch(val -> val);
+        return readyCount == maxPlayers;
     }
 
     @Override
     public void resetReady() {
-        Collections.fill(readyList, Boolean.FALSE);
+        readyCount = 0;
     }
 
     @Override
     public void removePlayerReady(int position) {
+        readyCount--;
     }
 
     public boolean isPlayerTurn(Player player) {
