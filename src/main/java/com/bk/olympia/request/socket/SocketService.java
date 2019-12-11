@@ -198,7 +198,6 @@ public class SocketService {
             return;
         }
 
-        System.out.println(Destination.LOBBY_CHAT + lobbyId);
         subscribe(authSession, success, error, Destination.LOBBY_CHAT + lobbyId);
     }
 
@@ -219,7 +218,8 @@ public class SocketService {
             return;
         }
 
-        subscribe(playSession, success, error, Destination.ROOM_CHAT);
+        System.out.println(Destination.ROOM_CHAT + UserSession.getInstance().getRoomId());
+        subscribe(authSession, success, error, Destination.ROOM_CHAT + UserSession.getInstance().getRoomId());
     }
 
     public void roomChat(String text, ErrorHandler error) {
@@ -230,12 +230,51 @@ public class SocketService {
 
         Message message = new Message(MessageType.LOGIN);
         message.addContent(ContentType.CHAT, text);
-        SocketSendingService.send(playSession, "/topic/private/room/" + UserSession.getInstance().getRoomId(), message);
+        SocketSendingService.send(authSession, "/topic/private/room/" + UserSession.getInstance().getRoomId(), message);
     }
 
     public static SocketService getInstance() {
         if (instance == null)
             instance = new SocketService();
         return instance;
+    }
+
+    public void subscribeQuestion(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(playSession, success, error, Destination.GET_QUESTION);
+
+        Message message = new Message(MessageType.GET_QUESTION);
+        SocketSendingService.send(playSession, "/play/get-question", message);
+    }
+
+    public void submit(int questionId, int[] placement, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        Message message = new Message(MessageType.SUBMIT_ANSWER);
+        message.addContent(QUESTION_ID, questionId)
+                .addContent(MONEY_PLACED, placement);
+        SocketSendingService.send(playSession, "/play/submit-answer", message);
+    }
+
+    public void getAnswer(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(playSession, success, error, Destination.GET_ANSWER);
+    }
+
+    public void gameOver(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(playSession, success, error, Destination.GAME_OVER);
     }
 }

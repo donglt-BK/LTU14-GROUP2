@@ -99,6 +99,7 @@ public class UserSession {
 
     public void setRoomId(Double roomId) {
         this.roomId = String.valueOf(roomId.intValue());
+        System.out.println("Room: " + this.roomId);
     }
 
     public void resetLobby() {

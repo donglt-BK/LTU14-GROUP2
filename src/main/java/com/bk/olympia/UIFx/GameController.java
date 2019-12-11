@@ -19,6 +19,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.eclipse.jetty.server.Authentication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,10 @@ import java.util.Optional;
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Util.isNullOrEmpty;
 import static com.bk.olympia.config.Util.parseIntOrZero;
+import static com.bk.olympia.type.ContentType.QUESTION;
 
 public class GameController extends ScreenService {
+    private static final int WIN = 1, DRAW = 2, LOSE = 3;
 
     public Button cancelBtn, confirmBtn;
     //public TextField answer_A_input, answer_B_input, answer_C_input, answer_D_input;
@@ -60,7 +63,7 @@ public class GameController extends ScreenService {
     private final VBox chatBox = new VBox(5);
 
     public void initialize() {
-        totalMoney = UserSession.getInstance().getBalance();
+        totalMoney = 2000;
         curMoney = totalMoney;
         money.setText(String.valueOf(curMoney));
 
@@ -79,52 +82,97 @@ public class GameController extends ScreenService {
         answer_D_input.getStyleClass().add(Spinner.STYLE_CLASS_ARROWS_ON_RIGHT_HORIZONTAL);
 
         answer_A_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
+            if (curMoney - parseIntOrZero(newValue) < 0) {
                 answer_A_input.getEditor().setText(String.valueOf(oldValue));
             }
         });
         answer_B_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
+            if (curMoney - parseIntOrZero(newValue) < 0) {
                 answer_B_input.getEditor().setText(String.valueOf(oldValue));
             }
         });
         answer_C_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
+            if (curMoney - parseIntOrZero(newValue) < 0) {
                 answer_C_input.getEditor().setText(String.valueOf(oldValue));
             }
         });
         answer_D_input.getEditor().textProperty().addListener((arg0, oldValue, newValue) -> {
-            if (curMoney - parseIntOrZero(newValue) < 0){
+            if (curMoney - parseIntOrZero(newValue) < 0) {
                 answer_D_input.getEditor().setText(String.valueOf(oldValue));
             }
         });
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
-        Thread t = new Thread(() ->
-                SocketService.getInstance().roomChatSubscribe(
-                        message -> Platform.runLater(() -> {
-                            System.out.println("receiving message...");
-                            if (message.getSender() != UserSession.getInstance().getUserId()) {
-                                String m = message.getContent(ContentType.CHAT);
-                                Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
-                                opponentMessage.setTextFill(Color.BLUE);
-                                messages.add(opponentMessage);
-                                chatBox.getChildren().add(messages.get(index));
-                                index++;
-                            }
-                        }),
-                        error -> {
-                            Label m = new Label("Failed to retrieve message from server. Trying again...");
-                            m.setPrefWidth(chatBox.getPrefWidth());
-                            m.setTextFill(Color.RED);
-                            messages.add(m);
+        Thread t = new Thread(() -> {
+            //chat
+            SocketService.getInstance().roomChatSubscribe(
+                    message -> Platform.runLater(() -> {
+                        if (message.getSender() != UserSession.getInstance().getUserId()) {
+                            String m = message.getContent(ContentType.CHAT);
+                            Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
+                            opponentMessage.setTextFill(Color.BLUE);
+                            messages.add(opponentMessage);
                             chatBox.getChildren().add(messages.get(index));
                             index++;
                         }
+                    }),
+                    error -> {
+                        Label m = new Label("Failed to retrieve message from server. Trying again...");
+                        m.setPrefWidth(chatBox.getPrefWidth());
+                        m.setTextFill(Color.RED);
+                        messages.add(m);
+                        chatBox.getChildren().add(messages.get(index));
+                        index++;
+                    }
+            );
+            //get answer
+            SocketService.getInstance().getAnswer(
+                    message -> Platform.runLater(() -> {
+                        String answer = message.getContent(ContentType.ANSWER);
+                        System.out.println(answer);
 
-                )
-        );
+                        //TODO show answer, get new question
+                    }),
+                    error -> {
+                        Label m = new Label("Failed to retrieve message from server. Trying again...");
+                        m.setPrefWidth(chatBox.getPrefWidth());
+                        m.setTextFill(Color.RED);
+                        messages.add(m);
+                        chatBox.getChildren().add(messages.get(index));
+                        index++;
+                    }
+            );
+            //game over
+            SocketService.getInstance().gameOver(
+                    message -> Platform.runLater(() -> {
+                        Double betVal = message.getContent(ContentType.BET_VALUE);
+                        Double[] winner = message.getContent(ContentType.WINNER);
+                        System.out.println(betVal);
+
+                        int status;
+                        if (winner.length == 2) {
+                            status = DRAW;
+                        } else {
+                            if (winner[0].intValue() == UserSession.getInstance().getUserId()) {
+                                status = WIN;
+                            } else {
+                                status = LOSE;
+                            }
+                        }
+
+                        //TODO: show result
+                    }),
+                    error -> {
+                        Label m = new Label("Failed to retrieve message from server. Trying again...");
+                        m.setPrefWidth(chatBox.getPrefWidth());
+                        m.setTextFill(Color.RED);
+                        messages.add(m);
+                        chatBox.getChildren().add(messages.get(index));
+                        index++;
+                    }
+            );
+        });
         t.start();
 
     }
@@ -352,9 +400,25 @@ public class GameController extends ScreenService {
             showWarning("Not enough money!", "You currently don't have enough money to deposit this amount of money.");
 //            cancelBtn.setDisable(true);
         } else {
+            if (depositA + depositB + depositC + depositD < curMoney) {
+                int leftover = curMoney - (depositA + depositB + depositC + depositD);
+                int each = (leftover - (leftover % 4)) / 4;
+                depositA += each;
+                depositB += each;
+                depositC += each;
+                depositD += each;
+
+                depositA += leftover - each * 4;
+
+                System.out.println(depositA);
+                System.out.println(depositB);
+                System.out.println(depositC);
+                System.out.println(depositD);
+            }
 //            cancelBtn.setDisable(false);
-            confirmBtn.setDisable(true);
+            //confirmBtn.setDisable(true);
             //TODO: call api confirm answer
+
             //If confirm -> invisible cancelBtn
         }
     }
@@ -410,6 +474,9 @@ public class GameController extends ScreenService {
         }
     }
 
+    public void counter() {
+
+    }
 
     public void onPressDepositAll(ActionEvent event) {
         Button button = (Button) event.getSource();
@@ -437,5 +504,8 @@ public class GameController extends ScreenService {
             answer_D_input.getValueFactory().setValue(value);
             answer_D_input.getEditor().setText(Integer.toString(value));
         }
+    }
+
+    public void getQuestion(ActionEvent event) {
     }
 }
