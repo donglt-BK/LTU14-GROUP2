@@ -124,7 +124,9 @@ public class GameController extends BaseController implements ApplicationListene
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
-        Topic topic = topicRepository.findById((int) message.getContent(ContentType.TOPIC_ID));
+        int randomTopic = RandomService.getRandomInteger(0, (int) topicRepository.count() - 1);
+        //Topic topic = topicRepository.findById((int) message.getContent(ContentType.TOPIC_ID));
+        Topic topic = topicRepository.findById(randomTopic);
         handleGetQuestion(user, player, room, topic);
     }
 

@@ -14,7 +14,7 @@ public class Destination {
     public static final String FIND_LOBBY = "/queue/play/join";
     public static final String INVITE_PLAYER = "/queue/play/invite";
     public static final String LEAVE_LOBBY = "/queue/play/leave";
-    public static final String LOBBY_READY = "/quêu/play/lobby-ready";
+    public static final String LOBBY_READY = "/queue/play/lobby-ready";
     public static final String START_GAME = "/queue/play/start-game";
     public static final String CREATE_ROOM = "/queue/play/create-room";
 

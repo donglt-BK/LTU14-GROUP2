@@ -18,6 +18,7 @@ import com.bk.olympia.model.message.MessageAccept;
 import com.bk.olympia.repository.UserList;
 import com.google.common.util.concurrent.Striped;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -25,6 +26,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -35,48 +37,8 @@ public class QueueController extends BaseController implements ApplicationListen
     private final Striped<ReadWriteLock> lockStriped = Striped.lazyWeakReadWriteLock(32);
     private static Map<Lobby, Integer> lobbyList = new TreeMap<>();
 
-//    @MessageMapping("/play/get-lobby-list")
-//    public void getLobbyList(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//        Message m = new Message(MessageType.GET_LOBBY_LIST, message.getSender());
-//        lobbyList.forEach((lobby, betValue) -> m.addContent(ContentType.LOBBY_ID, lobby.getId())
-//                .addContent(ContentType.LOBBY_NAME, lobby.getName())
-//                .addContent(ContentType.LOBBY_PARTICIPANT, lobby.getUsers().size())
-//                .addContent(ContentType.BET_VALUE, betValue));
-//        MessagingService.sendTo(user, "/queue/play/get-lobby-list", m);
-//    }
-//
-//    @MessageMapping("/play/create-lobby")
-//    public void createLobby(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//        Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
-//        user.join(lobby);
-//        lobbyList.put(lobby, lobby.getBetValue());
-//    }
-//
-//    @MessageMapping("/play/quick-join")
-//    public void quickJoin(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//
-//        Lobby lobby = searchLobby(message.getContent(ContentType.BET_VALUE));
-//        if (lobby != null)
-//            user.join(lobby);
-//        else {
-//
-//        }
-//    }
-//
-//    @MessageMapping("play/join")
-//    public void joinLobby(@Payload Message message) {
-//        User user = findUserById(message.getSender());
-//
-//        Lobby lobby = findLobbyById(message.getContent(ContentType.LOBBY_ID));
-//        if (lobby != null)
-//            user.join(lobby);
-//        else {
-//
-//        }
-//    }
+    @Autowired
+    private ChatController chatController;
 
     @Override
     protected void init() {
@@ -107,8 +69,10 @@ public class QueueController extends BaseController implements ApplicationListen
         sendTo(user, Destination.FIND_LOBBY, new MessageAccept(MessageType.JOIN_LOBBY, user.getId()));
         Lobby lobby = findLobbyByBetValue(betValue);
         lobby.addUser(user);
-        lobbyList.put(lobby, betValue);
+
+        chatController.lobbyUserMap.put(user.getId(), lobby.getId());
         save(user);
+        lobbyList.put(lobby, lobby.getId());
         broadcastLobbyInfo(user.getId(), lobby);
     }
 
@@ -134,8 +98,7 @@ public class QueueController extends BaseController implements ApplicationListen
             } finally {
                 lock.readLock().unlock();
             }
-        }
-        else throw new TargetInsufficientBalanceException(user.getId());
+        } else throw new TargetInsufficientBalanceException(user.getId());
     }
 
     @MessageMapping("/play/invite-rep")
@@ -194,6 +157,9 @@ public class QueueController extends BaseController implements ApplicationListen
         Message m = new Message(MessageType.LEAVE_LOBBY, user.getId());
         m.addContent(ContentType.LOBBY_PARTICIPANT, user.getName());
         lobby.removeUser(user);
+        chatController.lobbyUserMap.put(user.getId(), -1);
+        user.setLobbyId(-1);
+        userRepository.save(user);
 
         if (lobby.getUsers().size() > 0)
             broadcast(lobby.getUsers(), Destination.LEAVE_LOBBY, m);
@@ -208,15 +174,22 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     private void handleReady(User user, Lobby lobby) {
-        if (lobby.getHost().equals(user))
-            throw new UnauthorizedActionException(user.getId());
+        if (lobby.getHost().equals(user)) {
+            //throw new UnauthorizedActionException(user.getId());
+            return;
+        }
         int pos = lobby.getUsers().indexOf(user);
-        if (!lobby.getReadyList().get(pos))
+
+        boolean isReady = false;
+        if (lobby.getReadyList().get(pos)) {
+            lobby.removePlayerReady(pos);
+        } else {
+            isReady = true;
             lobby.addPlayerReady(pos);
-        else lobby.removePlayerReady(pos);
+        }
         Message m = new Message(MessageType.LOBBY_READY, user.getId());
-        m.addContent(ContentType.READY, lobby.getReadyList().get(pos));
-        broadcast(lobby.getUsers(), Destination.LOBBY_READY, m);
+        m.addContent(ContentType.READY, isReady);
+        sendTo(lobby.getHost(), Destination.LOBBY_READY, m);
     }
 
 
@@ -252,9 +225,9 @@ public class QueueController extends BaseController implements ApplicationListen
         ReadWriteLock lock = lockStriped.get(betValue);
         lock.readLock().lock();
         try {
-            return lobbyList.entrySet().stream()
-                    .filter(entry -> entry.getValue() == betValue)
-                    .map(Map.Entry::getKey)
+            return lobbyList.keySet().stream()
+                    .filter(lobby -> lobby.getUsers().size() < 2)
+                    .filter(lobby -> lobby.getBetValue() == betValue)
                     .findAny()
                     .orElse(new Lobby(betValue));
         } finally {
@@ -262,7 +235,7 @@ public class QueueController extends BaseController implements ApplicationListen
         }
     }
 
-    private Lobby findLobbyById(int id) {
+    public Lobby findLobbyById(int id) {
         return lobbyList.keySet().stream()
                 .filter(integer -> integer.getId() == id)
                 .findFirst()

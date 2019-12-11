@@ -101,6 +101,7 @@ public abstract class BaseController {
     @SendToUser(Destination.ERROR)
     protected ErrorMessage handleException(BaseRuntimeException e) {
         logger.error(e.getMessage());
+        System.out.println(e.getType());
         return new ErrorMessage(e.getType(), e.getUserId());
     }
 }
