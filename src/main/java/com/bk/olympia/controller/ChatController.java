@@ -4,6 +4,7 @@ import com.bk.olympia.base.BaseController;
 import com.bk.olympia.constant.Destination;
 import com.bk.olympia.exception.UnauthorizedActionException;
 import com.bk.olympia.exception.UserNameNotFoundException;
+import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.User;
 import com.bk.olympia.model.message.Message;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import javax.persistence.OneToOne;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 @Controller
 public class ChatController extends BaseController {
@@ -65,8 +67,9 @@ public class ChatController extends BaseController {
     @MessageMapping("/topic/private/room/{roomId}")
     public void processRoomOnlyChat(@DestinationVariable("roomId") int roomId, @Payload Message message) {
         User user = findUserById(message.getSender());
-        if (user.getCurrentPlayer().getRoom().getId() == roomId)
-            broadcast(Destination.ROOM_CHAT + roomId, message);
-        else throw new UnauthorizedActionException(user.getId());
+        if (user.getCurrentPlayer().getRoom().getId() == roomId) {
+            System.out.println("message forward to lobby " + roomId + " by " + Destination.ROOM_CHAT + roomId);
+            broadcast(roomRepository.findById(roomId).getPlayerList().stream().map(Player::getUser).collect(Collectors.toList()), Destination.ROOM_CHAT + roomId, message);
+        } else throw new UnauthorizedActionException(user.getId());
     }
 }
