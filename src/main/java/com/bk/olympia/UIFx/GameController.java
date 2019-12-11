@@ -20,9 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Util.isNullOrEmpty;
@@ -44,6 +42,7 @@ public class GameController extends ScreenService {
     public Spinner<Integer> answer_B_input = new Spinner<Integer>();
     public Spinner<Integer> answer_C_input = new Spinner<Integer>();
     public Spinner<Integer> answer_D_input = new Spinner<Integer>();
+    public Label time_left;
 
     private SpinnerValueFactory valueFactoryA;
     private SpinnerValueFactory valueFactoryB;
@@ -144,6 +143,7 @@ public class GameController extends ScreenService {
         );
         t.start();
 
+        setTimer();
     }
 
     public void onPressLeave(ActionEvent event) {
@@ -370,6 +370,7 @@ public class GameController extends ScreenService {
 //            cancelBtn.setDisable(true);
         } else {
 //            cancelBtn.setDisable(false);
+            isSubmit = true;
             confirmBtn.setDisable(true);
             //TODO: call api confirm answer
             //If confirm -> invisible cancelBtn
@@ -454,5 +455,32 @@ public class GameController extends ScreenService {
             answer_D_input.getValueFactory().setValue(value);
             answer_D_input.getEditor().setText(Integer.toString(value));
         }
+    }
+
+    int interval = 5;
+    Boolean isSubmit = false;
+    public void setTimer() {
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (interval > 0) {
+                    Platform.setImplicitExit(false);
+                    Platform.runLater(() -> time_left.setText(String.valueOf(interval)));
+                    System.out.println(interval);
+                    --interval;
+                } else{
+                    Platform.setImplicitExit(false);
+                    Platform.runLater(() -> {
+                        if (!isSubmit){
+                            //TODO: call submit answer to server
+                        }
+                        confirmBtn.setText("Timeout");
+                        confirmBtn.setTextFill(Color.RED);
+                        confirmBtn.setDisable(true);
+                    });
+                    timer.cancel();
+                }
+            }
+        }, 1000, 1000);
     }
 }

@@ -7,28 +7,39 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.bk.olympia.config.Constant.HOME_SCREEN;
 
 public class HistoryController extends ScreenService {
+    private int[] roomId;
+    private LocalDateTime[] createdAt;
+    private LocalDateTime[] endedAt;
+    private String[] resultType;
+    private int[] balanceChanged;
     public ScrollPane historyPane;
+
+    private final VBox historyBox = new VBox(5);
 
     public void onPressGoback(ActionEvent event) {
         changeScreen(event, HOME_SCREEN);
     }
 
     public void initialize() {
+
         Thread t = new Thread(() ->
                 SocketService.getInstance().getHistory(
                         message -> Platform.runLater(() -> {
-                            History.getInstance().setRoomId(message.getContent(ContentType.HISTORY_ROOM_ID));
-                            History.getInstance().setRoomId(message.getContent(ContentType.HISTORY_CREATED_AT));
-                            History.getInstance().setRoomId(message.getContent(ContentType.HISTORY_ENDED_AT));
-                            History.getInstance().setRoomId(message.getContent(ContentType.HISTORY_RESULT_TYPE));
-                            History.getInstance().setRoomId(message.getContent(ContentType.HISTORY_BALANCE_CHANGED));
+                            roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
+                            createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
+                            endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
+                            resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
+                            balanceChanged = message.getContent(ContentType.HISTORY_BALANCE_CHANGED);
                         }),
                         error -> {
                         }
@@ -36,6 +47,10 @@ public class HistoryController extends ScreenService {
                 )
         );
         t.start();
+        historyPane.setContent(historyBox);
+        for (int i = 0; i < roomId.length; i++) {
+            historyBox.getChildren().add(new Label(String.valueOf(roomId[i]) + "-" + createdAt[i] + "-" + endedAt[i] + "-" + resultType[i] + "-" + balanceChanged[i]));
+        }
     }
 
 }
