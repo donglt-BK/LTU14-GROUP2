@@ -29,7 +29,7 @@ public class OlympiaClient extends Application {
 
     @Override
     public void stop() {
-        if (UserSession.getInstance().getCurrentLobbyId() != null) {
+        if (!UserSession.getInstance().getCurrentLobbyId().equals("-1")) {
             SocketService.getInstance().leaveLobby(UserSession.getInstance().getCurrentLobbyId());
         }
     }
