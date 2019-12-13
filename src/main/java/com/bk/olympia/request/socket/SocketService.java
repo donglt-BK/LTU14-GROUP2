@@ -180,18 +180,6 @@ public class SocketService {
         subscribe(authSession, success, error, Destination.CREATE_ROOM);
     }
 
-    public void getQuestion(ResponseHandler success, ErrorHandler error) {
-        if (!ready) {
-            error.handle(new ErrorMessage(CONNECTION_ERROR));
-            return;
-        }
-
-        subscribe(playSession, success, error, Destination.GET_QUESTION);
-
-        Message message = new Message(MessageType.READY);
-        SocketSendingService.send(playSession, "/play/get-question", message);
-    }
-
     public void lobbyChatSubscribe(String lobbyId, ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
@@ -239,15 +227,22 @@ public class SocketService {
         return instance;
     }
 
+    public void getQuestion(ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        Message message = new Message(MessageType.GET_QUESTION);
+        SocketSendingService.send(playSession, "/play/get-question", message);
+    }
+
     public void subscribeQuestion(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
-        subscribe(playSession, success, error, Destination.GET_QUESTION);
-
-        Message message = new Message(MessageType.GET_QUESTION);
-        SocketSendingService.send(playSession, "/play/get-question", message);
+        subscribe(authSession, success, error, Destination.GET_QUESTION);
     }
 
     public void submit(int questionId, int[] placement, ErrorHandler error) {
@@ -262,7 +257,7 @@ public class SocketService {
         SocketSendingService.send(playSession, "/play/submit-answer", message);
     }
 
-    public void getAnswer(ResponseHandler success, ErrorHandler error) {
+    public void receiveAnswer(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;

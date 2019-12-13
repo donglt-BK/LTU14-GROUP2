@@ -1,50 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.paint.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
 <?import java.lang.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="803.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.GameController">
     <children>
-        <Hyperlink fx:id="leave_game" layoutX="27.0" layoutY="24.0" onAction="#onPressLeave" text="Leave game" />
-        <Label fx:id="question" layoutX="31.0" layoutY="96.0" maxWidth="480.0" prefHeight="65.0" prefWidth="480.0" text="Question" />
-        <Label fx:id="answerA" layoutX="31.0" layoutY="178.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer A" />
-        <Label fx:id="answerB" layoutX="31.0" layoutY="238.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer B" />
-        <Label fx:id="answerC" layoutX="31.0" layoutY="293.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer C" />
-        <Label fx:id="answerD" layoutX="31.0" layoutY="354.0" maxWidth="535.0" prefHeight="21.0" prefWidth="535.0" text="Answer D" />
-        <Spinner fx:id="answer_A_input" editable="true" layoutX="31.0" layoutY="201.0" prefHeight="31.0" prefWidth="146.0" />
-        <Spinner fx:id="answer_C_input" editable="true" layoutX="31.0" layoutY="318.0" prefHeight="31.0" prefWidth="146.0" />
-        <Spinner fx:id="answer_D_input" editable="true" layoutX="31.0" layoutY="377.0" prefHeight="31.0" prefWidth="146.0" />
-        <Spinner fx:id="answer_B_input" editable="true" layoutX="31.0" layoutY="259.0" prefHeight="31.0" prefWidth="146.0" />
-        <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="30.0" text="Your money:">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fcfcfc" height="129.0" layoutX="270.0" layoutY="165.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fcfcfc" height="129.0" layoutX="270.0" layoutY="290.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fcfcfc" height="129.0" layoutX="71.0" layoutY="165.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#fcfcfc" height="129.0" layoutX="71.0" layoutY="290.0" stroke="BLACK" strokeType="INSIDE" width="200.0" />
+        <Hyperlink layoutX="27.0" layoutY="24.0" onAction="#onPressLeave" text="Leave game" />
+        <Label fx:id="question" alignment="CENTER" layoutX="31.0" layoutY="96.0" maxWidth="480.0" prefHeight="65.0" prefWidth="480.0" text="Question" textAlignment="CENTER" wrapText="true">
+            <font>
+                <Font size="17.0" />
+            </font>
+        </Label>
+        <Label fx:id="answerA" alignment="CENTER" layoutX="74.0" layoutY="173.0" maxWidth="535.0" prefHeight="43.0" prefWidth="194.0" text="Answer A" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <Label fx:id="answerB" alignment="CENTER" layoutX="273.0" layoutY="173.0" maxWidth="535.0" prefHeight="43.0" prefWidth="194.0" text="Answer B" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <Label fx:id="answerC" alignment="CENTER" layoutX="74.0" layoutY="299.0" maxWidth="535.0" prefHeight="43.0" prefWidth="194.0" text="Answer C" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <Label fx:id="answerD" alignment="CENTER" layoutX="273.0" layoutY="299.0" maxWidth="535.0" prefHeight="43.0" prefWidth="194.0" text="Answer D" wrapText="true">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <Spinner fx:id="answer_A_input" editable="true" layoutX="98.0" layoutY="220.0" prefHeight="31.0" prefWidth="146.0" />
+        <Spinner fx:id="answer_B_input" editable="true" layoutX="297.0" layoutY="220.0" prefHeight="31.0" prefWidth="146.0" />
+        <Spinner fx:id="answer_C_input" editable="true" layoutX="98.0" layoutY="346.0" prefHeight="31.0" prefWidth="146.0" />
+        <Spinner fx:id="answer_D_input" editable="true" layoutX="297.0" layoutY="346.0" prefHeight="31.0" prefWidth="146.0" />
+        <Label alignment="CENTER_RIGHT" layoutX="269.0" layoutY="24.0" text="Your money:">
             <font>
                 <Font size="19.0" />
             </font>
         </Label>
-        <Button fx:id="confirmBtn" disable="false" layoutX="363.0" layoutY="427.0" mnemonicParsing="false" onAction="#onPressConfirm" prefHeight="31.0" prefWidth="146.0" text="Confirm answer" />
-<!--        <Button fx:id="cancelBtn" disable="true" layoutX="365.0" layoutY="427.0" mnemonicParsing="false"-->
-<!--                onAction="#onPressCancel" prefHeight="31.0" prefWidth="146.0" text="Cancel"/>-->
-        <Label alignment="CENTER_RIGHT" layoutX="268.0" layoutY="64.0" prefHeight="30.0" prefWidth="106.0" text="Time left:">
+        <Button fx:id="confirmBtn" disable="true" layoutX="363.0" layoutY="427.0" mnemonicParsing="false" onAction="#submitAnswer" prefHeight="31.0" prefWidth="146.0" text="Confirm answer" />
+        <Label fx:id="time_label" alignment="CENTER_RIGHT" layoutX="255.0" layoutY="58.0" prefHeight="30.0" prefWidth="120.0" text="Time left:">
             <font>
                 <Font size="20.0" />
             </font>
         </Label>
-        <Label fx:id="time_left" layoutX="390.0" layoutY="63.0" prefHeight="32.0" prefWidth="44.0" text="0" textFill="RED">
+        <Label fx:id="time_left" layoutX="391.0" layoutY="57.0" prefHeight="32.0" prefWidth="120.0" text="0" textFill="RED">
             <font>
                 <Font size="22.0" />
             </font>
         </Label>
-        <Label fx:id="money" layoutX="392.0" layoutY="29.0" text="3000" textFill="GREEN">
+        <Label fx:id="money" layoutX="393.0" layoutY="23.0" text="3000" textFill="GREEN">
             <font>
                 <Font size="20.0" />
             </font>
         </Label>
 
-        <HBox fx:id="row_A" layoutX="184.0" layoutY="200.0" prefHeight="32.0" prefWidth="329.0" spacing="10.0">
+        <HBox fx:id="row_A" layoutX="108.0" layoutY="257.0" prefHeight="21.0" prefWidth="127.0" spacing="10.0">
             <children>
                 <Button fx:id="clear_A" mnemonicParsing="false" onAction="#onPressClear" text="Clear" />
                 <Button fx:id="all_in_A" mnemonicParsing="false" onAction="#onPressDepositAll" text="Deposit All" />
@@ -53,7 +76,7 @@
                 <Insets />
             </opaqueInsets>
         </HBox>
-        <HBox fx:id="row_B" layoutX="184.0" layoutY="259.0" prefHeight="32.0" prefWidth="329.0" spacing="10.0">
+        <HBox fx:id="row_B" layoutX="307.0" layoutY="257.0" prefHeight="25.0" prefWidth="127.0" spacing="10.0">
             <children>
                 <Button fx:id="clear_B" layoutX="398.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressClear" text="Clear" />
                 <Button fx:id="all_in_B" layoutX="458.0" layoutY="257.0" mnemonicParsing="false" onAction="#onPressDepositAll" text="Deposit All" />
@@ -62,7 +85,7 @@
                 <Insets />
             </opaqueInsets>
         </HBox>
-        <HBox fx:id="row_C" layoutX="184.0" layoutY="314.0" prefHeight="32.0" prefWidth="329.0" spacing="10.0">
+        <HBox fx:id="row_C" layoutX="108.0" layoutY="385.0" prefHeight="0.0" prefWidth="127.0" spacing="10.0">
             <children>
                 <Button fx:id="clear_C" layoutX="397.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressClear" text="Clear" />
                 <Button fx:id="all_in_C" layoutX="457.0" layoutY="318.0" mnemonicParsing="false" onAction="#onPressDepositAll" text="Deposit All" />
@@ -71,7 +94,7 @@
                 <Insets />
             </opaqueInsets>
         </HBox>
-        <HBox fx:id="row_D" layoutX="184.0" layoutY="375.0" prefHeight="32.0" prefWidth="329.0" spacing="10.0">
+        <HBox fx:id="row_D" layoutX="307.0" layoutY="385.0" prefHeight="15.0" prefWidth="127.0" spacing="10.0">
             <children>
                 <Button fx:id="clear_D" layoutX="396.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressClear" text="Clear" />
                 <Button fx:id="all_in_D" layoutX="456.0" layoutY="377.0" mnemonicParsing="false" onAction="#onPressDepositAll" text="Deposit All" />
@@ -87,9 +110,9 @@
             </content>
         </ScrollPane>
         <TextField fx:id="chatbox_input" layoutX="528.0" layoutY="378.0" onAction="#sendMessage" prefHeight="32.0" prefWidth="261.0" />
-        <Button fx:id="send_message" layoutX="528.0" layoutY="427.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="261.0" text="Send message" />
-      <Label layoutX="14.0" layoutY="434.0" text="Undeposited money will be automatic devided between answers" textFill="RED" />
-      <Button layoutX="410.0" layoutY="149.0" mnemonicParsing="false" text="Button" onAction="#getQuestion"/>
+        <Button layoutX="528.0" layoutY="427.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="261.0" text="Send message" />
+        <Label layoutX="20.0" layoutY="421.0" prefHeight="43.0" prefWidth="329.0" text="Undeposited money will be devide between answers Extended money will be trim evenly from all answers" textAlignment="CENTER" textFill="RED" wrapText="true" />
+        <Button layoutX="139.0" layoutY="23.0" mnemonicParsing="false" onAction="#getQuestion" text="Get quest" />
 
     </children>
 </AnchorPane>
