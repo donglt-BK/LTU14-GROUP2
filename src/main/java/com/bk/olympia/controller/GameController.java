@@ -134,12 +134,16 @@ public class GameController extends BaseController implements ApplicationListene
         if (room.isPlayerTurn(player)) {
             List<Question> questions = getQuestionList(topic, room.getCurrentLevel());
             Message m = new Message(MessageType.GET_QUESTION, user.getId());
-            Question randomQuestion = questions.get(RandomService.getRandomInteger(questions.size()));
+            int randomInteger = -1;
+            while (randomInteger < 0) {
+                randomInteger = RandomService.getRandomInteger(questions.size());
+            }
+            Question randomQuestion = questions.get(randomInteger);
             m.addContent(ContentType.QUESTION_ID, randomQuestion.getId())
                     .addContent(ContentType.QUESTION, randomQuestion.getQuestionDetail())
                     .addContent(ContentType.ANSWER, randomQuestion.getAnswers())
                     .addContent(ContentType.DIFFICULTY, randomQuestion.getDifficulty());
-            broadcast(room, Destination.GET_QUESTION, m);
+            broadcast(room.getPlayerList().stream().map(Player::getUser).collect(Collectors.toList()), Destination.GET_QUESTION, m);
         } else throw new UnauthorizedActionException(user.getId());
     }
 

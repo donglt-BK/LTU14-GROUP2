@@ -5,14 +5,16 @@ import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class HistoryList {
     private ArrayList<History> list;
 
     public HistoryList(User user) {
-        ArrayList<Player> playerHistory = (ArrayList<Player>) user.getPlayerList();
+        List<Player> playerHistory = user.getPlayerList();
         ArrayList<Room> roomHistory = new ArrayList<>();
         playerHistory.forEach(p -> roomHistory.add(p.getRoom()));
 
@@ -28,10 +30,10 @@ public class HistoryList {
                 .toArray();
     }
 
-    public Date[] getCreatedAts() {
+    public LocalDateTime[] getCreatedAts() {
         return list.stream()
                 .map(History::getCreatedAt)
-                .toArray(Date[]::new);
+                .toArray(LocalDateTime[]::new);
     }
 
     public Date[] getEndedAts() {
