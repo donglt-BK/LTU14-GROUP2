@@ -1,5 +1,6 @@
 package com.bk.olympia;
 
+import com.bk.olympia.config.Constant;
 import com.bk.olympia.model.UserSession;
 import com.bk.olympia.request.socket.SocketService;
 import com.bk.olympia.type.ContentType;
@@ -19,7 +20,7 @@ public class OlympiaClient extends Application {
         UserSession.getInstance();
         try {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("login.fxml"));
-            primaryStage.setTitle("Đừng để tiền rơi!");
+            primaryStage.setTitle(Constant.APP_NAME);
             primaryStage.setScene(new Scene(root, 600, 400));
             primaryStage.show();
         } catch (Exception e) {
@@ -30,6 +31,7 @@ public class OlympiaClient extends Application {
     @Override
     public void stop() {
         if (UserSession.getInstance().getCurrentLobbyId() != -1) {
+            //TODO change to logout
             SocketService.getInstance().leaveLobby(UserSession.getInstance().getCurrentLobbyId());
         }
     }

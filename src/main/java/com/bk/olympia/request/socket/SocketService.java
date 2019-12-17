@@ -262,7 +262,7 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
-        subscribe(playSession, success, error, Destination.GET_ANSWER);
+        subscribe(authSession, success, error, Destination.SUBMIT_ANSWER);
     }
 
     public void gameOver(ResponseHandler success, ErrorHandler error) {

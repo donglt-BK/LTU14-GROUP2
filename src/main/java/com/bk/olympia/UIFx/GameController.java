@@ -10,6 +10,7 @@ import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import java.util.*;
 
@@ -43,8 +44,13 @@ public class GameController extends ScreenService {
     public Label answerB;
     public Label answerC;
     public Label answerD;
+    public Rectangle answerBackgroundA;
+    public Rectangle answerBackgroundB;
+    public Rectangle answerBackgroundC;
+    public Rectangle answerBackgroundD;
+    public Rectangle blocker;
 
-    private int totalMoney, curMoney;
+    private int curMoney;
 
     private int interval;
     private boolean isSubmit;
@@ -59,8 +65,16 @@ public class GameController extends ScreenService {
 
     private int questionId = -1;
 
+    private String questionStr;
+    private List<String> answer;
+    private boolean isWait = true;
+
+    private int receivedAnswer = 0;
+
+    private Double moneyLeft;
+    private Double answerIndex;
     public void initialize() {
-        totalMoney = UserSession.getInstance().getCurBet();
+        int totalMoney = UserSession.getInstance().getCurBet();
         curMoney = totalMoney;
         money.setText(String.valueOf(curMoney));
 
@@ -80,6 +94,52 @@ public class GameController extends ScreenService {
 
         chatbox_scroll.setContent(chatBox);
         chatbox_input.setPromptText("Enter your message...");
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (interval > 0) {
+                    Platform.setImplicitExit(false);
+                    Platform.runLater(() -> time_left.setText(interval + "s"));
+                    --interval;
+                } else {
+                    if (!isWait) {
+                        if (isAnswerCountdown) {
+                            Platform.setImplicitExit(false);
+                            Platform.runLater(() -> {
+                                time_left.setText("Timeout");
+                                confirmBtn.setDisable(true);
+                            });
+                            if (!isSubmit) {
+                                submitAnswer();
+                            }
+                            isWait = true;
+                        } else {
+                            Platform.runLater(() -> {
+                                blocker.setVisible(false);
+                                question.setText(questionStr);
+                                answerA.setText(answer.get(0));
+                                answerB.setText(answer.get(1));
+                                answerC.setText(answer.get(2));
+                                answerD.setText(answer.get(3));
+                                answerBackgroundA.setFill(Color.rgb(252, 252, 252));
+                                answerBackgroundB.setFill(Color.rgb(252, 252, 252));
+                                answerBackgroundC.setFill(Color.rgb(252, 252, 252));
+                                answerBackgroundD.setFill(Color.rgb(252, 252, 252));
+                                time_label.setText("Time left: ");
+                                time_left.setText("20s");
+                                setValue(0, 0, 0, 0);
+
+                                confirmBtn.setDisable(false);
+                            });
+                            interval = 20;
+                            isAnswerCountdown = true;
+                        }
+                    }
+                }
+            }
+        }, 1000, 1000);
+
         Thread t = new Thread(() -> {
             //chat
             SocketService.getInstance().roomChatSubscribe(
@@ -109,12 +169,11 @@ public class GameController extends ScreenService {
                         Double questionId = message.getContent(ContentType.QUESTION_ID);
                         String question = message.getContent(QUESTION);
                         List<String> answer = message.getContent(ANSWER);
-                        System.out.println(questionId);
-                        System.out.println(question);
-                        answer.forEach(System.out::println);
 
                         this.questionId = questionId.intValue();
-                        setTimer(question, answer);
+                        questionStr = question;
+                        this.answer = answer;
+                        setTimer();
                     }),
                     error -> {
                         Label m = new Label("Failed to retrieve message from server. Trying again...");
@@ -128,10 +187,37 @@ public class GameController extends ScreenService {
             //receive answer
             SocketService.getInstance().receiveAnswer(
                     message -> Platform.runLater(() -> {
-                        String answer = message.getContent(ContentType.ANSWER);
-                        System.out.println(answer);
+                        if (message.getSender() == UserSession.getInstance().getUserId()) {
+                            answerIndex = message.getContent(ContentType.ANSWER);
+                            moneyLeft = message.getContent(ContentType.MONEY_PLACED);
+                        }
+                        receivedAnswer++;
+                        if (receivedAnswer == 2) {
+                            receivedAnswer = 0;
 
-                        //TODO show answer, get new question
+                            answerBackgroundA.setFill(Color.rgb(255, 142, 142));
+                            answerBackgroundB.setFill(Color.rgb(255, 142, 142));
+                            answerBackgroundC.setFill(Color.rgb(255, 142, 142));
+                            answerBackgroundD.setFill(Color.rgb(255, 142, 142));
+                            switch (answerIndex.intValue()) {
+                                case 0:
+                                    answerBackgroundA.setFill(Color.rgb(151, 255, 128));
+                                    break;
+                                case 1:
+                                    answerBackgroundB.setFill(Color.rgb(151, 255, 128));
+                                    break;
+                                case 2:
+                                    answerBackgroundC.setFill(Color.rgb(151, 255, 128));
+                                    break;
+                                case 3:
+                                    answerBackgroundD.setFill(Color.rgb(151, 255, 128));
+                                    break;
+                            }
+
+                            curMoney = moneyLeft.intValue();
+                            money.setText(String.valueOf(curMoney));
+                            getQuestion();
+                        }
                     }),
                     error -> {
                         Label m = new Label("Failed to retrieve message from server. Trying again...");
@@ -172,11 +258,10 @@ public class GameController extends ScreenService {
                     }
             );
 
-            long timer = System.currentTimeMillis();
-            while (System.currentTimeMillis() - timer < 3000) {
-                System.out.print("");
-            };
-            System.out.println();
+            //delayer
+            long time = System.currentTimeMillis();
+            while (System.currentTimeMillis() - time < 1000) {
+            }
             getQuestion();
         });
         t.start();
@@ -190,12 +275,14 @@ public class GameController extends ScreenService {
         Optional<ButtonType> option = alert.showAndWait();
 
         if (option.get() == ButtonType.OK) {
-            //TODO: subtract current credit to balance
+            //TODO: handle game over
             changeScreen(event, HOME_SCREEN);
         }
     }
 
     public void submitAnswer() {
+        blocker.setVisible(true);
+
         String answerAInput = answer_A_input.getEditor().getText(),
                 answerBInput = answer_B_input.getEditor().getText(),
                 answerCInput = answer_C_input.getEditor().getText(),
@@ -244,14 +331,15 @@ public class GameController extends ScreenService {
         isSubmit = true;
         confirmBtn.setDisable(true);
         int[] placement = {depositA, depositB, depositC, depositD};
-        SocketService.getInstance().submit(questionId, placement, error -> {
+        Thread t = new Thread(() -> SocketService.getInstance().submit(questionId, placement, error -> {
             Label m = new Label("Failed to retrieve message from server. Trying again...");
             m.setPrefWidth(chatBox.getPrefWidth());
             m.setTextFill(Color.RED);
             messages.add(m);
             chatBox.getChildren().add(messages.get(index));
             index++;
-        });
+        }));
+        t.start();
     }
 
     private void setValue(int depositA, int depositB, int depositC, int depositD) {
@@ -334,48 +422,13 @@ public class GameController extends ScreenService {
         }
     }
 
-    private void setTimer(String questionStr, List<String> answer) {
+    private void setTimer() {
         interval = 10;
         isSubmit = false;
         isAnswerCountdown = false;
         time_label.setText("Question in: ");
         time_left.setText("10s");
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                if (interval > 0) {
-                    Platform.setImplicitExit(false);
-                    Platform.runLater(() -> time_left.setText(interval + "s"));
-                    --interval;
-                } else {
-                    if (isAnswerCountdown) {
-
-                        Platform.setImplicitExit(false);
-                        Platform.runLater(() -> {
-                            submitAnswer();
-                            time_left.setText("Timeout");
-                            confirmBtn.setDisable(true);
-                        });
-                        timer.cancel();
-                    } else {
-                        Platform.runLater(() -> {
-                            question.setText(questionStr);
-                            answerA.setText(answer.get(0));
-                            answerB.setText(answer.get(1));
-                            answerC.setText(answer.get(2));
-                            answerD.setText(answer.get(3));
-                            time_label.setText("Time left: ");
-                            time_left.setText("20s");
-                            setValue(0, 0, 0, 0);
-
-                            confirmBtn.setDisable(false);
-                        });
-                        interval = 20;
-                        isAnswerCountdown = true;
-                    }
-                }
-            }
-        }, 1000, 1000);
+        isWait = false;
     }
 
     public void getQuestion() {
