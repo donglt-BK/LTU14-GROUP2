@@ -17,7 +17,7 @@ Dự án này được xây dựng theo mô hình Client-Server với:
 
 - Server xây dựng trên [Java Spring](https://spring.io/) ![](./img/spring.png)
 - Client xây dựng trên JavaFx [JavaFx]() ![](./img/javafx.png)
-- Cơ sở dữ liệu sử dụng [MySQL](https://www.mysql.com/) ![](./img/mysql.png)
+- Cơ sở dữ liệu sử dụng [MySQL](https://www.mysql.com/) ![](./img/mysql.jpg)
 
 ### Cài đặt công cụ
 
@@ -48,4 +48,4 @@ Mở folder client bằng IntelliJ. Với những file có dịnh dạng `fxml`,
 
 - [Gameplay](./note/gameplay.md)
 - [Danh sách API](./note/api.md)
-- [Hướng dẫn cài đặt SceneBuilder](./note/scenebuilder.setup)
+- [Hướng dẫn cài đặt SceneBuilder](./note/scenebuilder.setup.md)
