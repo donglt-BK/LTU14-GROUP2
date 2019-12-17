@@ -4,9 +4,9 @@
 
 STT | Họ tên | MSSV
 --- | --- | ---
-1 | Lương Tiến Đồng |
-2 | Trương Minh Đức |
-3 | Nguyễn Dương Khoa |
+1 | Lương Tiến Đồng | 20158100
+2 | Trương Minh Đức | 20158109
+3 | Nguyễn Dương Khoa | 20138975
 4 | Nguyễn Việt An | 20158002
 
 ## Triển khai
@@ -43,10 +43,6 @@ Xong xuôi, nhấn nút Run để chạy Server.
 #### Đối với Client
 
 Mở folder client bằng IntelliJ. Với những file có dịnh dạng `fxml`, chuột phải chọn mở trong SceneBuilder để thao tác được trên giao diện.
-
-## Một số hình ảnh game
-
-
 
 ## Một số thông tin hữu ích
 
