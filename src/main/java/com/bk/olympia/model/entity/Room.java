@@ -141,7 +141,14 @@ public class Room implements IReadiable {
     }
 
     public void setChosenTopic(Topic topic) {
-        this.topics.stream().filter(t -> t.getTopic().equals(topic)).findFirst().get().setCanBeChosen(false);
+        this.topics
+                .stream()
+                .filter(t -> t
+                        .getTopic()
+                        .equals(topic))
+                .findFirst()
+                .get()
+                .setCanBeChosen(false);
     }
 
     public Integer[] getTopicIds() {

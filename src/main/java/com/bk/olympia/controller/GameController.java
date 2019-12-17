@@ -19,10 +19,8 @@ import org.springframework.stereotype.Controller;
 import service.RandomService;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -39,6 +37,7 @@ public class GameController extends BaseController implements ApplicationListene
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof DisconnectUserFromRoomEvent) {
+            System.out.println("Player disconnect");
             userDisconnect(((DisconnectUserFromRoomEvent) event).getUser(), ((DisconnectUserFromRoomEvent) event).getPlayer(), ((DisconnectUserFromRoomEvent) event).getRoom());
         }
     }
@@ -124,27 +123,38 @@ public class GameController extends BaseController implements ApplicationListene
         User user = findUserById(message.getSender());
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
-        int randomTopic = RandomService.getRandomInteger(0, (int) topicRepository.count() - 1);
-        //Topic topic = topicRepository.findById((int) message.getContent(ContentType.TOPIC_ID));
-        Topic topic = topicRepository.findById(randomTopic);
-        handleGetQuestion(user, player, room, topic);
+
+        handleGetQuestion(user, player, room);
     }
 
-    private void handleGetQuestion(User user, Player player, Room room, Topic topic) {
-        if (room.isPlayerTurn(player)) {
-            List<Question> questions = getQuestionList(topic, room.getCurrentLevel());
-            Message m = new Message(MessageType.GET_QUESTION, user.getId());
-            int randomInteger = -1;
-            while (randomInteger < 0) {
-                randomInteger = RandomService.getRandomInteger(questions.size());
-            }
-            Question randomQuestion = questions.get(randomInteger);
-            m.addContent(ContentType.QUESTION_ID, randomQuestion.getId())
-                    .addContent(ContentType.QUESTION, randomQuestion.getQuestionDetail())
-                    .addContent(ContentType.ANSWER, randomQuestion.getAnswers())
-                    .addContent(ContentType.DIFFICULTY, randomQuestion.getDifficulty());
-            broadcast(room.getPlayerList().stream().map(Player::getUser).collect(Collectors.toList()), Destination.GET_QUESTION, m);
-        } else throw new UnauthorizedActionException(user.getId());
+    private void handleGetQuestion(User user, Player player, Room room) {
+        if (room.getTopics().size() == 0) {
+            List<Topic> totalTopic = topicRepository.findAll();
+            int[] topicIds = RandomService.getRandomArray(totalTopic.size(), room.getMaxQuestions());
+
+            room.setTopics(Arrays.stream(topicIds)
+                    .mapToObj(i -> new RoomTopic(room, totalTopic.get(i), true))
+                    .collect(Collectors.toList()));
+            save(room);
+        }
+        Topic[] topics = room.getTopics().entrySet().stream().filter(Entry::getValue).map(Entry::getKey).toArray(Topic[]::new);
+        int randomTopic = RandomService.getRandomInteger(0, room.getTopics().size() - 1);
+        Topic topic = topics[randomTopic];
+        room.setChosenTopic(topic);
+
+        List<Question> questions = getQuestionList(topic, room.getCurrentLevel());
+        int randomInteger = RandomService.getRandomInteger(questions.size());
+        Question randomQuestion = questions.get(randomInteger);
+
+        room.addLevel();
+        roomRepository.save(room);
+
+        Message m = new Message(MessageType.GET_QUESTION, user.getId());
+        m.addContent(ContentType.QUESTION_ID, randomQuestion.getId())
+                .addContent(ContentType.QUESTION, randomQuestion.getQuestionDetail())
+                .addContent(ContentType.ANSWER, randomQuestion.getAnswers())
+                .addContent(ContentType.DIFFICULTY, randomQuestion.getDifficulty());
+        broadcast(room, Destination.GET_QUESTION, m);
     }
 
     private List<Question> getQuestionList(Topic topic, int minDifficulty) {
@@ -157,22 +167,29 @@ public class GameController extends BaseController implements ApplicationListene
         Player player = user.getCurrentPlayer();
         Room room = player.getRoom();
         Question question = questionRepository.findById((int) message.getContent(ContentType.QUESTION_ID));
-        handleSubmitAnswer(user, player, room, question, message.getContent(ContentType.MONEY_PLACED));
+        List<Integer> placement = message.getContent(ContentType.MONEY_PLACED);
+        handleSubmitAnswer(user, player, room, question, placement);
     }
 
-    private void handleSubmitAnswer(User user, Player player, Room room, Question question, int[] moneyPlaced) {
+    private void handleSubmitAnswer(User user, Player player, Room room, Question question, List<Integer> moneyPlaced) {
         //Check if player follows the rule: you have to put in all money you currently have and you can only place at max 3 answers
-        if (IntStream.of(moneyPlaced).sum() != player.getMoney())
+        if (moneyPlaced.stream().mapToInt(Integer::intValue).sum() != player.getMoney())
             throw new AnswerPlacingViolationException(AnswerPlacingViolationException.ViolationType.MONEY_EXCEED_MONEY_TOTAL, user.getId());
-        if (IntStream.of(moneyPlaced).allMatch(m -> m > 0))
+        /*if (moneyPlaced.stream().mapToInt(Integer::intValue).allMatch(m -> m > 0))
             throw new AnswerPlacingViolationException(AnswerPlacingViolationException.ViolationType.PLACE_ALL_FOUR_ANSWER, user.getId());
+        */
         Answer correctAnswer = question.getCorrectAnswer();
-        player.setMoney(moneyPlaced[question.getAnswers().indexOf(correctAnswer)]);
+        player.setMoney(moneyPlaced.get(question.getAnswers().indexOf(correctAnswer.getAnswerDetail())));
         save(player);
 
         Message m = new Message(MessageType.SUBMIT_ANSWER, user.getId());
-//        m.addContent(ContentType.ANSWER, correctAnswer.getAnswer());
+        m.addContent(ContentType.ANSWER, question.getAnswers().indexOf(correctAnswer.getAnswerDetail()));
+        m.addContent(ContentType.MONEY_PLACED, player.getMoney());
         broadcast(room, Destination.SUBMIT_ANSWER, m);
+
+        if (player.getMoney() == 0) {
+            handleGameOver(user, player, room);
+        }
     }
 
     @MessageMapping("/play/get-answer")
