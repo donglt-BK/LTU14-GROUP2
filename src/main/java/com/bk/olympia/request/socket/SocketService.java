@@ -271,6 +271,10 @@ public class SocketService {
             return;
         }
         subscribe(authSession, success, error, Destination.GAME_OVER);
+        if (UserSession.getInstance().isAlpha()) {
+            Message message = new Message(MessageType.GAME_OVER);
+            SocketSendingService.send(playSession, "/play/game-over", message);
+        }
     }
 
     public void subscribeSurrender(ResponseHandler success, ErrorHandler error) {
@@ -280,6 +284,7 @@ public class SocketService {
         }
         subscribe(authSession, success, error, Destination.SURRENDER);
     }
+
     public void surrender(ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));

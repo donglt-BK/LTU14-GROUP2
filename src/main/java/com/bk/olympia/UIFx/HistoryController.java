@@ -18,11 +18,11 @@ import static com.bk.olympia.config.Constant.HOME_SCREEN;
 
 public class HistoryController extends ScreenService {
     public Label noDataMessage;
-    private int[] roomId;
-    private LocalDateTime[] createdAt;
-    private LocalDateTime[] endedAt;
-    private String[] resultType;
-    private int[] balanceChanged;
+    private List<Double> roomId;
+    private List<LocalDateTime> createdAt;
+    private List<LocalDateTime> endedAt;
+    private List<String> resultType;
+    private List<Double> balanceChanged;
     public ScrollPane historyPane;
 
     private final VBox historyBox = new VBox(5);
@@ -32,33 +32,43 @@ public class HistoryController extends ScreenService {
     }
 
     public void initialize() {
-        historyPane.setContent(historyBox);
-
         SocketService.getInstance().getHistory(
-            message -> {
-                roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
-                createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
-                endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
-                resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
-                balanceChanged = message.getContent(ContentType.HISTORY_BALANCE_CHANGED);
+                message -> Platform.runLater(() -> {
+                    roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
+                    createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
+                    endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
+                    resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
+                    balanceChanged = message.getContent(ContentType.HISTORY_BALANCE_CHANGED);
 
-                historyPane.setDisable(false);
-                noDataMessage.setDisable(true);
-                for (int i = 0; i < roomId.length; i++) {
-                    HBox historyRow = new HBox(10);
-                    historyBox.getChildren().add(historyRow);
-                    historyRow.getChildren().add(new Label(String.valueOf(roomId[i])));
-                    historyRow.getChildren().add(new Label(String.valueOf(createdAt[i])));
-                    historyRow.getChildren().add(new Label(String.valueOf(endedAt[i])));
-                    historyRow.getChildren().add(new Label(String.valueOf(resultType[i])));
-                    historyRow.getChildren().add(new Label(String.valueOf(balanceChanged[i])));
+                    if (roomId.size() > 0) {
+                        HBox header = new HBox(10);
+                        header.getChildren().add(new Label("Room id"));
+                        header.getChildren().add(new Label("Start time"));
+                        header.getChildren().add(new Label("End time"));
+                        header.getChildren().add(new Label("Result"));
+                        header.getChildren().add(new Label("Balance"));
+                        historyBox.getChildren().add(header);
+
+                        for (int i = 0; i < roomId.size(); i++) {
+                            HBox historyRow = new HBox(10);
+                            historyRow.getChildren().add(new Label(String.valueOf(roomId.get(i).intValue())));
+                            historyRow.getChildren().add(new Label(String.valueOf(createdAt.get(i))));
+                            historyRow.getChildren().add(new Label(String.valueOf(endedAt.get(i))));
+                            historyRow.getChildren().add(new Label(String.valueOf(resultType.get(i))));
+                            historyRow.getChildren().add(new Label(String.valueOf(balanceChanged.get(i).intValue())));
+                            historyBox.getChildren().add(historyRow);
+                            historyPane.setContent(historyBox);
+                        }
+
+                        historyPane.setVisible(true);
+                        noDataMessage.setVisible(false);
+                    }
+                }),
+                error -> {
+                    System.out.print("Error in get history");
+                    historyPane.setVisible(false);
+                    noDataMessage.setVisible(true);
                 }
-            },
-            error -> {
-                System.out.print("Error in get history");
-                historyPane.setDisable(true);
-                noDataMessage.setDisable(false);
-            }
         );
     }
 }
