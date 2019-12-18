@@ -10,6 +10,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
@@ -24,6 +25,7 @@ import static com.bk.olympia.config.Constant.*;
 
 public class HomeController extends ScreenService {
     public Text userBalance;
+    public Label nameLabel;
     @FXML
     TextField playerId;
 
@@ -33,6 +35,7 @@ public class HomeController extends ScreenService {
     public void initialize() {
         int curBalance = UserSession.getInstance().getBalance();
         userBalance.setText(String.valueOf(curBalance));
+        nameLabel.setText("Hello " + UserSession.getInstance().getName());
     }
 
     public void findPlayer(ActionEvent event) {

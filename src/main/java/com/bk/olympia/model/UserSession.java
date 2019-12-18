@@ -18,6 +18,9 @@ public class UserSession {
     private String lobbyParticipant;
     private int curBet = 2000;
 
+    public void setBalance(int balance) {
+        this.balance = balance;
+    }
 
     private String roomId;
 
@@ -116,5 +119,9 @@ public class UserSession {
 
     public void setCurBet(int curBet) {
         this.curBet = curBet;
+    }
+
+    public void addBalance(int change) {
+        balance += change;
     }
 }

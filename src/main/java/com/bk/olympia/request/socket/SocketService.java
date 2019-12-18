@@ -270,6 +270,23 @@ public class SocketService {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
-        subscribe(playSession, success, error, Destination.GAME_OVER);
+        subscribe(authSession, success, error, Destination.GAME_OVER);
     }
+
+    public void subscribeSurrender(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        subscribe(authSession, success, error, Destination.SURRENDER);
+    }
+    public void surrender(ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+        Message message = new Message(MessageType.SURRENDER);
+        SocketSendingService.send(playSession, "/play/surrender", message);
+    }
+
 }

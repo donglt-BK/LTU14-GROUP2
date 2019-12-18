@@ -14,9 +14,9 @@
       <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
       <TextField fx:id="playerId" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's id" />
       <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
-      <Hyperlink fx:id="next_scene" layoutX="457.0" layoutY="331.0" onAction="#nextScene" text="Next scene" />
       <Hyperlink layoutX="89.0" layoutY="10.0" onAction="#onPressHistory" text="Glorious History" />
-      <Label layoutX="419.0" layoutY="10.0" text="Your Balance:" />
+      <Label layoutX="439.0" layoutY="10.0" text="Your Balance:" />
       <Text fx:id="userBalance" fill="#da6313" layoutX="520.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+      <Label fx:id="nameLabel" alignment="CENTER_RIGHT" layoutX="317.0" layoutY="10.0" prefHeight="17.0" prefWidth="111.0" text="Hello" />
    </children>
 </AnchorPane>

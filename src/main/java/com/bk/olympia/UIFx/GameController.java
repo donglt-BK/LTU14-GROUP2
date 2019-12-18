@@ -49,8 +49,9 @@ public class GameController extends ScreenService {
     public Rectangle answerBackgroundC;
     public Rectangle answerBackgroundD;
     public Rectangle blocker;
+    public Button backToHome;
 
-    private int curMoney;
+    private int currentMoney;
 
     private int interval;
     private boolean isSubmit;
@@ -73,10 +74,20 @@ public class GameController extends ScreenService {
 
     private Double moneyLeft;
     private Double answerIndex;
+
+    private boolean gameOver = false;
+
+    private int status;
+    private int moneyChange;
+
+    private Double opponentMoneyLeft;
+
+    private boolean surrender = false;
     public void initialize() {
         int totalMoney = UserSession.getInstance().getCurBet();
-        curMoney = totalMoney;
-        money.setText(String.valueOf(curMoney));
+        currentMoney = totalMoney;
+
+        money.setText(String.valueOf(currentMoney));
 
         SpinnerValueFactory<Integer> valueA = new IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
         SpinnerValueFactory<Integer> valueB = new IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
@@ -98,6 +109,7 @@ public class GameController extends ScreenService {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
+                if (surrender) return;
                 if (interval > 0) {
                     Platform.setImplicitExit(false);
                     Platform.runLater(() -> time_left.setText(interval + "s"));
@@ -146,11 +158,7 @@ public class GameController extends ScreenService {
                     message -> Platform.runLater(() -> {
                         if (message.getSender() != UserSession.getInstance().getUserId()) {
                             String m = message.getContent(ContentType.CHAT);
-                            Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
-                            opponentMessage.setTextFill(Color.BLUE);
-                            messages.add(opponentMessage);
-                            chatBox.getChildren().add(messages.get(index));
-                            index++;
+                            addMessage(m, false, Color.BLUE, false);
                         }
                     }),
                     error -> {
@@ -162,6 +170,24 @@ public class GameController extends ScreenService {
                         index++;
                     }
             );
+
+            //receive surrender
+            SocketService.getInstance().subscribeSurrender(message -> Platform.runLater(() -> {
+                        if (message.getSender() != UserSession.getInstance().getUserId()) {
+                            addMessage("Your oppenent surrendered", true, Color.GREEN, false);
+                            addMessage("YOU WINNNN.", true, Color.GREEN, false);
+                            UserSession.getInstance().addBalance(2000);
+                            backToHome.setVisible(true);
+                        }
+                    }),
+                    error -> {
+                        Label m = new Label("Failed to retrieve message from server. Trying again...");
+                        m.setPrefWidth(chatBox.getPrefWidth());
+                        m.setTextFill(Color.RED);
+                        messages.add(m);
+                        chatBox.getChildren().add(messages.get(index));
+                        index++;
+                    });
 
             //receive question
             SocketService.getInstance().subscribeQuestion(
@@ -190,6 +216,10 @@ public class GameController extends ScreenService {
                         if (message.getSender() == UserSession.getInstance().getUserId()) {
                             answerIndex = message.getContent(ContentType.ANSWER);
                             moneyLeft = message.getContent(ContentType.MONEY_PLACED);
+                            if (!gameOver) gameOver = moneyLeft.intValue() == 0;
+                        } else {
+                            opponentMoneyLeft = message.getContent(ContentType.MONEY_PLACED);
+                            if (!gameOver) gameOver = opponentMoneyLeft.intValue() == 0;
                         }
                         receivedAnswer++;
                         if (receivedAnswer == 2) {
@@ -214,9 +244,24 @@ public class GameController extends ScreenService {
                                     break;
                             }
 
-                            curMoney = moneyLeft.intValue();
-                            money.setText(String.valueOf(curMoney));
-                            getQuestion();
+                            currentMoney = moneyLeft.intValue();
+                            money.setText(String.valueOf(currentMoney));
+
+                            if (moneyLeft.intValue() == 0) {
+                                addMessage("You lose everything.", true, Color.RED, false);
+                            } else {
+                                addMessage("You passed with " + moneyLeft.intValue() + " left.", true, Color.GREEN, false);
+                            }
+                            if (opponentMoneyLeft.intValue() == 0) {
+                                addMessage("Your opponent lose everything.", true, Color.BLUE, false);
+                            } else {
+                                addMessage("Your opponent passed with " + opponentMoneyLeft.intValue() + " left.", true, Color.BLUE, false);
+                            }
+                            if (!gameOver) {
+                                getQuestion();
+                            } else {
+                                showStatus();
+                            }
                         }
                     }),
                     error -> {
@@ -231,22 +276,20 @@ public class GameController extends ScreenService {
             //game over
             SocketService.getInstance().gameOver(
                     message -> Platform.runLater(() -> {
+                        System.out.println("GAME OVER");
                         Double betVal = message.getContent(ContentType.BET_VALUE);
-                        Double[] winner = message.getContent(ContentType.WINNER);
+                        List<Double> winner = message.getContent(ContentType.WINNER);
                         System.out.println(betVal);
-
-                        int status;
-                        if (winner.length == 2) {
+                        moneyChange = betVal.intValue();
+                        if (winner.size() == 2) {
                             status = DRAW;
                         } else {
-                            if (winner[0].intValue() == UserSession.getInstance().getUserId()) {
+                            if (winner.get(0).intValue() == UserSession.getInstance().getUserId()) {
                                 status = WIN;
                             } else {
                                 status = LOSE;
                             }
                         }
-
-                        //TODO: show result
                     }),
                     error -> {
                         Label m = new Label("Failed to retrieve message from server. Trying again...");
@@ -267,21 +310,22 @@ public class GameController extends ScreenService {
         t.start();
     }
 
-    public void onPressLeave(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirm leave");
-        alert.setHeaderText("You will lose your current credit. Do you really want to quit?");
-
-        Optional<ButtonType> option = alert.showAndWait();
-
-        if (option.get() == ButtonType.OK) {
-            //TODO: handle game over
-            changeScreen(event, HOME_SCREEN);
+    private void showStatus() {
+        if (status == DRAW) {
+            addMessage("IT'S A DRAW.", true, Color.GREEN, false);
+        } else if (status == WIN) {
+            addMessage("YOU WINNNN.", true, Color.GREEN, false);
+            UserSession.getInstance().addBalance(moneyChange);
+        } else if (status == LOSE) {
+            addMessage("YOU LOSE :(", true, Color.RED, false);
+            UserSession.getInstance().addBalance(-moneyChange);
         }
+        backToHome.setVisible(true);
     }
 
     public void submitAnswer() {
         blocker.setVisible(true);
+        if (gameOver) return;
 
         String answerAInput = answer_A_input.getEditor().getText(),
                 answerBInput = answer_B_input.getEditor().getText(),
@@ -293,9 +337,9 @@ public class GameController extends ScreenService {
         depositC = parseIntOrZero(answerCInput);
         depositD = parseIntOrZero(answerDInput);
 
-        if (depositA + depositB + depositC + depositD != curMoney) {
-            if (depositA + depositB + depositC + depositD > curMoney) {
-                int extended = (depositA + depositB + depositC + depositD) - curMoney;
+        if (depositA + depositB + depositC + depositD != currentMoney) {
+            if (depositA + depositB + depositC + depositD > currentMoney) {
+                int extended = (depositA + depositB + depositC + depositD) - currentMoney;
                 int count = 0;
                 if (depositA != 0) count++;
                 if (depositB != 0) count++;
@@ -316,8 +360,8 @@ public class GameController extends ScreenService {
                 } else {
                     depositD -= extended - each * count;
                 }
-            } else if (depositA + depositB + depositC + depositD < curMoney) {
-                int leftover = curMoney - (depositA + depositB + depositC + depositD);
+            } else if (depositA + depositB + depositC + depositD < currentMoney) {
+                int leftover = currentMoney - (depositA + depositB + depositC + depositD);
                 int each = (leftover - (leftover % 4)) / 4;
                 depositA += each;
                 depositB += each;
@@ -360,12 +404,7 @@ public class GameController extends ScreenService {
         String message = chatbox_input.getText();
 
         if (!isNullOrEmpty(message)) {
-            Label m = new Label(UserSession.getInstance().getName() + ": " + message);
-            m.setTextFill(Color.GREEN);
-            messages.add(m);
-            chatBox.getChildren().add(m);
-            chatbox_input.setText("");
-            index++;
+            addMessage(message, false, Color.GREEN, true);
             SocketService.getInstance().roomChat(message, error -> {
                 Label err = new Label("Failed to retrieve message from server. Trying again...");
                 err.setTextFill(Color.RED);
@@ -375,6 +414,21 @@ public class GameController extends ScreenService {
             });
 
         }
+    }
+
+    private void addMessage(String message, boolean isSystem, Color color, boolean resetChatbox) {
+        Label m;
+        if (isSystem) {
+            m = new Label(message);
+        } else {
+            m = new Label(UserSession.getInstance().getName() + ": " + message);
+        }
+        m.setTextFill(color);
+        messages.add(m);
+        chatBox.getChildren().add(m);
+        index++;
+
+        if (resetChatbox) chatbox_input.setText("");
     }
 
     public void onPressClear(ActionEvent event) {
@@ -404,19 +458,19 @@ public class GameController extends ScreenService {
         int value;
 
         if (button.equals(all_in_A)) {
-            value = curMoney - B_input - C_input - D_input;
+            value = currentMoney - B_input - C_input - D_input;
             answer_A_input.getValueFactory().setValue(value);
             answer_A_input.getEditor().setText(Integer.toString(value));
         } else if (button.equals(all_in_B)) {
-            value = curMoney - A_input - C_input - D_input;
+            value = currentMoney - A_input - C_input - D_input;
             answer_B_input.getValueFactory().setValue(value);
             answer_B_input.getEditor().setText(Integer.toString(value));
         } else if (button.equals(all_in_C)) {
-            value = curMoney - A_input - B_input - D_input;
+            value = currentMoney - A_input - B_input - D_input;
             answer_C_input.getValueFactory().setValue(value);
             answer_C_input.getEditor().setText(Integer.toString(value));
         } else if (button.equals(all_in_D)) {
-            value = curMoney - A_input - B_input - C_input;
+            value = currentMoney - A_input - B_input - C_input;
             answer_D_input.getValueFactory().setValue(value);
             answer_D_input.getEditor().setText(Integer.toString(value));
         }
@@ -441,6 +495,24 @@ public class GameController extends ScreenService {
                 chatBox.getChildren().add(messages.get(index));
                 index++;
             });
+    }
+
+    public void toHome(ActionEvent event) {
+        changeScreen(event, HOME_SCREEN);
+    }
+
+    public void onPressLeave(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirm leave");
+        alert.setHeaderText("You will lose your current credit. Do you really want to quit?");
+
+        Optional<ButtonType> option = alert.showAndWait();
+
+        if (option.get() == ButtonType.OK) {
+            SocketService.getInstance().surrender(error -> {
+            });
+            toHome(event);
+        }
     }
 
 }

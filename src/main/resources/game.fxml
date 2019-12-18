@@ -115,12 +115,12 @@
         <Label layoutX="20.0" layoutY="421.0" prefHeight="43.0" prefWidth="329.0" text="Undeposited money will be devide between answers Extended money will be trim evenly from all answers" textAlignment="CENTER" textFill="RED" wrapText="true" />
         <Button layoutX="139.0" layoutY="23.0" mnemonicParsing="false" onAction="#getQuestion" text="Get quest" />
 
-        <Rectangle fx:id="blocker" arcHeight="5.0" arcWidth="5.0" fill="#00000018" height="252.0"
-                   layoutX="72.0" layoutY="166.0" stroke="#ffffff00" strokeType="INSIDE" width="398.0">
+        <Rectangle fx:id="blocker" arcHeight="5.0" arcWidth="5.0" fill="#00000018" height="252.0" layoutX="72.0" layoutY="166.0" stroke="#ffffff00" strokeType="INSIDE" width="398.0">
             <cursor>
-                <Cursor fx:constant="DEFAULT"/>
+                <Cursor fx:constant="DEFAULT" />
             </cursor>
         </Rectangle>
+      <Button fx:id="backToHome" onAction="#toHome" layoutX="528.0" layoutY="338.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="261.0" text="Back to home" visible="false" />
 
     </children>
 </AnchorPane>
