@@ -92,6 +92,7 @@ public class QueueController extends BaseController implements ApplicationListen
             ReadWriteLock lock = lockStriped.get(recipient);
             lock.readLock().lock();
             try {
+                message.addContent(ContentType.USERNAME, user.getName());
                 sendTo(recipient, Destination.INVITE_PLAYER, message);
             } finally {
                 lock.readLock().unlock();
@@ -108,7 +109,7 @@ public class QueueController extends BaseController implements ApplicationListen
     }
 
     private void handleReplyInvite(User user, User recipient, Message message) {
-        sendTo(recipient, Destination.INVITE_PLAYER, message);
+        sendTo(user, Destination.INVITE_PLAYER, message);
         if (message.getContent(ContentType.REPLY)) {
             Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
             lobby.addUser(recipient)
