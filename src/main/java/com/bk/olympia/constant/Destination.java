@@ -25,6 +25,7 @@ public class Destination {
     public static final String SUBMIT_ANSWER = "/queue/play/submit_answer";
     public static final String GET_ANSWER = "/queue/play/get_answer";
     public static final String GAME_OVER = "/queue/play/game_over";
+    public static final String SURRENDER = "/queue/play/surrender";
 
     public static final String PUBLIC_CHAT = "/topic/public";
     public static final String PRIVATE_CHAT = "/topic/private/user/";

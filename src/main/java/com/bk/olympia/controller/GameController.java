@@ -172,12 +172,8 @@ public class GameController extends BaseController implements ApplicationListene
     }
 
     private void handleSubmitAnswer(User user, Player player, Room room, Question question, List<Integer> moneyPlaced) {
-        //Check if player follows the rule: you have to put in all money you currently have and you can only place at max 3 answers
         if (moneyPlaced.stream().mapToInt(Integer::intValue).sum() != player.getMoney())
             throw new AnswerPlacingViolationException(AnswerPlacingViolationException.ViolationType.MONEY_EXCEED_MONEY_TOTAL, user.getId());
-        /*if (moneyPlaced.stream().mapToInt(Integer::intValue).allMatch(m -> m > 0))
-            throw new AnswerPlacingViolationException(AnswerPlacingViolationException.ViolationType.PLACE_ALL_FOUR_ANSWER, user.getId());
-        */
         Answer correctAnswer = question.getCorrectAnswer();
         player.setMoney(moneyPlaced.get(question.getAnswers().indexOf(correctAnswer.getAnswerDetail())));
         save(player);
@@ -186,10 +182,6 @@ public class GameController extends BaseController implements ApplicationListene
         m.addContent(ContentType.ANSWER, question.getAnswers().indexOf(correctAnswer.getAnswerDetail()));
         m.addContent(ContentType.MONEY_PLACED, player.getMoney());
         broadcast(room, Destination.SUBMIT_ANSWER, m);
-
-        if (player.getMoney() == 0) {
-            handleGameOver(user, player, room);
-        }
     }
 
     @MessageMapping("/play/get-answer")
@@ -220,37 +212,87 @@ public class GameController extends BaseController implements ApplicationListene
         handleGameOver(user, player, room);
     }
 
+    @MessageMapping("/play/surrender")
+    public void surrender(@Payload Message message) {
+        User user = findUserById(message.getSender());
+        Player player = user.getCurrentPlayer();
+        Room room = player.getRoom();
+        player.setMoney(0);
+        save(player);
+
+        Message m = new Message(MessageType.SURRENDER, user.getId());
+        broadcast(room, Destination.SURRENDER, m);
+        handleGameOver(user, player, room);
+    }
+
     private void handleGameOver(User user, Player player, Room room) {
+        Player otherPlayer = room.getPlayerList().stream().filter(p-> p.getId() != player.getId()).collect(Collectors.toList()).get(0);
+
         if (player.getMoney() == 0) {
             Message m = new Message(MessageType.GAME_OVER, user.getId());
             m.addContent(ContentType.BET_VALUE, room.getBetValue());
 
-            if (room.getPlayerList().size() == Room.DEFAULT_MAX_PLAYERS) {
-                Player otherPlayer = Collections.max(room.getPlayerList(), Comparator.comparing(Player::getMoney));
-                if (otherPlayer.getMoney() > 0) {
-                    otherPlayer.getUser().addBalance(room.getBetValue());
-                    save(otherPlayer);
+            if (otherPlayer.getMoney() > 0) {
+                user.addBalance(-room.getBetValue());
+                otherPlayer.getUser().addBalance(room.getBetValue());
+                room.setWinner(otherPlayer.getUser().getId());
 
-                    m.addContent(ContentType.WINNER, new int[]{otherPlayer.getId()});
-                } else if (otherPlayer.getMoney() == 0) {
-                    ReadWriteLock lock = lockStriped.get(room.getId());
-                    lock.readLock().lock();
-                    try {
-                        room.setEndedAt(LocalDateTime.now());
-                        m.addContent(ContentType.WINNER, new int[]{player.getId(), otherPlayer.getId()});
-                        broadcast(room, Destination.GAME_OVER, m);
-                    } finally {
-                        lock.readLock().unlock();
-                        lock.writeLock().lock();
-                    }
-                    return;
-                }
-            } else {
-                room.getPlayerList().remove(player);
-                m.addContent(ContentType.WINNER, null);
+                save(room);
+                save(user);
+                save(otherPlayer);
+
+                m.addContent(ContentType.WINNER, new int[]{otherPlayer.getUser().getId()});
+            } else if (otherPlayer.getMoney() == 0) {
+                //DRAW
+                m.addContent(ContentType.WINNER, new int[]{player.getUser().getId(), otherPlayer.getUser().getId()});
             }
-            player.getUser().addBalance(-room.getBetValue());
-            save(user);
+
+            ReadWriteLock lock = lockStriped.get(room.getId());
+            lock.readLock().lock();
+            try {
+                room.setEndedAt(LocalDateTime.now());
+            } finally {
+                lock.readLock().unlock();
+                lock.writeLock().lock();
+            }
+            save(room);
+            List<User> users = room.getPlayerList().stream().map(Player::getUser).collect(Collectors.toList());
+            users.forEach(u -> u.setLobbyId(-1));
+            userRepository.saveAll(users);
+
+            broadcast(room, Destination.GAME_OVER, m);
+        } else if (otherPlayer.getMoney() == 0) {
+            Message m = new Message(MessageType.GAME_OVER, user.getId());
+            m.addContent(ContentType.BET_VALUE, room.getBetValue());
+
+            if (player.getMoney() > 0) {
+                otherPlayer.getUser().addBalance(-room.getBetValue());
+                user.addBalance(room.getBetValue());
+                room.setWinner(player.getUser().getId());
+
+                save(room);
+                save(user);
+                save(otherPlayer);
+
+                m.addContent(ContentType.WINNER, new int[]{player.getUser().getId()});
+            } else if (otherPlayer.getMoney() == 0) {
+                //DRAW
+                m.addContent(ContentType.WINNER, new int[]{player.getUser().getId(), otherPlayer.getUser().getId()});
+            }
+
+            ReadWriteLock lock = lockStriped.get(room.getId());
+            lock.readLock().lock();
+            try {
+                room.setEndedAt(LocalDateTime.now());
+            } finally {
+                lock.readLock().unlock();
+                lock.writeLock().lock();
+            }
+            save(room);
+            List<User> users = room.getPlayerList().stream().map(Player::getUser).collect(Collectors.toList());
+            users.forEach(u -> u.setLobbyId(-1));
+            userRepository.saveAll(users);
+
             broadcast(room, Destination.GAME_OVER, m);
         }
     }

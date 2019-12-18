@@ -22,5 +22,6 @@ public enum MessageType {
     SUBMIT_ANSWER,
     GET_ANSWER,
     GAME_OVER,
-    ERROR
+    ERROR,
+    SURRENDER
 }

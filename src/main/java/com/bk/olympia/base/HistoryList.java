@@ -42,10 +42,10 @@ public class HistoryList {
                 .toArray(Date[]::new);
     }
 
-    public int[] getResultTypes() {
+    public String[] getResultTypes() {
         return list.stream()
-                .mapToInt(e -> e.getResultType().getModifier())
-                .toArray();
+                .map(e -> e.getResultType().getString())
+                .toArray(String[]::new);
     }
 
     public int[] getBalanceChanges() {
