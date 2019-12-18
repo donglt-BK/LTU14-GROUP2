@@ -15,6 +15,7 @@ import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.List;
@@ -26,8 +27,7 @@ import static com.bk.olympia.config.Constant.*;
 public class HomeController extends ScreenService {
     public Text userBalance;
     public Label nameLabel;
-    @FXML
-    TextField playerId;
+    public TextField playerName;
 
     @FXML
     Text errorMessage;
@@ -36,33 +36,68 @@ public class HomeController extends ScreenService {
         int curBalance = UserSession.getInstance().getBalance();
         userBalance.setText(String.valueOf(curBalance));
         nameLabel.setText("Hello " + UserSession.getInstance().getName());
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Thread t = new Thread(() -> SocketService.getInstance().subscribeInvite(
+                message -> Platform.runLater(() -> {
+                    if (message.getContent(ContentType.REPLY) != null) {
+                        inviteWaiting.hide();
+                        if (message.getContent(ContentType.REPLY)) {
+                            changeScreen((Stage) nameLabel.getScene().getWindow(), LOBBY_SCREEN);
+                        } else {
+                            alert.setTitle("Invite player");
+                            alert.setHeaderText(message.getContent(ContentType.NAME) + " decline your invitation");
+                            alert.getButtonTypes().clear();
+                            ButtonType cancel = new ButtonType("Back");
+                            alert.getButtonTypes().setAll(cancel);
+
+                            alert.showAndWait();
+                            alert.hide();
+                        }
+                    } else {
+                        alert.setTitle("Player invitation");
+                        alert.setHeaderText("You have receipt invitation from " + message.getContent(ContentType.USERNAME));
+
+                        alert.getButtonTypes().clear();
+                        ButtonType cancel = new ButtonType("Decline");
+                        ButtonType accept = new ButtonType("Accept");
+                        alert.getButtonTypes().setAll(cancel, accept);
+
+                        Optional<ButtonType> option = alert.showAndWait();
+                        if (option.get() == cancel) {
+                            message.addContent(ContentType.REPLY, false);
+                            SocketService.getInstance().replyInvite(message, error -> {
+                            });
+                            alert.hide();
+                        } else {
+                            changeScreen((Stage) nameLabel.getScene().getWindow(), LOBBY_SCREEN);
+                            message.addContent(ContentType.REPLY, true);
+                            SocketService.getInstance().replyInvite(message, error -> {
+                            });
+                            alert.hide();
+                        }
+                    }
+                }), error -> {
+                }
+        ));
+        t.start();
     }
 
     public void findPlayer(ActionEvent event) {
         changeScreen(event, LOBBY_SCREEN);
     }
 
+    private Alert inviteWaiting = new Alert(Alert.AlertType.INFORMATION);
     public void invitePlayer(ActionEvent event) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Invite player");
-        alert.setHeaderText("Waiting for response, please wait...");
-        alert.getButtonTypes().clear();
-        alert.getButtonTypes().setAll(new ButtonType("Cancel invite"));
-
-        //Delay để fake việc tìm player
-        Timeline idleStage = new Timeline(new KeyFrame(Duration.seconds(3.0), new EventHandler<ActionEvent>() {
-
-            @Override
-            public void handle(ActionEvent event1) {
-                alert.hide();
-                changeScreen(event, LOBBY_SCREEN);
-            }
+        inviteWaiting.setTitle("Invite player");
+        inviteWaiting.setHeaderText("Waiting for response, please wait...");
+        inviteWaiting.getButtonTypes().clear();
+        ButtonType cancel = new ButtonType("Cancel invite");
+        inviteWaiting.getButtonTypes().setAll(cancel);
+        Thread t = new Thread(() -> SocketService.getInstance().invite(playerName.getText(), error -> {
         }));
-        idleStage.setCycleCount(1);
-        idleStage.play();
-        Optional<ButtonType> option = alert.showAndWait();
-
-        System.out.println("Waiting for response...");
+        t.start();
+        inviteWaiting.show();
     }
 
     public void signOut(ActionEvent event) {

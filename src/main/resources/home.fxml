@@ -12,7 +12,7 @@
       <Text layoutX="187.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the game! Now you can..." />
       <Text layoutX="276.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Or...." />
       <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
-      <TextField fx:id="playerId" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's id" />
+      <TextField fx:id="playerName" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's name" />
       <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
       <Hyperlink layoutX="89.0" layoutY="10.0" onAction="#onPressHistory" text="Glorious History" />
       <Label layoutX="439.0" layoutY="10.0" text="Your Balance:" />

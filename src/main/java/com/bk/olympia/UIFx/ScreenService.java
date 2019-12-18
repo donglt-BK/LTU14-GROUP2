@@ -30,6 +30,21 @@ public class ScreenService {
         }
     }
 
+    public void changeScreen(Stage currentScreen, String screenName) {
+        Parent screenToChange = null;
+        try {
+            screenToChange = FXMLLoader.load(getClass().getClassLoader().getResource(screenName + ".fxml"));
+            System.out.println("load: " + getClass().getClassLoader().getResource(screenName + ".fxml"));
+        } catch (IOException e) {
+            System.out.println("ERRROR: " + e.getMessage());
+        }
+        try {
+            changeScreen(currentScreen, screenToChange);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void changeScreen(Stage stage, Parent root) {
         Scene scene = new Scene(root);
         stage.setScene(scene);

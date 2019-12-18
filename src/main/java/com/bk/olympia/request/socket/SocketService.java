@@ -11,6 +11,7 @@ import com.bk.olympia.type.Destination;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSession.Subscription;
+import sun.security.krb5.internal.crypto.Des;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -119,19 +120,34 @@ public class SocketService {
         SocketSendingService.send(authSession, "/play/join", message);
     }
 
-    //TODO check session
-    public void invite(String playerID, ResponseHandler success, ErrorHandler error) {
+    public void subscribeInvite(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR));
             return;
         }
 
-        subscribe(userSession, success, error, "/queue/play/invite");
+        subscribe(authSession, success, error, Destination.INVITE_PLAYER);
+    }
+
+    public void invite(String playerName, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
 
         Message message = new Message(MessageType.JOIN_LOBBY);
         message.addContent(BET_VALUE, 2000)
-                .addContent(NAME, playerID);
+                .addContent(NAME, playerName);
         SocketSendingService.send(authSession, "/play/invite", message);
+    }
+
+    public void replyInvite(Message message, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR));
+            return;
+        }
+
+        SocketSendingService.send(authSession, "/play/invite-rep", message);
     }
 
     public void readySubscribe(ResponseHandler success, ErrorHandler error) {
