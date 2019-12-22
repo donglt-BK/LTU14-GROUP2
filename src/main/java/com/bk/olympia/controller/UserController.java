@@ -116,13 +116,19 @@ public class UserController extends BaseController {
         return handleAddQuestion(user, topic, message.getContent(ContentType.QUESTION), message.getContent(ContentType.ANSWER), message.getContent(ContentType.CORRECT_ANSWER_POSITION));
     }
 
-    private Message handleAddQuestion(User user, Topic topic, String question, String[] answers, int correctAnswerPos) {
+    private Message handleAddQuestion(User user, Topic topic, String question, List<String> answers, int correctAnswerPos) {
         //TODO: Add question and check if needed
         List<Answer> answerList = new ArrayList<>();
-        for (int i = 0; i < answers.length; i++) {
-            answerList.add(new Answer(answers[i], correctAnswerPos == i));
+        for (int i = 0; i < answers.size(); i++) {
+            answerList.add(new Answer(answers.get(i), correctAnswerPos == i));
         }
-        questionRepository.save(new Question(topic, question, answerList));
+        Question q = new Question(topic, question, answerList);
+
+        for (Answer a : answerList) {
+            a.setQuestion(q);
+        }
+        questionRepository.save(q);
+        answerRepository.saveAll(answerList);
         return new MessageAccept(MessageType.ADD_QUESTION, user.getId());
     }
 

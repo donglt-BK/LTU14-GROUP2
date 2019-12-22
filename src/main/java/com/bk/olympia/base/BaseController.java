@@ -46,7 +46,8 @@ public abstract class BaseController {
 
     @Autowired
     protected QuestionRepository questionRepository;
-
+    @Autowired
+    protected AnswerRepository answerRepository;
     @PostConstruct
     protected abstract void init();
 

@@ -111,7 +111,8 @@ public class QueueController extends BaseController implements ApplicationListen
     private void handleReplyInvite(User user, User recipient, Message message) {
         sendTo(user, Destination.INVITE_PLAYER, message);
         if (message.getContent(ContentType.REPLY)) {
-            Lobby lobby = new Lobby(message.getContent(ContentType.BET_VALUE));
+            Double d = message.getContent(ContentType.BET_VALUE);
+            Lobby lobby = new Lobby(d.intValue());
             lobby.addUser(recipient)
                     .addUser(user);
             broadcastLobbyInfo(user.getId(), lobby);
