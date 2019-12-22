@@ -55,19 +55,19 @@ public class HistoryController extends ScreenService {
                         header.getChildren().add(opponentHeader);
 
                         Label startTimeHeader = new Label("Start time");
-                        startTimeHeader.setPrefWidth(120);
+                        startTimeHeader.setPrefWidth(100);
                         header.getChildren().add(startTimeHeader);
 
                         Label endTimeHeader = new Label("End time");
-                        endTimeHeader.setPrefWidth(120);
+                        endTimeHeader.setPrefWidth(100);
                         header.getChildren().add(endTimeHeader);
 
                         Label resultHeader = new Label("Result");
-                        resultHeader.setPrefWidth(70);
+                        resultHeader.setPrefWidth(60);
                         header.getChildren().add(resultHeader);
 
                         Label balanceHeader = new Label("Balance");
-                        balanceHeader.setPrefWidth(70);
+                        balanceHeader.setPrefWidth(60);
                         header.getChildren().add(balanceHeader);
 
                         historyBox.getChildren().add(header);
@@ -83,15 +83,15 @@ public class HistoryController extends ScreenService {
                             historyRow.getChildren().add(opponent);
 
                             Label createdTime = new Label(createdAt.get(i));
-                            createdTime.setPrefWidth(120);
+                            createdTime.setPrefWidth(100);
                             historyRow.getChildren().add(createdTime);
 
                             Label endTime = new Label(endedAt.get(i));
-                            endTime.setPrefWidth(120);
+                            endTime.setPrefWidth(100);
                             historyRow.getChildren().add(endTime);
 
                             Label result = new Label(resultType.get(i));
-                            result.setPrefWidth(70);
+                            result.setPrefWidth(60);
                             historyRow.getChildren().add(result);
 
                             Label balance = new Label(String.valueOf(balanceChanged.get(i).intValue()));
@@ -100,7 +100,7 @@ public class HistoryController extends ScreenService {
                             } else if (resultType.get(i).equals("WIN")) {
                                 balance.setTextFill(Color.GREEN);
                             }
-                            balance.setPrefWidth(70);
+                            balance.setPrefWidth(60);
                             historyRow.getChildren().add(balance);
                             addParticipant();
                             historyBox.getChildren().add(historyRow);
