@@ -9,7 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +21,9 @@ import static com.bk.olympia.config.Constant.HOME_SCREEN;
 public class HistoryController extends ScreenService {
     public Label noDataMessage;
     private List<Double> roomId;
-    private List<LocalDateTime> createdAt;
-    private List<LocalDateTime> endedAt;
+    private List<String> createdAt;
+    private List<String> endedAt;
+    private List<String> opponentList;
     private List<String> resultType;
     private List<Double> balanceChanged;
     public ScrollPane historyPane;
@@ -35,6 +38,7 @@ public class HistoryController extends ScreenService {
         SocketService.getInstance().getHistory(
                 message -> Platform.runLater(() -> {
                     roomId = message.getContent(ContentType.HISTORY_ROOM_ID);
+                    opponentList = message.getContent(ContentType.HISTORY_OPPONENT);
                     createdAt = message.getContent(ContentType.HISTORY_CREATED_AT);
                     endedAt = message.getContent(ContentType.HISTORY_ENDED_AT);
                     resultType = message.getContent(ContentType.HISTORY_RESULT_TYPE);
@@ -42,20 +46,63 @@ public class HistoryController extends ScreenService {
 
                     if (roomId.size() > 0) {
                         HBox header = new HBox(10);
-                        header.getChildren().add(new Label("Room id"));
-                        header.getChildren().add(new Label("Start time"));
-                        header.getChildren().add(new Label("End time"));
-                        header.getChildren().add(new Label("Result"));
-                        header.getChildren().add(new Label("Balance"));
+                        Label roomIdHeader = new Label("Room id");
+                        roomIdHeader.setPrefWidth(80);
+                        header.getChildren().add(roomIdHeader);
+
+                        Label opponentHeader = new Label("Opponent");
+                        opponentHeader.setPrefWidth(80);
+                        header.getChildren().add(opponentHeader);
+
+                        Label startTimeHeader = new Label("Start time");
+                        startTimeHeader.setPrefWidth(120);
+                        header.getChildren().add(startTimeHeader);
+
+                        Label endTimeHeader = new Label("End time");
+                        endTimeHeader.setPrefWidth(120);
+                        header.getChildren().add(endTimeHeader);
+
+                        Label resultHeader = new Label("Result");
+                        resultHeader.setPrefWidth(70);
+                        header.getChildren().add(resultHeader);
+
+                        Label balanceHeader = new Label("Balance");
+                        balanceHeader.setPrefWidth(70);
+                        header.getChildren().add(balanceHeader);
+
                         historyBox.getChildren().add(header);
 
                         for (int i = 0; i < roomId.size(); i++) {
                             HBox historyRow = new HBox(10);
-                            historyRow.getChildren().add(new Label(String.valueOf(roomId.get(i).intValue())));
-                            historyRow.getChildren().add(new Label(String.valueOf(createdAt.get(i))));
-                            historyRow.getChildren().add(new Label(String.valueOf(endedAt.get(i))));
-                            historyRow.getChildren().add(new Label(String.valueOf(resultType.get(i))));
-                            historyRow.getChildren().add(new Label(String.valueOf(balanceChanged.get(i).intValue())));
+                            Label id = new Label(String.valueOf(roomId.get(i).intValue()));
+                            id.setPrefWidth(80);
+                            historyRow.getChildren().add(id);
+
+                            Label opponent = new Label(opponentList.get(i));
+                            opponent.setPrefWidth(80);
+                            historyRow.getChildren().add(opponent);
+
+                            Label createdTime = new Label(createdAt.get(i));
+                            createdTime.setPrefWidth(120);
+                            historyRow.getChildren().add(createdTime);
+
+                            Label endTime = new Label(endedAt.get(i));
+                            endTime.setPrefWidth(120);
+                            historyRow.getChildren().add(endTime);
+
+                            Label result = new Label(resultType.get(i));
+                            result.setPrefWidth(70);
+                            historyRow.getChildren().add(result);
+
+                            Label balance = new Label(String.valueOf(balanceChanged.get(i).intValue()));
+                            if (resultType.get(i).equals("LOSE")) {
+                                balance.setTextFill(Color.RED);
+                            } else if (resultType.get(i).equals("WIN")) {
+                                balance.setTextFill(Color.GREEN);
+                            }
+                            balance.setPrefWidth(70);
+                            historyRow.getChildren().add(balance);
+                            addParticipant();
                             historyBox.getChildren().add(historyRow);
                             historyPane.setContent(historyBox);
                         }
