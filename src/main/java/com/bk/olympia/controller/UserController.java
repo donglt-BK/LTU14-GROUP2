@@ -83,10 +83,11 @@ public class UserController extends BaseController {
     }
 
     private Message handleGetHistory(User user) {
-        HistoryList historyList = new HistoryList(user);
+        HistoryList historyList = new HistoryList(user, playerRepository);
         Message m = new Message(MessageType.GET_RECENT_HISTORY, user.getId());
         m.addContent(ContentType.HISTORY_ROOM_ID, historyList.getHistoryRoomIds())
                 .addContent(ContentType.HISTORY_CREATED_AT, historyList.getCreatedAts())
+                .addContent(ContentType.HISTORY_OPPONENT, historyList.getOpponents())
                 .addContent(ContentType.HISTORY_ENDED_AT, historyList.getEndedAts())
                 .addContent(ContentType.HISTORY_RESULT_TYPE, historyList.getResultTypes())
                 .addContent(ContentType.HISTORY_BALANCE_CHANGED, historyList.getBalanceChanges());

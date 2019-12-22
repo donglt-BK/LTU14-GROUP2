@@ -4,23 +4,26 @@ import com.bk.olympia.model.History;
 import com.bk.olympia.model.entity.Player;
 import com.bk.olympia.model.entity.Room;
 import com.bk.olympia.model.entity.User;
+import com.bk.olympia.repository.PlayerRepository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class HistoryList {
     private ArrayList<History> list;
 
-    public HistoryList(User user) {
+    public HistoryList(User user, PlayerRepository playerRepository) {
         List<Player> playerHistory = user.getPlayerList();
         ArrayList<Room> roomHistory = new ArrayList<>();
         playerHistory.forEach(p -> roomHistory.add(p.getRoom()));
 
         list = new ArrayList<>();
         roomHistory.forEach(room -> {
-            list.add(new History(room, user));
+            Player p = playerRepository.findByRoomIdAndUserIdNot(room.getId(), user.getId());
+            list.add(new History(room, user, p.getUser().getName()));
         });
     }
 
@@ -30,16 +33,16 @@ public class HistoryList {
                 .toArray();
     }
 
-    public LocalDateTime[] getCreatedAts() {
+    public String[] getCreatedAts() {
         return list.stream()
-                .map(History::getCreatedAt)
-                .toArray(LocalDateTime[]::new);
+                .map(History::getCreatedAtStr)
+                .toArray(String[]::new);
     }
 
-    public Date[] getEndedAts() {
+    public String[] getEndedAts() {
         return list.stream()
-                .map(History::getEndedAt)
-                .toArray(Date[]::new);
+                .map(History::getEndedAtStr)
+                .toArray(String[]::new);
     }
 
     public String[] getResultTypes() {
@@ -52,5 +55,10 @@ public class HistoryList {
         return list.stream()
                 .mapToInt(History::getBalanceChanged)
                 .toArray();
+    }
+    public String[] getOpponents() {
+        return list.stream()
+                .map(History::getOpponent)
+                .toArray(String[]::new);
     }
 }
