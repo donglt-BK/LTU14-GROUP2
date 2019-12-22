@@ -11,7 +11,6 @@ import com.bk.olympia.type.Destination;
 import com.bk.olympia.type.MessageType;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSession.Subscription;
-import sun.security.krb5.internal.crypto.Des;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,14 +25,12 @@ public class SocketService {
 
     private StompSession authSession;
     private StompSession userSession;
-    private StompSession playSession;
     private boolean ready;
 
     private SocketService() {
         try {
             authSession = SocketSendingService.connect("/auth");
             userSession = SocketSendingService.connect("/user");
-            playSession = SocketSendingService.connect("/play");
             ready = true;
         } catch (ExecutionException | InterruptedException e) {
             System.out.println("Error connect to auth socket");
@@ -107,6 +104,33 @@ public class SocketService {
         SocketSendingService.send(userSession, "/user/get-recent-history", message);
     }
 
+    public void getTopic(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+        subscribe(userSession, success, error, Destination.GET_ALL_TOPICS);
+
+        Message message = new Message(MessageType.GET_ALL_TOPICS);
+        SocketSendingService.send(userSession, "/user/get-all-topics", message);
+    }
+
+    public void addQuestion(int topic, String question, String[] answer, int pos, ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
+            return;
+        }
+        subscribe(userSession, success, error, Destination.ADD_QUESTION);
+
+        Message message = new Message(MessageType.ADD_QUESTION);
+        message.addContent(ContentType.TOPIC_ID, topic);
+        message.addContent(QUESTION, question);
+        message.addContent(ANSWER, answer);
+        message.addContent(CORRECT_ANSWER_POSITION, pos);
+
+        SocketSendingService.send(userSession, "/user/add-question", message);
+    }
+
     public void findGame(ResponseHandler success, ErrorHandler error) {
         if (!ready) {
             error.handle(new ErrorMessage(CONNECTION_ERROR, -1));
@@ -168,11 +192,16 @@ public class SocketService {
         if (!ready) {
             return;
         }
-
         Message message = new Message(MessageType.LEAVE_LOBBY);
         message.addContent(LOBBY_ID, currentLobbyId);
+        SocketSendingService.send(authSession, "/play/leave", message);
+    }
 
-        SocketSendingService.send(playSession, "/play/leave", message);
+    public void subscribeLeaveLobby(ResponseHandler success, ErrorHandler error) {
+        if (!ready) {
+            return;
+        }
+        subscribe(authSession, success, error, Destination.LEAVE_LOBBY);
     }
 
     public void start(ResponseHandler success, ErrorHandler error) {
@@ -250,7 +279,7 @@ public class SocketService {
         }
 
         Message message = new Message(MessageType.GET_QUESTION);
-        SocketSendingService.send(playSession, "/play/get-question", message);
+        SocketSendingService.send(authSession, "/play/get-question", message);
     }
 
     public void subscribeQuestion(ResponseHandler success, ErrorHandler error) {
@@ -270,7 +299,7 @@ public class SocketService {
         Message message = new Message(MessageType.SUBMIT_ANSWER);
         message.addContent(QUESTION_ID, questionId)
                 .addContent(MONEY_PLACED, placement);
-        SocketSendingService.send(playSession, "/play/submit-answer", message);
+        SocketSendingService.send(authSession, "/play/submit-answer", message);
     }
 
     public void receiveAnswer(ResponseHandler success, ErrorHandler error) {
@@ -289,7 +318,7 @@ public class SocketService {
         subscribe(authSession, success, error, Destination.GAME_OVER);
         if (UserSession.getInstance().isAlpha()) {
             Message message = new Message(MessageType.GAME_OVER);
-            SocketSendingService.send(playSession, "/play/game-over", message);
+            SocketSendingService.send(authSession, "/play/game-over", message);
         }
     }
 
@@ -307,7 +336,7 @@ public class SocketService {
             return;
         }
         Message message = new Message(MessageType.SURRENDER);
-        SocketSendingService.send(playSession, "/play/surrender", message);
+        SocketSendingService.send(authSession, "/play/surrender", message);
     }
 
 }

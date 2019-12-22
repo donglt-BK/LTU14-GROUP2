@@ -7,19 +7,16 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
-import javax.jws.soap.SOAPBinding;
 import java.util.ArrayList;
 import java.util.List;
-
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.bk.olympia.config.Constant.*;
+import static com.bk.olympia.config.Constant.GAME_SCREEN;
+import static com.bk.olympia.config.Constant.HOME_SCREEN;
 import static com.bk.olympia.config.Util.isNullOrEmpty;
 
 public class LobbyController extends ScreenService {
@@ -30,7 +27,6 @@ public class LobbyController extends ScreenService {
     public Button chat_send;
     public TextField chatbox_input;
     public ScrollPane chatbox_scroll;
-    public Hyperlink next_scene;
     public ImageView opponentImg;
     public Label opponentLabel;
     private static List<Label> messages = new ArrayList<>();
@@ -46,6 +42,7 @@ public class LobbyController extends ScreenService {
 
         Alert alert = new Alert(Alert.AlertType.NONE);
         AtomicBoolean found = new AtomicBoolean(false);
+
         SocketService.getInstance().findGame(
                 success -> Platform.runLater(() -> {
                     if (success.getContent().containsKey(ContentType.STATUS)) {
@@ -89,7 +86,6 @@ public class LobbyController extends ScreenService {
                         if (UserSession.getInstance().getCurrentLobbyId() == -1) {
                             SocketService.getInstance().lobbyChatSubscribe(lobbyId,
                                     message -> Platform.runLater(() -> {
-                                        System.out.println("receive");
                                         if (message.getSender() != UserSession.getInstance().getUserId()) {
                                             String m = message.getContent(ContentType.CHAT);
                                             Label opponentMessage = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + m);
@@ -129,7 +125,6 @@ public class LobbyController extends ScreenService {
                                 })
                         );
 
-
                         if (!lobbyParticipant.isEmpty()) {
                             if (lobbyParticipant.get(0).equals(UserSession.getInstance().getName())) {
                                 if (lobbyParticipant.size() == 2) {
@@ -160,6 +155,24 @@ public class LobbyController extends ScreenService {
                             showError("No lobby participant!", "Ask your admin about this feature~!");
                         }
                     }
+                }),
+                errorMessage -> System.out.println("Login error: " + errorMessage.getErrorType())
+        );
+        SocketService.getInstance().subscribeLeaveLobby(
+                success -> Platform.runLater(() -> {
+                    if (!UserSession.getInstance().isAlpha()) {
+                        your_ready.setText("Host");
+                        your_ready.setTextFill(Color.GREEN);
+                        readyBtn.setVisible(false);
+                        startBtn.setVisible(true);
+                        startBtn.setDisable(true);
+                    }
+                    opponentImg.setVisible(false);
+                    opponentLabel.setVisible(false);
+
+                    your_opp_ready.setVisible(false);
+                    your_opp_ready.setText("Not ready");
+                    your_opp_ready.setTextFill(Color.RED);
                 }),
                 errorMessage -> System.out.println("Login error: " + errorMessage.getErrorType())
         );

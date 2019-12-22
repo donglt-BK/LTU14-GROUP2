@@ -34,7 +34,7 @@ public class HomeController extends ScreenService {
 
     public void initialize() {
         int curBalance = UserSession.getInstance().getBalance();
-        userBalance.setText(String.valueOf(curBalance));
+        userBalance.setText(curBalance + "KAD");
         nameLabel.setText("Hello " + UserSession.getInstance().getName());
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -88,6 +88,7 @@ public class HomeController extends ScreenService {
     }
 
     private Alert inviteWaiting = new Alert(Alert.AlertType.INFORMATION);
+
     public void invitePlayer(ActionEvent event) {
         inviteWaiting.setTitle("Invite player");
         inviteWaiting.setHeaderText("Waiting for response, please wait...");
@@ -132,5 +133,9 @@ public class HomeController extends ScreenService {
 
     public void onPressHistory(ActionEvent event) {
         changeScreen(event, HISTORY_SCREEN);
+    }
+
+    public void onPressContribute(ActionEvent event) {
+        changeScreen(event, CONTRIBUTE_SCREEN);
     }
 }

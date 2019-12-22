@@ -87,7 +87,7 @@ public class GameController extends ScreenService {
         int totalMoney = UserSession.getInstance().getCurBet();
         currentMoney = totalMoney;
 
-        money.setText(String.valueOf(currentMoney));
+        money.setText(currentMoney + "KAD");
 
         SpinnerValueFactory<Integer> valueA = new IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
         SpinnerValueFactory<Integer> valueB = new IntegerSpinnerValueFactory(0, totalMoney, 0, 10);
@@ -245,17 +245,17 @@ public class GameController extends ScreenService {
                             }
 
                             currentMoney = moneyLeft.intValue();
-                            money.setText(String.valueOf(currentMoney));
+                            money.setText(currentMoney + "KAD");
 
                             if (moneyLeft.intValue() == 0) {
-                                addMessage("You lose everything.", true, Color.RED, false);
+                                addMessage("You lose all your KAD.", true, Color.RED, false);
                             } else {
-                                addMessage("You passed with " + moneyLeft.intValue() + " left.", true, Color.GREEN, false);
+                                addMessage("You passed with " + moneyLeft.intValue() + " KAD left.", true, Color.GREEN, false);
                             }
                             if (opponentMoneyLeft.intValue() == 0) {
-                                addMessage("Your opponent lose everything.", true, Color.BLUE, false);
+                                addMessage("Your opponent lose all KAD.", true, Color.BLUE, false);
                             } else {
-                                addMessage("Your opponent passed with " + opponentMoneyLeft.intValue() + " left.", true, Color.BLUE, false);
+                                addMessage("Your opponent passed with " + opponentMoneyLeft.intValue() + "KAD left.", true, Color.BLUE, false);
                             }
                             if (!gameOver) {
                                 getQuestion();
@@ -286,44 +286,44 @@ public class GameController extends ScreenService {
 
     private void gameOver() {
         //game over
-            SocketService.getInstance().gameOver(
-                    message -> Platform.runLater(() -> {
-                        System.out.println("GAME OVER");
-                        Double betVal = message.getContent(ContentType.BET_VALUE);
-                        List<Double> winner = message.getContent(ContentType.WINNER);
-                        System.out.println(betVal);
-                        moneyChange = betVal.intValue();
-                        int status;
-                        if (winner.size() == 2) {
-                            status = DRAW;
+        SocketService.getInstance().gameOver(
+                message -> Platform.runLater(() -> {
+                    System.out.println("GAME OVER");
+                    Double betVal = message.getContent(ContentType.BET_VALUE);
+                    List<Double> winner = message.getContent(ContentType.WINNER);
+                    System.out.println(betVal);
+                    moneyChange = betVal.intValue();
+                    int status;
+                    if (winner.size() == 2) {
+                        status = DRAW;
+                    } else {
+                        if (winner.get(0).intValue() == UserSession.getInstance().getUserId()) {
+                            status = WIN;
                         } else {
-                            if (winner.get(0).intValue() == UserSession.getInstance().getUserId()) {
-                                status = WIN;
-                            } else {
-                                status = LOSE;
-                            }
+                            status = LOSE;
                         }
-
-                        if (status == DRAW) {
-                            addMessage("IT'S A DRAW.", true, Color.GREEN, false);
-                        } else if (status == WIN) {
-                            addMessage("YOU WINNNN.", true, Color.GREEN, false);
-                            UserSession.getInstance().addBalance(moneyChange);
-                        } else {
-                            addMessage("YOU LOSE :(", true, Color.RED, false);
-                            UserSession.getInstance().addBalance(-moneyChange);
-                        }
-                        backToHome.setVisible(true);
-                    }),
-                    error -> {
-                        Label m = new Label("Failed to retrieve message from server. Trying again...");
-                        m.setPrefWidth(chatBox.getPrefWidth());
-                        m.setTextFill(Color.RED);
-                        messages.add(m);
-                        chatBox.getChildren().add(messages.get(index));
-                        index++;
                     }
-            );
+
+                    if (status == DRAW) {
+                        addMessage("IT'S A DRAW.", true, Color.GREEN, false);
+                    } else if (status == WIN) {
+                        addMessage("YOU WINNNN.", true, Color.GREEN, false);
+                        UserSession.getInstance().addBalance(moneyChange);
+                    } else {
+                        addMessage("YOU LOSE :(", true, Color.RED, false);
+                        UserSession.getInstance().addBalance(-moneyChange);
+                    }
+                    backToHome.setVisible(true);
+                }),
+                error -> {
+                    Label m = new Label("Failed to retrieve message from server. Trying again...");
+                    m.setPrefWidth(chatBox.getPrefWidth());
+                    m.setTextFill(Color.RED);
+                    messages.add(m);
+                    chatBox.getChildren().add(messages.get(index));
+                    index++;
+                }
+        );
     }
 
     public void submitAnswer() {
@@ -424,7 +424,11 @@ public class GameController extends ScreenService {
         if (isSystem) {
             m = new Label(message);
         } else {
-            m = new Label(UserSession.getInstance().getName() + ": " + message);
+            if (color == Color.GREEN) {
+                m = new Label(UserSession.getInstance().getName() + ": " + message);
+            } else {
+                m = new Label(UserSession.getInstance().getLobbyParticipant() + ": " + message);
+            }
         }
         m.setTextFill(color);
         messages.add(m);

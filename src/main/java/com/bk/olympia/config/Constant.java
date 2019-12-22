@@ -15,6 +15,7 @@ public class Constant {
             LOBBY_SCREEN = "lobby",
             SIGN_UP_SCREEN = "register",
             GAME_SCREEN = "game",
+            CONTRIBUTE_SCREEN = "contribute",
             HISTORY_SCREEN = "history";
 }
 

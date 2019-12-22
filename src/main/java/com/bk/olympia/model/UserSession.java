@@ -2,8 +2,6 @@ package com.bk.olympia.model;
 
 import com.bk.olympia.type.ContentType;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class UserSession {
