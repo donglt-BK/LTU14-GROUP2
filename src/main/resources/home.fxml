@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.control.*?>
 <?import java.lang.*?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.bk.olympia.UIFx.HomeController">
-   <children>
-      <Button layoutX="248.0" layoutY="126.0" mnemonicParsing="false" onAction="#findPlayer" text="Find a player" />
-      <Button layoutX="243.0" layoutY="259.0" mnemonicParsing="false" onAction="#invitePlayer" text="Invite a player" />
-      <Text layoutX="187.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the game! Now you can..." />
-      <Text layoutX="276.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Or...." />
-      <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
-      <TextField fx:id="playerName" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's name" />
-      <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
-      <Hyperlink layoutX="101.0" layoutY="10.0" onAction="#onPressHistory" text="Glorious history" />
-      <Label layoutX="439.0" layoutY="10.0" text="Your Balance:" />
-      <Text fx:id="userBalance" fill="#da6313" layoutX="520.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
-      <Label fx:id="nameLabel" alignment="CENTER_RIGHT" layoutX="317.0" layoutY="10.0" prefHeight="17.0" prefWidth="111.0" text="Hello" />
-      <Hyperlink layoutX="227.0" layoutY="10.0" onAction="#onPressContribute" text="Contribute question" />
-   </children>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="com.bk.olympia.UIFx.HomeController">
+  <children>
+    <Button layoutX="248.0" layoutY="126.0" mnemonicParsing="false" onAction="#findPlayer" text="Find a player" />
+    <Button layoutX="243.0" layoutY="259.0" mnemonicParsing="false" onAction="#invitePlayer" text="Invite a player" />
+    <Text layoutX="187.0" layoutY="110.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Welcome to the game! Now you can..." />
+    <Text layoutX="276.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Or...." />
+    <Hyperlink layoutX="20.0" layoutY="10.0" onAction="#signOut" text="Sign Out" />
+    <TextField fx:id="playerName" alignment="CENTER" layoutX="209.0" layoutY="211.0" onKeyPressed="#hideError" promptText="enter a player's name" />
+    <Text fx:id="errorMessage" fill="RED" layoutX="195.0" layoutY="304.0" wrappingWidth="186.0" />
+    <Hyperlink layoutX="101.0" layoutY="10.0" onAction="#onPressHistory" text="Glorious history" />
+    <Label layoutX="402.0" layoutY="38.0" text="Your Balance:" />
+    <Text fx:id="userBalance" fill="#da6313" layoutX="494.0" layoutY="54.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+    <Label fx:id="nameLabel" alignment="CENTER_LEFT" layoutX="402.0" layoutY="14.0" prefHeight="17.0" prefWidth="111.0" text="Hello" />
+    <Hyperlink layoutX="227.0" layoutY="10.0" onAction="#onPressContribute" text="Contribute question" />
+  </children>
 </AnchorPane>

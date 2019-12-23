@@ -49,5 +49,4 @@ public class SocketSendingService {
         System.out.println(gson.toJson(object));
         stompSession.send("/app" + url, gson.toJson(object).getBytes());
     }
-
 }

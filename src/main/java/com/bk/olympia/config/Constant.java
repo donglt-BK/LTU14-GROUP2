@@ -3,10 +3,10 @@ package com.bk.olympia.config;
 import java.awt.*;
 
 public class Constant {
-    //public static final String HOST = "86cbc151.ngrok.io";
-    //public static final int PORT = 80;
-    public static final String HOST = "localhost";
-    public static final int PORT = 8109;
+    public static final String HOST = "63513063.ngrok.io";
+    public static final int PORT = 80;
+//    public static final String HOST = "localhost";
+//    public static final int PORT = 8109;
     public static final String APP_NAME = "Dừng để tiền rơi!!!";
 
     public static final String
